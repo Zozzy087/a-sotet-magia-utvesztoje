@@ -59,7 +59,7 @@ button {
 }
 
 button:hover {
-    background-color: #ff007f; /* Hoverkor pirosas árnyalat */
+    background-color: #7a003d; /* Hoverkor pirosas árnyalat */
     transform: scale(1.1); /* Enyhe nagyítás */
 }
 
