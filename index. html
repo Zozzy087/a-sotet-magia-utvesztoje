@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fejezet Validáló</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>A Sötét Mágia Útvesztője</h1>
+        <div class="puzzle-box">
+            <h2>Feladvány Validáló</h2>
+            <input type="text" id="code" placeholder="Írd be a megoldást...">
+            <button onclick="checkCode()">Ellenőrzés</button>
+            <div id="result"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
