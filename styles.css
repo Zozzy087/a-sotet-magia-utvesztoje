@@ -32,27 +32,37 @@ input {
     width: 100%;
     padding: 10px;
     margin: 1rem 0;
-    border: none;
-    border-radius: 5px;
-    background-color: #333;
-    color: white;
-    font-size: 1.1rem;
+    border: 2px solid #7f00ff; /* Misztikus lila keret */
+    border-radius: 8px; /* Lágyabb sarkok */
+    background-color: #1a1a1a; /* Sötét háttér */
+    color: #f5f5f5; /* Világos szöveg */
+    font-size: 1.2rem;
+    box-shadow: 0 0 15px #7f00ff; /* Ragyogó, mágikus hatás */
+    transition: box-shadow 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    box-shadow: 0 0 20px #ff007f; /* Fókuszkor más színnel ragyog */
 }
 
 button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
+    background-color: #7f00ff; /* Lila, varázslatos árnyalat */
+    color: #f5f5f5;
+    padding: 12px 25px;
+    border: 2px solid #ff007f; /* Misztikus keret */
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 1.1rem;
-    transition: background-color 0.3s;
+    font-size: 1.2rem;
+    transition: background-color 0.3s, transform 0.2s ease;
+    box-shadow: 0 0 15px #7f00ff;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #ff007f; /* Hoverkor pirosas árnyalat */
+    transform: scale(1.1); /* Enyhe nagyítás */
 }
+
 
 #result {
     margin-top: 1rem;
