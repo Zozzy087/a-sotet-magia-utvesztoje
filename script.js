@@ -3,8 +3,8 @@ function checkCode() {
     const result = document.getElementById('result');
     
     // Itt állítsd be a helyes kódot
-    if (code === "3419") {
-        result.innerHTML = "Helyes! A következő fejezet tartalma...";
+    if (code === "25") {
+        result.innerHTML = "Helyes! Lapozz a [78]-ra a következő fejezethez!";
         result.className = "success";
         // Itt átirányíthatod a játékost a következő fejezetre vagy megjelenítheted a folytatást
     } else {
