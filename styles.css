@@ -15,7 +15,7 @@ body {
 
 h1 {
     font-family: 'Cinzel', serif; /* Cinzel betűtípus */
-    font-weight: 700; /* Vastag betű */
+    font-weight: 400; /* Vastag betű */
     color: white; /* Szöveg színe fehér */
     background-color: black; /* Fekete háttér a szöveg mögött */
     display: inline-block; /* A háttér csak a szöveg mögött legyen */
