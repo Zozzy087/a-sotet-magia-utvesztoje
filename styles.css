@@ -23,19 +23,17 @@ body {
     padding: 20px;
     box-shadow: 0 0 20px rgba(127, 0, 255, 0.5); /* Varázslatos árnyék */
     color: #ffffff; /* Fehér szöveg */
+    text-align: center; /* Középre igazítás */
 }
 
 
 .puzzle-box {
-    background-image: url('images/box-background.jpg'); /* A háttérkép elérési útja */
-    background-size: cover; /* A kép kitölti a dobozt torzítás nélkül */
-    background-position: center; /* A kép középre igazítása */
-    background-repeat: no-repeat; /* Nem ismétlődő háttér */
+    background-color: #1a1a1a; /* Fekete háttér */
     border-radius: 10px; /* Lekerekített sarkok */
-    padding: 20px; /* Belül tágasabb legyen */
+    padding: 20px;
     box-shadow: 0 0 20px rgba(127, 0, 255, 0.5); /* Varázslatos árnyék */
-    color: #ffffff; /* Szöveg színe fehér maradjon */
-    text-align: center; /* Szöveg középre igazítása */
+    color: #ffffff; /* Fehér szöveg */
+    text-align: center; /* Középre igazítás */
 }
 
 
