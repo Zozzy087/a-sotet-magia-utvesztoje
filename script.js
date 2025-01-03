@@ -8,7 +8,7 @@ function checkCode() {
         result.className = "success";
         // Itt átirányíthatod a játékost a következő fejezetre vagy megjelenítheted a folytatást
     } else {
-        result.innerHTML = "Helytelen válasz. Kérlek próbáld újra!";
+        result.innerHTML = "Helytelen válasz. Próbáld újra!";
         result.className = "error";
     }
 }
