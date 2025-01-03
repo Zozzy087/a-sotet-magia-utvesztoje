@@ -13,6 +13,16 @@ body {
     min-height: 100vh;
 }
 
+h1 {
+    font-family: 'Cinzel', serif; /* Cinzel betűtípus */
+    font-weight: 700; /* Vastag betű */
+    color: white; /* Szöveg színe fehér */
+    background-color: black; /* Fekete háttér a szöveg mögött */
+    display: inline-block; /* A háttér csak a szöveg mögött legyen */
+    padding: 10px 20px; /* Tér a szöveg körül */
+    border-radius: 5px; /* Lekerekített sarkok */
+    text-align: center; /* Középre igazítás */
+}
 
 .container {
     background-image: url('images/box-background.jpg'); /* Pentagramma háttér */
