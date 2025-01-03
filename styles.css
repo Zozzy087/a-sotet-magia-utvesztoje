@@ -14,14 +14,18 @@ body {
 }
 
 h1 {
-    font-family: 'Cinzel', serif; /* Cinzel betűtípus */
-    font-weight: 400; /* Vastag betű */
-    color: white; /* Szöveg színe fehér */
-    background-color: black; /* Fekete háttér a szöveg mögött */
-    display: inline-block; /* A háttér csak a szöveg mögött legyen */
-    padding: 10px 20px; /* Tér a szöveg körül */
-    border-radius: 5px; /* Lekerekített sarkok */
-    text-align: center; /* Középre igazítás */
+    font-family: 'Cinzel', serif;
+    font-weight: 500;
+    color: white;
+    text-align: center;
+    max-width: 300px; /* Szövegmező maximális szélessége */
+    margin: auto; /* Középre igazítás */
+    background-color: black;
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 5px;
+    line-height: 1.5; /* Sortávolság */
+    word-wrap: break-word; /* Automatikus sortörés */
 }
 
 .container {
