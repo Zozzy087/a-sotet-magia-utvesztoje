@@ -13,6 +13,27 @@ body {
     min-height: 100vh;
 }
 
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.5rem; /* Kisebb betűméret */
+        padding: 10px 15px; /* Csökkentett padding */
+        max-width: 90%; /* Igazodik a képernyő szélességéhez */
+    }
+
+    .puzzle-box {
+        width: 90%;
+        padding: 15px;
+        margin: auto;
+    }
+
+    input, button {
+        font-size: 1rem;
+        padding: 10px;
+        width: 100%;
+    }
+}
+
+
 h1 {
     font-family: 'Cinzel', serif;
     font-weight: 500;
