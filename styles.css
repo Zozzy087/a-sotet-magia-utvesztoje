@@ -25,8 +25,16 @@ body {
 }
 
 .puzzle-box {
-    margin-top: 2rem;
+    background-image: url('images/box-background.jpg'); /* Egyedi kép */
+    background-size: cover; /* Kitölti a dobozt */
+    background-position: center; /* Középre igazítás */
+    background-repeat: no-repeat; /* Nem ismétlődik */
+    border: 2px solid #7f00ff; /* Lila szegély */
+    border-radius: 10px; /* Lekerekített sarkok */
+    padding: 20px; /* Belül tágasabb legyen */
+    box-shadow: 0 0 20px rgba(127, 0, 255, 0.5); /* Ragyogó árnyék */
 }
+
 
 input {
     width: 100%;
