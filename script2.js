@@ -8,7 +8,7 @@ function checkCode() {
         result.className = "success";
         // Itt átirányíthatod a játékost a következő fejezetre vagy megjelenítheted a folytatást
     } else {
-        result.innerHTML = "Helytelen válasz. Veszítesz 3 ÉP! Próbáld újra!";
+        result.innerHTML = "Helytelen válasz. Veszítesz 3 ÉP-t! Próbáld újra!";
         result.className = "error";
     }
 }
