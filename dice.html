@@ -34,12 +34,12 @@
 <body>
   <h1>3D6 Kockadobás</h1>
   <div class="dice-container">
-    <button onclick="rollDice()">Dobás</button>
+    <button id="rollButton">Dobás</button>
     <div id="dice-results" class="result"></div>
     <div id="success-results" class="result"></div>
   </div>
   <script>
-    function rollDice() {
+    document.getElementById("rollButton").addEventListener("click", function () {
       const dice = [0, 0, 0]; // A kockadobások tárolására szolgáló tömb
       let successes = 0; // A sikeres dobások száma
 
@@ -54,7 +54,7 @@
       // Eredmények megjelenítése az HTML-ben
       document.getElementById("dice-results").textContent = `Kockadobások: ${dice.join(", ")}`;
       document.getElementById("success-results").textContent = `Sikeres dobások száma: ${successes}`;
-    }
+    });
   </script>
 </body>
 </html>
