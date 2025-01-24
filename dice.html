@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dice Roller</title>
+  <title>3D6 Kockadobás</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -32,12 +32,29 @@
   </style>
 </head>
 <body>
-  <h1>3D6 Dice Roller</h1>
+  <h1>3D6 Kockadobás</h1>
   <div class="dice-container">
-    <button onclick="rollDice()">Roll the Dice</button>
+    <button onclick="rollDice()">Dobás</button>
     <div id="dice-results" class="result"></div>
     <div id="success-results" class="result"></div>
   </div>
-  <script src="script.js"></script>
+  <script>
+    function rollDice() {
+      const dice = [0, 0, 0]; // A kockadobások tárolására szolgáló tömb
+      let successes = 0; // A sikeres dobások száma
+
+      // Minden kocka dobása
+      for (let i = 0; i < 3; i++) {
+        dice[i] = Math.floor(Math.random() * 6) + 1; // Véletlenszám 1 és 6 között
+        if (dice[i] >= 4) {
+          successes++; // Sikeres dobások számolása (4 vagy nagyobb)
+        }
+      }
+
+      // Eredmények megjelenítése az HTML-ben
+      document.getElementById("dice-results").textContent = `Kockadobások: ${dice.join(", ")}`;
+      document.getElementById("success-results").textContent = `Sikeres dobások száma: ${successes}`;
+    }
+  </script>
 </body>
 </html>
