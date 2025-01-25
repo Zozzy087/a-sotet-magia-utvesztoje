@@ -9,8 +9,7 @@
         /* Globális stílusok */
         body {
             font-family: 'Cinzel', serif;
-            background-image: url('images/background.jpg.jpg');
- /* Az egyedi háttered útvonala */
+            background-image: url('images/background.jpg.jpg'); /* Az egyedi háttered útvonala */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -57,6 +56,10 @@
             font-size: 1.2rem;
             margin-top: 10px;
         }
+
+        .result-label {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -70,8 +73,13 @@
         <!-- Dobókockás funkció -->
         <h2>3D6 Kockadobás</h2>
         <button onclick="rollDice()">Dobás</button>
-        <div id="dice-results" class="result"></div>
-        <div id="success-results" class="result"></div>
+        <div class="result">
+            <span class="result-label">Kockadobások:</span>
+            <span id="dice-results"></span>
+        </div>
+        <div class="result">
+            <span id="success-results" class="result-label"></span>
+        </div>
     </div>
 
     <script>
@@ -88,8 +96,25 @@
             }
 
             // Eredmények megjelenítése
-            document.getElementById("dice-results").textContent = `Kockadobások: ${dice.join(", ")}`;
-            document.getElementById("success-results").textContent = `Sikeres dobások száma: ${successes}`;
+            document.getElementById("dice-results").textContent = dice.join(", ");
+
+            // Sikeres dobások szöveges megjelenítése
+            let successText = "";
+            switch (successes) {
+                case 0:
+                    successText = "Nincs Siker";
+                    break;
+                case 1:
+                    successText = "Egy Siker";
+                    break;
+                case 2:
+                    successText = "Két Siker";
+                    break;
+                case 3:
+                    successText = "Három Siker";
+                    break;
+            }
+            document.getElementById("success-results").textContent = successText;
         }
     </script>
 </body>
