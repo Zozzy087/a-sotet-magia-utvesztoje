@@ -3,27 +3,93 @@
 <head>
     <title>3D6 Kockadobás</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Globális stílusok */
+        body {
+            font-family: 'Cinzel', serif;
+            background-image: url('images/background.jpg'); /* Az egyedi háttered útvonala */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-weight: 500;
+            color: white;
+            background-color: black;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #7f00ff; /* Lila szín */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 0 10px #7f00ff;
+        }
+
+        button:hover {
+            background-color: #a020f0;
+            transform: scale(1.1);
+        }
+
+        .result {
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
+    <div>
         <h1>
             A<br>
             SÖTÉT MÁGIA<br>
             ÚTVESZTŐJE
         </h1>
 
-        <!-- Kockadobás doboz -->
-        <div class="dice-box">
-            <h2>3D6 Kockadobás</h2>
-            <button onclick="rollDice()">Dobás</button>
-            <div id="dice-results" class="result"></div>
-            <div id="success-results" class="result"></div>
-        </div>
+        <!-- Dobókockás funkció -->
+        <h2>3D6 Kockadobás</h2>
+        <button onclick="rollDice()">Dobás</button>
+        <div id="dice-results" class="result"></div>
+        <div id="success-results" class="result"></div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        function rollDice() {
+            const dice = [0, 0, 0]; // A kockadobások tárolása
+            let successes = 0; // Sikeres dobások száma
+
+            // Három D6 dobás
+            for (let i = 0; i < 3; i++) {
+                dice[i] = Math.floor(Math.random() * 6) + 1; // Véletlen szám 1-6 között
+                if (dice[i] >= 4) {
+                    successes++; // 4 vagy nagyobb érték sikeres
+                }
+            }
+
+            // Eredmények megjelenítése
+            document.getElementById("dice-results").textContent = `Kockadobások: ${dice.join(", ")}`;
+            document.getElementById("success-results").textContent = `Sikeres dobások száma: ${successes}`;
+        }
+    </script>
 </body>
 </html>
