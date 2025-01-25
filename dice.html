@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: 'Cinzel', serif;
-            background-image: url('images/background.jpg.jpg'); /* Az egyedi háttered */
+            background-image: url('images/background.jpg'); /* Az egyedi háttered */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -18,7 +18,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
+            flex-direction: column; /* Egymás alatti elrendezés */
             min-height: 100vh;
             text-align: center;
         }
@@ -46,6 +46,7 @@
             border-radius: 5px;
             line-height: 1.2;
             margin-bottom: 20px;
+            width: fit-content; /* Szélesség igazítása */
         }
 
         button {
@@ -70,6 +71,7 @@
             justify-content: center;
             gap: 10px;
             margin-top: 20px;
+            flex-wrap: wrap; /* Ha túl szélesek, törik a sor */
         }
 
         .dice-results img {
