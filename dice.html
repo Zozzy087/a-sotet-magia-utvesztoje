@@ -99,6 +99,26 @@
                 img.alt = `Kocka: ${roll}`;
                 diceContainer.appendChild(img);
             }
+
+             // Sikeres dobások szöveges megjelenítése
+            let successText = '';
+            switch (successes) {
+                case 0:
+                    successText = 'Nincs Siker';
+                    break;
+                case 1:
+                    successText = 'Egy Siker';
+                    break;
+                case 2:
+                    successText = 'Két Siker';
+                    break;
+                case 3:
+                    successText = 'Három Siker';
+                    break;
+            }
+
+            successResults.textContent = successText;
+        }
         }
     </script>
 </body>
