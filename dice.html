@@ -6,10 +6,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Globális stílusok */
         body {
             font-family: 'Cinzel', serif;
-            background-image: url('images/background.jpg.jpg'); /* Az egyedi háttered útvonala */
+            background-image: url('images/background.jpg.jpg'); /* Az egyedi háttered */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -38,7 +37,7 @@
         button {
             padding: 10px 20px;
             margin-top: 20px;
-            background-color: #7f00ff; /* Lila szín */
+            background-color: #7f00ff;
             color: white;
             border: none;
             border-radius: 5px;
@@ -52,22 +51,16 @@
             transform: scale(1.1);
         }
 
-        .result {
-            font-size: 1.2rem;
-            margin-top: 10px;
+        .dice-results {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
         }
 
-        .result-label {
-            font-weight: bold;
-        }
-
-        .success-message {
-            background-color: black;
-            color: white;
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin-top: 10px;
+        .dice-results img {
+            width: 80px;
+            height: 80px;
         }
     </style>
 </head>
@@ -82,46 +75,30 @@
         <!-- Dobókockás funkció -->
         <h2>3D6 Kockadobás</h2>
         <button onclick="rollDice()">Dobás</button>
-        <div class="result">
-            <span class="result-label">Kockadobások:</span>
-            <span id="dice-results"></span>
-        </div>
-        <div id="success-results" class="success-message"></div>
+        <div class="dice-results" id="dice-images"></div>
     </div>
 
     <script>
         function rollDice() {
-            const dice = [0, 0, 0]; // A kockadobások tárolása
-            let successes = 0; // Sikeres dobások száma
+            const diceImages = {
+                1: 'd1.png',
+                2: 'd2.png',
+                3: 'd3.png',
+                4: 'd4.png',
+                5: 'd5.png',
+                6: 'd6.png'
+            };
 
-            // Három D6 dobás
+            const diceContainer = document.getElementById('dice-images');
+            diceContainer.innerHTML = ''; // Előző képek törlése
+
             for (let i = 0; i < 3; i++) {
-                dice[i] = Math.floor(Math.random() * 6) + 1; // Véletlen szám 1-6 között
-                if (dice[i] >= 4) {
-                    successes++; // 4 vagy nagyobb érték sikeres
-                }
+                const roll = Math.floor(Math.random() * 6) + 1;
+                const img = document.createElement('img');
+                img.src = diceImages[roll];
+                img.alt = `Kocka: ${roll}`;
+                diceContainer.appendChild(img);
             }
-
-            // Eredmények megjelenítése
-            document.getElementById("dice-results").textContent = dice.join(", ");
-
-            // Sikeres dobások szöveges megjelenítése
-            let successText = "";
-            switch (successes) {
-                case 0:
-                    successText = "Nincs Siker";
-                    break;
-                case 1:
-                    successText = "Egy Siker";
-                    break;
-                case 2:
-                    successText = "Két Siker";
-                    break;
-                case 3:
-                    successText = "Három Siker";
-                    break;
-            }
-            document.getElementById("success-results").textContent = successText;
         }
     </script>
 </body>
