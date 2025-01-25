@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: 'Cinzel', serif;
-            background-image: url('images/background.jpg.jpg'); /* Az egyedi háttered */
+            background-image: url('images/background.jpg'); /* Az egyedi háttered */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -16,11 +16,11 @@
             margin: 0;
             padding: 0;
             display: flex;
-            flex-direction: column; /* Egymás alatt helyezkedjenek el az elemek */
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             text-align: center;
+            flex-direction: column; /* Az elemek egymás alatti elrendezése */
         }
 
         h1 {
@@ -43,8 +43,8 @@
             display: inline-block;
             padding: 10px 20px;
             border-radius: 5px;
-            margin-top: 20px; /* Távolság az előző elem alatt */
-            line-height: 1.5; /* Szebb szövegformázás */
+            margin: 20px 0; /* Távolság az előző és következő elem között */
+            text-align: center; /* Szöveg középre igazítása */
         }
 
         button {
