@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: 'Cinzel', serif;
-            background-image: url('images/background.jpg'); /* Az egyedi háttered */
+            background-image: url('images/background.jpg.jpg'); /* Az egyedi háttered */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -34,16 +34,17 @@
             word-wrap: break-word;
         }
 
-        .subtitle {
+        h2 {
             font-family: 'Cinzel', serif;
-            font-weight: 500;
+            font-weight: 400;
             color: white;
             background-color: black;
             display: inline-block;
-            padding: 5px 15px;
+            padding: 10px 20px;
             border-radius: 5px;
             margin-top: 20px;
             line-height: 1.2;
+            word-wrap: break-word;
         }
 
         button {
@@ -94,8 +95,8 @@
             ÚTVESZTŐJE
         </h1>
 
-        <h2 class="subtitle">3D6 Kockadobás</h2>
-
+        <!-- Dobókockás funkció -->
+        <h2>3D6 Kockadobás</h2>
         <button onclick="rollDice()">Dobás</button>
         <div class="dice-results" id="dice-images"></div>
         <div id="success-results" class="success-message"></div>
