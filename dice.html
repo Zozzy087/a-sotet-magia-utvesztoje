@@ -9,7 +9,7 @@
         /* Globális stílusok */
         body {
             font-family: 'Cinzel', serif;
-            background-image: url('images/background.jpg.jpg'); /* Az egyedi háttered útvonala */
+            background-image: url('images/background.jpg'); /* Az egyedi háttered útvonala */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -60,6 +60,15 @@
         .result-label {
             font-weight: bold;
         }
+
+        .success-message {
+            background-color: black;
+            color: white;
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -77,9 +86,7 @@
             <span class="result-label">Kockadobások:</span>
             <span id="dice-results"></span>
         </div>
-        <div class="result">
-            <span id="success-results" class="result-label"></span>
-        </div>
+        <div id="success-results" class="success-message"></div>
     </div>
 
     <script>
