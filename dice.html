@@ -8,13 +8,17 @@
     <style>
         body {
             font-family: 'Cinzel', serif;
-            background-image: url('images/background.jpg'); /* Az egyedi háttered */
+            background-image: url('images/background.jpg.jpg'); /* Az egyedi háttered */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             color: #ffffff;
             margin: 0;
             padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             text-align: center;
         }
 
@@ -28,6 +32,17 @@
             border-radius: 5px;
             line-height: 1.5;
             word-wrap: break-word;
+        }
+
+        h2 {
+            font-family: 'Cinzel', serif;
+            font-weight: 500;
+            color: white;
+            background-color: black;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            line-height: 1.2;
         }
 
         button {
@@ -71,19 +86,19 @@
     </style>
 </head>
 <body>
-    <h1>
-        A<br>
-        SÖTÉT MÁGIA<br>
-        ÚTVESZTŐJE
-    </h1>
+    <div>
+        <h1>
+            A<br>
+            SÖTÉT MÁGIA<br>
+            ÚTVESZTŐJE
+        </h1>
 
-    <!-- Dobókockás funkció -->
-    <h2 style="background-color: black; color: white; display: inline-block; padding: 10px 20px; border-radius: 5px;">
-        3D6 KOCKADOBÁS
-    </h2>
-    <button onclick="rollDice()">Dobás</button>
-    <div class="dice-results" id="dice-images"></div>
-    <div id="success-results" class="success-message"></div>
+        <!-- Dobókockás funkció -->
+        <h2>3D6 Kockadobás</h2>
+        <button onclick="rollDice()">Dobás</button>
+        <div class="dice-results" id="dice-images"></div>
+        <div id="success-results" class="success-message"></div>
+    </div>
 
     <script>
         function rollDice() {
