@@ -1,0 +1,38 @@
+.dice-box {
+    background-color: #1a1a1a; /* Sötét háttér */
+    border-radius: 10px; /* Lekerekített sarkok */
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(127, 0, 255, 0.5); /* Varázslatos árnyék */
+    color: #ffffff; /* Fehér szöveg */
+    text-align: center; /* Középre igazítás */
+    margin-top: 20px; /* Távolság a többi doboztól */
+}
+
+.dice-box h2 {
+    font-family: 'Cinzel', serif;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.result {
+    font-size: 1.2rem;
+    margin-top: 10px;
+}
+
+button {
+    width: calc(100% - 40px);
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #7f00ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 0 10px #7f00ff;
+}
+
+button:hover {
+    background-color: #a020f0;
+    transform: scale(1.1);
+}
