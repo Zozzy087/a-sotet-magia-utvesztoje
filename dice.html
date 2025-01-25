@@ -62,6 +62,16 @@
             width: 80px;
             height: 80px;
         }
+
+        .success-message {
+            background-color: black;
+            color: white;
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 1.2rem;
+        }
     </style>
 </head>
 <body>
@@ -76,6 +86,7 @@
         <h2>3D6 Kockadobás</h2>
         <button onclick="rollDice()">Dobás</button>
         <div class="dice-results" id="dice-images"></div>
+        <div id="success-results" class="success-message"></div>
     </div>
 
     <script>
@@ -90,17 +101,26 @@
             };
 
             const diceContainer = document.getElementById('dice-images');
+            const successResults = document.getElementById('success-results');
             diceContainer.innerHTML = ''; // Előző képek törlése
 
+            let successes = 0;
+
+            // Három D6 dobás
             for (let i = 0; i < 3; i++) {
                 const roll = Math.floor(Math.random() * 6) + 1;
                 const img = document.createElement('img');
                 img.src = diceImages[roll];
                 img.alt = `Kocka: ${roll}`;
                 diceContainer.appendChild(img);
+
+                // Sikeres dobás számolása
+                if (roll >= 4) {
+                    successes++;
+                }
             }
 
-             // Sikeres dobások szöveges megjelenítése
+            // Sikeres dobások szöveges megjelenítése
             let successText = '';
             switch (successes) {
                 case 0:
@@ -118,7 +138,6 @@
             }
 
             successResults.textContent = successText;
-        }
         }
     </script>
 </body>
