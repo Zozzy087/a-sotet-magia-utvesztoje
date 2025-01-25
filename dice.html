@@ -1,14 +1,19 @@
+A fájl egyszerűen tökéletes! Viszont a "3D6 KOCKADOBÁS" rész mögé is kellene egy fekete háttér, mint a sötét mágia útvesztője felirat mögött. Csak annyit kérek, hogy e mögött a felrat mögött is fekete háttér legyen! Semmi mást ne változtass meg!
+
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-    <title>3D6 Kockadobás</title>
+    <title><h2 style="background-color: black; color: white; display: inline-block; padding: 10px 20px; border-radius: 5px;">
+    3D6 KOCKADOBÁS
+</h2>
+</title>
     <meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: 'Cinzel', serif;
-            background-image: url('images/background.jpg.jpg'); /* Az egyedi háttér */
+            background-image: url('images/background.jpg.jpg'); /* Az egyedi háttered */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -18,12 +23,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column; /* Elemek egymás alatt */
             min-height: 100vh;
             text-align: center;
         }
 
-        h1, h2.title {
+        h1 {
             font-family: 'Cinzel', serif;
             font-weight: 500;
             color: white;
@@ -33,7 +37,6 @@
             border-radius: 5px;
             line-height: 1.5;
             word-wrap: break-word;
-            margin-bottom: 20px; /* Távolság az elemek között */
         }
 
         button {
@@ -77,17 +80,19 @@
     </style>
 </head>
 <body>
-    <h1>
-        A<br>
-        SÖTÉT MÁGIA<br>
-        ÚTVESZTŐJE
-    </h1>
+    <div>
+        <h1>
+            A<br>
+            SÖTÉT MÁGIA<br>
+            ÚTVESZTŐJE
+        </h1>
 
-    <!-- Dobókockás funkció -->
-    <h2 class="title">3D6 KOCKADOBÁS</h2>
-    <button onclick="rollDice()">Dobás</button>
-    <div class="dice-results" id="dice-images"></div>
-    <div id="success-results" class="success-message"></div>
+        <!-- Dobókockás funkció -->
+        <h2>3D6 Kockadobás</h2>
+        <button onclick="rollDice()">Dobás</button>
+        <div class="dice-results" id="dice-images"></div>
+        <div id="success-results" class="success-message"></div>
+    </div>
 
     <script>
         function rollDice() {
