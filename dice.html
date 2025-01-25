@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: 'Cinzel', serif;
-            background-image: url('images/background.jpg.jpg'); /* Az egyedi háttered */
+            background-image: url('images/background.jpg'); /* Az egyedi háttered */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -18,6 +18,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column; /* Ez biztosítja, hogy minden elem egymás alatt legyen */
             min-height: 100vh;
             text-align: center;
         }
@@ -32,6 +33,7 @@
             border-radius: 5px;
             line-height: 1.5;
             word-wrap: break-word;
+            margin-bottom: 20px;
         }
 
         h2 {
@@ -43,6 +45,7 @@
             padding: 10px 20px;
             border-radius: 5px;
             line-height: 1.2;
+            margin-bottom: 20px;
         }
 
         button {
@@ -90,66 +93,4 @@
         <h1>
             A<br>
             SÖTÉT MÁGIA<br>
-            ÚTVESZTŐJE
-        </h1>
-
-        <!-- Dobókockás funkció -->
-        <h2>3D6 Kockadobás</h2>
-        <button onclick="rollDice()">Dobás</button>
-        <div class="dice-results" id="dice-images"></div>
-        <div id="success-results" class="success-message"></div>
-    </div>
-
-    <script>
-        function rollDice() {
-            const diceImages = {
-                1: 'images/d1.png',
-                2: 'images/d2.png',
-                3: 'images/d3.png',
-                4: 'images/d4.png',
-                5: 'images/d5.png',
-                6: 'images/d6.png'
-            };
-
-            const diceContainer = document.getElementById('dice-images');
-            const successResults = document.getElementById('success-results');
-            diceContainer.innerHTML = ''; // Előző képek törlése
-
-            let successes = 0;
-
-            // Három D6 dobás
-            for (let i = 0; i < 3; i++) {
-                const roll = Math.floor(Math.random() * 6) + 1;
-                const img = document.createElement('img');
-                img.src = diceImages[roll];
-                img.alt = `Kocka: ${roll}`;
-                diceContainer.appendChild(img);
-
-                // Sikeres dobás számolása
-                if (roll >= 4) {
-                    successes++;
-                }
-            }
-
-            // Sikeres dobások szöveges megjelenítése
-            let successText = '';
-            switch (successes) {
-                case 0:
-                    successText = 'Nincs Siker';
-                    break;
-                case 1:
-                    successText = 'Egy Siker';
-                    break;
-                case 2:
-                    successText = 'Két Siker';
-                    break;
-                case 3:
-                    successText = 'Három Siker';
-                    break;
-            }
-
-            successResults.textContent = successText;
-        }
-    </script>
-</body>
-</html>
+           
