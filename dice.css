@@ -28,17 +28,7 @@ h1 {
     word-wrap: break-word; /* Automatikus sortörés */
 }
 
-.container {
-    background-image: url('images/box-background.jpg'); /* Pentagramma háttér */
-    background-size: cover; /* A kép kitölti a hátteret */
-    background-position: center; /* A kép középre igazítása */
-    background-repeat: no-repeat; /* Nem ismétlődő háttér */
-    border-radius: 10px; /* Lekerekített sarkok */
-    padding: 20px;
-    box-shadow: 0 0 20px rgba(127, 0, 255, 0.5); /* Varázslatos árnyék */
-    color: #ffffff; /* Fehér szöveg */
-    text-align: center; /* Középre igazítás */
-}
+
 
 .dice-box {
     background-color: #1a1a1a; /* Sötét háttér */
