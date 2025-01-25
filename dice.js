@@ -14,16 +14,3 @@ function rollDice() {
     document.getElementById("dice-results").textContent = `Kockadobások: ${dice.join(", ")}`;
     document.getElementById("success-results").textContent = `Sikeres dobások száma: ${successes}`;
 }
-
-function checkCode() {
-    const correctCode = "helyes"; // Példa megoldás
-    const userCode = document.getElementById("code").value.trim();
-
-    if (userCode.toLowerCase() === correctCode) {
-        document.getElementById("result").textContent = "Helyes megoldás!";
-        document.getElementById("result").className = "success";
-    } else {
-        document.getElementById("result").textContent = "Hibás megoldás. Próbáld újra!";
-        document.getElementById("result").className = "error";
-    }
-}
