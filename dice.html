@@ -34,17 +34,19 @@
             word-wrap: break-word;
         }
 
-        h2 {
-            font-family: 'Cinzel', serif;
-            font-weight: 400;
-            color: white;
+        .title-container {
             background-color: black;
             display: inline-block;
             padding: 10px 20px;
             border-radius: 5px;
             margin-top: 20px;
-            line-height: 1.2;
-            word-wrap: break-word;
+        }
+
+        .title-container h2 {
+            margin: 0;
+            color: white;
+            font-family: 'Cinzel', serif;
+            font-weight: 400;
         }
 
         button {
@@ -96,7 +98,9 @@
         </h1>
 
         <!-- Dobókockás funkció -->
-        <h2>3D6 Kockadobás</h2>
+        <div class="title-container">
+            <h2>3D6 Kockadobás</h2>
+        </div>
         <button onclick="rollDice()">Dobás</button>
         <div class="dice-results" id="dice-images"></div>
         <div id="success-results" class="success-message"></div>
