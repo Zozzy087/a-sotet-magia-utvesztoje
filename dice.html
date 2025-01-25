@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: 'Cinzel', serif;
-            background-image: url('images/background.jpg'); /* Az egyedi háttered */
+            background-image: url('images/background.jpg.jpg'); /* Az egyedi háttered */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -20,6 +20,7 @@
             align-items: center;
             min-height: 100vh;
             text-align: center;
+            flex-direction: column; /* Az elemek egymás alatti elrendezése */
         }
 
         h1 {
@@ -42,6 +43,7 @@
             display: inline-block;
             padding: 10px 20px;
             border-radius: 5px;
+            margin-top: 20px; /* Távolság az előző elem alatt */
         }
 
         button {
