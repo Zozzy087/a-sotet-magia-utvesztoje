@@ -1,60 +1,37 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D6 Kockadobás</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 50px;
-    }
-    .dice-container {
-      margin: 20px;
-    }
-    .result {
-      font-size: 1.5em;
-      margin-top: 20px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 1em;
-      cursor: pointer;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-  </style>
+    <title>Fejezet Validáló és Kockadobás</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-  <h1>3D6 Kockadobás</h1>
-  <div class="dice-container">
-    <button id="rollButton">Dobás</button>
-    <div id="dice-results" class="result"></div>
-    <div id="success-results" class="result"></div>
-  </div>
-  <script>
-    document.getElementById("rollButton").addEventListener("click", function () {
-      const dice = [0, 0, 0]; // A kockadobások tárolására szolgáló tömb
-      let successes = 0; // A sikeres dobások száma
+    <div class="container">
+        <h1>
+            A<br>
+            SÖTÉT MÁGIA<br>
+            ÚTVESZTŐJE
+        </h1>
 
-      // Minden kocka dobása
-      for (let i = 0; i < 3; i++) {
-        dice[i] = Math.floor(Math.random() * 6) + 1; // Véletlenszám 1 és 6 között
-        if (dice[i] >= 4) {
-          successes++; // Sikeres dobások számolása (4 vagy nagyobb)
-        }
-      }
+        <!-- Feladvány doboz -->
+        <div class="puzzle-box">
+            <h2>A [62] fejezet feladványának megoldása</h2>
+            <input type="text" id="code" placeholder="Írd be a helyes megoldást...">
+            <button onclick="checkCode()">Ellenőrzés</button>
+            <div id="result"></div>
+        </div>
 
-      // Eredmények megjelenítése az HTML-ben
-      document.getElementById("dice-results").textContent = `Kockadobások: ${dice.join(", ")}`;
-      document.getElementById("success-results").textContent = `Sikeres dobások száma: ${successes}`;
-    });
-  </script>
+        <!-- Kockadobás doboz -->
+        <div class="dice-box">
+            <h2>3D6 Kockadobás</h2>
+            <button onclick="rollDice()">Dobás</button>
+            <div id="dice-results" class="result"></div>
+            <div id="success-results" class="result"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
