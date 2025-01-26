@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <title>Karakteralkotás</title>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Cinzel', serif;
+            background-image: url('images/background.jpg.jpg'); /* Az egyedi háttered */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        h1, h2 {
+            font-family: 'Cinzel', serif;
+            font-weight: 500;
+            color: white;
+            background-color: black;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #7f00ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 0 10px #7f00ff;
+        }
+
+        button:hover {
+            background-color: #a020f0;
+            transform: scale(1.1);
+        }
+
+        .results {
+            background-color: black;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>
+            A<br>
+            SÖTÉT MÁGIA<br>
+            ÚTVESZTŐJE
+        </h1>
+
+        <h2>Karakteralkotás</h2>
+        <button onclick="generateCharacter()">Karakter Generálása</button>
+        
+        <div id="character-results" class="results"></div>
+    </div>
+
+    <script>
+        function generateCharacter() {
+            // Sötét tudás generálása: 1D6 + 6
+            const darkKnowledge = Math.floor(Math.random() * 6) + 1 + 6;
+
+            // Árnyék erő: Sötét tudás kétszerese
+            const shadowPower = darkKnowledge * 2;
+
+            // Életpont: 15 + Sötét tudás
+            const healthPoints = 15 + darkKnowledge;
+
+            // Eredmények megjelenítése
+            const resultsDiv = document.getElementById('character-results');
+            resultsDiv.innerHTML = `
+                <p>Sötét Tudás: ${darkKnowledge}</p>
+                <p>Árnyék Erő: ${shadowPower}</p>
+                <p>Életpont: ${healthPoints}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
