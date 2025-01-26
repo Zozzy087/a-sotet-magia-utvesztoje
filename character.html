@@ -58,13 +58,14 @@
             border-radius: 5px;
             margin-top: 20px;
             font-size: 2.2rem;
-            text-align: left;
+            text-align: center; /* Szöveg középre igazítása */
         }
 
         .result-item {
             display: flex;
-            align-items: center;
-            gap: 10px;
+            justify-content: center; /* Horizontálisan középre igazítás */
+            align-items: center; /* Vertikálisan középre igazítás */
+            gap: 10px; /* Ikon és szöveg közötti távolság */
             margin-top: 10px;
         }
 
@@ -103,16 +104,16 @@
             const resultsDiv = document.getElementById('character-results');
             resultsDiv.innerHTML = `
                 <div class="result-item">
-                    <img src="images/dark_knowledge.png" alt=": Sötét Tudás">
-                    <span>${darkKnowledge}</span>
+                    <img src="images/dark_knowledge.png" alt="Sötét Tudás">
+                    <span>: ${darkKnowledge}</span>
                 </div>
                 <div class="result-item">
-                    <img src="images/shadow_power.png" alt=": Árnyék Erő">
-                    <span>${shadowPower}</span>
+                    <img src="images/shadow_power.png" alt="Árnyék Erő">
+                    <span>: ${shadowPower}</span>
                 </div>
                 <div class="result-item">
-                    <img src="images/health_points.png" alt=": Életpont">
-                    <span>${healthPoints}</span>
+                    <img src="images/health_points.png" alt="Életpont">
+                    <span>: ${healthPoints}</span>
                 </div>
             `;
         }
