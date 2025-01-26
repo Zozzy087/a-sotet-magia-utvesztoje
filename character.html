@@ -57,7 +57,20 @@
             padding: 10px 20px;
             border-radius: 5px;
             margin-top: 20px;
-            font-size: 2.2rem;
+            font-size: 2.0rem;
+            text-align: left;
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .result-item img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
         }
     </style>
 </head>
@@ -86,12 +99,21 @@
             // Életpont: 15 + Sötét tudás
             const healthPoints = 15 + darkKnowledge;
 
-            // Eredmények megjelenítése
+            // Eredmények megjelenítése ikonokkal
             const resultsDiv = document.getElementById('character-results');
             resultsDiv.innerHTML = `
-                <p>Sötét Tudás: ${darkKnowledge}</p>
-                <p>Árnyék Erő: ${shadowPower}</p>
-                <p>Életpont: ${healthPoints}</p>
+                <div class="result-item">
+                    <img src="images/dark_knowledge.png" alt="Sötét Tudás">
+                    <span>Sötét Tudás: ${darkKnowledge}</span>
+                </div>
+                <div class="result-item">
+                    <img src="images/shadow_power.png" alt="Árnyék Erő">
+                    <span>Árnyék Erő: ${shadowPower}</span>
+                </div>
+                <div class="result-item">
+                    <img src="images/health_points.png" alt="Életpont">
+                    <span>Életpont: ${healthPoints}</span>
+                </div>
             `;
         }
     </script>
