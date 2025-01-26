@@ -57,20 +57,20 @@
             padding: 10px 20px;
             border-radius: 5px;
             margin-top: 20px;
-            font-size: 2.0rem;
+            font-size: 2.2rem;
             text-align: left;
         }
 
         .result-item {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            gap: 10px;
+            margin-top: 10px;
         }
 
         .result-item img {
-            width: 50px;
-            height: 50px;
-            margin-right: 15px;
+            width: 35px;
+            height: 35px;
         }
     </style>
 </head>
@@ -103,16 +103,16 @@
             const resultsDiv = document.getElementById('character-results');
             resultsDiv.innerHTML = `
                 <div class="result-item">
-                    <img src="images/dark_knowledge.png">
-                    <span>Sötét Tudás: ${darkKnowledge}</span>
+                    <img src="images/dark_knowledge.png" alt="Sötét Tudás">
+                    <span>${darkKnowledge}</span>
                 </div>
                 <div class="result-item">
-                    <img src="images/shadow_power.png">
-                    <span>Árnyék Erő: ${shadowPower}</span>
+                    <img src="images/shadow_power.png" alt="Árnyék Erő">
+                    <span>${shadowPower}</span>
                 </div>
                 <div class="result-item">
-                    <img src="images/health_points.png">
-                    <span>Életpont: ${healthPoints}</span>
+                    <img src="images/health_points.png" alt="Életpont">
+                    <span>${healthPoints}</span>
                 </div>
             `;
         }
