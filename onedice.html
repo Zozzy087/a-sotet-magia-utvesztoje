@@ -1,1 +1,111 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <title>1D6 Kockadobás</title>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Cinzel', serif;
+            background-image: url('images/background.jpg.jpg'); /* Az egyedi háttered */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-weight: 500;
+            color: white;
+            background-color: black;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        h2 {
+            font-family: 'Cinzel', serif;
+            font-weight: 500;
+            color: white;
+            background-color: black;
+            display: block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        
+        button {
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #7f00ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 0 10px #7f00ff;
+        }
+
+        button:hover {
+            background-color: #a020f0;
+            transform: scale(1.1);
+        }
+
+        .dice-results img {
+            width: 80px;
+            height: 80px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>
+            A<br>
+            SÖTÉT MÁGIA<br>
+            ÚTVESZTŐJE
+        </h1>
+
+        <!-- Dobókockás funkció -->
+        <h2>1D6 Kockadobás</h2>
+        <button onclick="rollDice()">Dobás</button>
+        <div class="dice-results" id="dice-images"></div>
+    </div>
+
+    <script>
+        function rollDice() {
+            const diceImages = {
+                1: 'images/d1.png',
+                2: 'images/d2.png',
+                3: 'images/d3.png',
+                4: 'images/d4.png',
+                5: 'images/d5.png',
+                6: 'images/d6.png'
+            };
+
+            const diceContainer = document.getElementById('dice-images');
+            diceContainer.innerHTML = ''; // Előző kép törlése
+
+            // 1D6 dobás
+            const roll = Math.floor(Math.random() * 6) + 1;
+            const img = document.createElement('img');
+            img.src = diceImages[roll];
+            img.alt = `Kocka: ${roll}`;
+            diceContainer.appendChild(img);
+        }
+    </script>
+</body>
+</html>
 
