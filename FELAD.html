@@ -30,15 +30,15 @@
     <script>
         function checkSolution() {
             const left = document.getElementById('left').value.trim().toLowerCase();
-            const middle = document.getElementById('right').value.trim().toLowerCase();
+            const center = document.getElementById('center').value.trim().toLowerCase();
             const right = document.getElementById('right').value.trim().toLowerCase();
 
             const result = document.getElementById('result');
 
-            if (left === 'múlt' && middle === 'jövő' && right === 'jelen') {
-                result.innerHTML = "<span style='color: #4CAF50;'>Helyes válasz! Lapozz a [következő] fejezethez.</span>";
+            if (left === 'múlt' && center === 'jövő' && right === 'jelen') {
+                result.innerHTML = '<span style="color: #4CAF50;">Helyes válasz! Lapozz a [következő] fejezethez.</span>';
             } else {
-                result.innerHTML = "<span style='color: #f44336;'>Helytelen válasz. Próbáld újra!</span>";
+                result.innerHTML = '<span style="color: #f44336;">Helytelen válasz. Próbáld újra!</span>';
             }
         }
     </script>
