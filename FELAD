@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sors Istennői Rejtvény</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="container">
+        <h1>
+            A<br>
+            SÖTÉT MÁGIA<br>
+            ÚTVESZTŐJE
+        </h1>
+
+        <div class="puzzle-box">
+            <h2>A Sors Istennőinek Rejtvénye</h2>
+
+            <input type="text" id="left" placeholder="Baloldali alak">
+            <input type="text" id="center" placeholder="Középső alak">
+            <input type="text" id="right" placeholder="Jobb oldali alak">
+
+            <button onclick="checkSolution()">Ellenőrzés</button>
+
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function checkSolution() {
+            const left = document.getElementById('left').value.trim().toLowerCase();
+            const middle = document.getElementById('right').value.trim().toLowerCase();
+            const right = document.getElementById('right').value.trim().toLowerCase();
+
+            const result = document.getElementById('result');
+
+            if (left === 'múlt' && middle === 'jövő' && right === 'jelen') {
+                result.innerHTML = "<span style='color: #4CAF50;'>Helyes válasz! Lapozz a [következő] fejezethez.</span>";
+            } else {
+                result.innerHTML = "<span style='color: #f44336;'>Helytelen válasz. Próbáld újra!</span>";
+            }
+        }
+    </script>
+</body>
+</html>
