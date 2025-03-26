@@ -268,7 +268,15 @@ body::after,
  
  function updateUI() {
    document.getElementById("result").textContent = "";
-   document.getElementById("chosenAttr").textContent = selectedAttribute ? `Kiválasztott tulajdonság: ${attributeHu(selectedAttribute)}` : "";
+   const chosen = document.getElementById("chosenAttr");
+if (selectedAttribute) {
+  chosen.textContent = `Kiválasztott tulajdonság: ${attributeHu(selectedAttribute)}`;
+  chosen.style.display = "block";
+} else {
+  chosen.textContent = "";
+  chosen.style.display = "none";
+}
+
    document.getElementById("score").textContent = `Állás: Játékos 1 - ${player1Wins} | Játékos 2 - ${player2Wins}`;
    document.getElementById("turnInfo").textContent = lastWinner === "player1" ? "Játékos 1 választhat tulajdonságot." : "Bot választ...";
    document.getElementById("player1Hand").innerHTML = "";
