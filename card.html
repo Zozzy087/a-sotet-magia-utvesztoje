@@ -254,23 +254,18 @@
   }
 
   function startGame() {
-  document.getElementById("resetContainer").style.display = "none";
-  deckPool = [...allCards];
-  player1Deck = [];
-  player2Deck = [];
-  player1Wins = 0;
-  player2Wins = 0;
-  lastWinner = "player1";
-  selectedAttribute = null;
-  roundInProgress = false;
-
-  // Gombok újra engedélyezése
-  const allButtons = document.querySelectorAll("button");
-  allButtons.forEach(btn => btn.disabled = false);
-
-  refillHands();
-  updateUI();
-}
+    document.getElementById("resetContainer").style.display = "none";
+    deckPool = [...allCards];
+    player1Deck = [];
+    player2Deck = [];
+    player1Wins = 0;
+    player2Wins = 0;
+    lastWinner = "player1";
+    selectedAttribute = null;
+    roundInProgress = false;
+    refillHands();
+    updateUI();
+  }
 
   function updateUI() {
     document.getElementById("result").textContent = "";
@@ -389,10 +384,10 @@
   }
 
   function disableAll() {
-    const buttons = document.querySelectorAll("#attributeButtons button");
-buttons.forEach(btn => {
-  btn.disabled = lastWinner !== "player1" || selectedAttribute !== null;
-});
+    const buttons = document.querySelectorAll("button");
+    buttons.forEach(btn => btn.disabled = true);
+    document.getElementById("player1Hand").innerHTML = "";
+  }
 
   function getBestCardIndex(deck, attribute, playerCardValue = null) {
     if (playerCardValue !== null) {
