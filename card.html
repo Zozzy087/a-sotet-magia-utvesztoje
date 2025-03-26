@@ -173,7 +173,10 @@ function playRound(player1Index, botIndex = null, botInitiated = false) {
   : player1Deck.splice(player1Index, 1)[0];
 
   // Bot döntés: választhatna okosan is, most véletlenszerű
-  const finalBotIndex = botIndex !== null ? botIndex : Math.floor(Math.random() * player2Deck.length);
+  const finalBotIndex = botIndex !== null 
+  ? botIndex 
+  : getBestCardIndex(player2Deck, selectedAttribute, player1Card[selectedAttribute]);
+
 const player2Card = player2Deck.splice(finalBotIndex, 1)[0];
 
   const val1 = player1Card[selectedAttribute];
@@ -232,16 +235,35 @@ function disableAll() {
   document.getElementById("player1Hand").innerHTML = "";
 }
 
-  function getBestCardIndex(deck, attribute) {
-  let bestValue = -1;
-  let bestIndex = 0;
-  deck.forEach((card, index) => {
-    if (card[attribute] > bestValue) {
-      bestValue = card[attribute];
-      bestIndex = index;
+  function getBestCardIndex(deck, attribute, playerCardValue = null) {
+  if (playerCardValue !== null) {
+    // Megnézzük, van-e olyan lap, ami legyőzheti vagy legalább döntetlen
+    let candidates = deck
+      .map((card, index) => ({ value: card[attribute], index }))
+      .filter(entry => entry.value >= playerCardValue);
+
+    if (candidates.length > 0) {
+      // Ha van olyan, ami legalább döntetlen, akkor a leggyengébbet választjuk közülük
+      candidates.sort((a, b) => a.value - b.value);
+      return candidates[0].index;
+    } else {
+      // Ha nincs esélye, akkor dobja el a leggyengébb lapját
+      let weakest = deck.map((card, index) => ({ value: card[attribute], index }));
+      weakest.sort((a, b) => a.value - b.value);
+      return weakest[0].index;
     }
-  });
-  return bestIndex;
+  } else {
+    // Bot választott tulajdonságot – játsszon a legerősebbjével
+    let bestValue = -1;
+    let bestIndex = 0;
+    deck.forEach((card, index) => {
+      if (card[attribute] > bestValue) {
+        bestValue = card[attribute];
+        bestIndex = index;
+      }
+    });
+    return bestIndex;
+  }
 }
 
 startGame();
