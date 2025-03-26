@@ -166,6 +166,7 @@ function refillHands() {
 }
 
 function startGame() {
+  // Újraindítás: visszaállítjuk az összes változót
   deckPool = [...allCards];
   player1Deck = [];
   player2Deck = [];
@@ -179,14 +180,18 @@ function startGame() {
   const allButtons = document.querySelectorAll("button");
   allButtons.forEach(btn => btn.disabled = false);
 
-  // 🔧 Ezt javítottuk itt:
-  document.getElementById("result").innerHTML = "";
+  // Összes UI elem visszaállítása
+  document.getElementById("result").textContent = "";
   document.getElementById("chosenAttr").textContent = "";
   document.getElementById("battlefield").innerHTML = "";
   document.getElementById("player1Hand").innerHTML = "";
+  document.getElementById("score").textContent = "Állás: Játékos 1 - 0 | Játékos 2 - 0";
+  document.getElementById("turnInfo").textContent = "Játékos 1 választhat tulajdonságot.";
 
+  // Reset gomb elrejtése
   document.getElementById("resetContainer").style.display = "none";
 
+  // Pakli újratöltése
   refillHands();
   updateUI();
 }
@@ -304,7 +309,7 @@ function playRound(player1Index) {
 }
 
 function disableAll() {
-  const buttons = document.querySelectorAll("button");
+  const buttons = document.querySelectorAll("#attributeButtons button");
   buttons.forEach(btn => btn.disabled = true);
   document.getElementById("player1Hand").innerHTML = "";
 }
