@@ -149,14 +149,19 @@
         align-items: center;
       }
 
-      .card::before,
+.card::before,
 .card::after,
 #player1Hand::before,
 #player1Hand::after,
 #battlefield::before,
-#battlefield::after {
+#battlefield::after,
+body::before,
+body::after {
   content: none !important;
   display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
 }
 
       /* Ezek rejtik el a scroll-indikátorokat minden elemről */
