@@ -241,12 +241,12 @@
   }
 
   function refillHands() {
-    while (player1Deck.length < 8) {
+    while (player1Deck.length < 3) {
       const card = drawCard();
       if (card) player1Deck.push(card);
       else break;
     }
-    while (player2Deck.length < 8) {
+    while (player2Deck.length < 3) {
       const card = drawCard();
       if (card) player2Deck.push(card);
       else break;
