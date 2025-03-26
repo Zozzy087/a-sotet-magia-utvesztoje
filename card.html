@@ -171,7 +171,19 @@
    -ms-overflow-style: none;  /* Internet Explorer 10+ */
    scrollbar-width: none;     /* Firefox */
  }
- 
+
+      button::before,
+button::after,
+#attributeButtons::before,
+#attributeButtons::after,
+body::before,
+body::after,
+.hand::before,
+.hand::after {
+  content: none !important;
+  display: none !important;
+}
+
      }
    </style>
  </head>
