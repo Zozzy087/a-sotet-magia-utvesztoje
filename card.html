@@ -155,11 +155,11 @@ function drawCard() {
 }
 
 function refillHands() {
-  while (player1Deck.length < 8) {
+  while (player1Deck.length < 3) {
     const card = drawCard();
     if (card) player1Deck.push(card); else break;
   }
-  while (player2Deck.length < 8) {
+  while (player2Deck.length < 3) {
     const card = drawCard();
     if (card) player2Deck.push(card); else break;
   }
@@ -179,11 +179,13 @@ function startGame() {
   const allButtons = document.querySelectorAll("button");
   allButtons.forEach(btn => btn.disabled = false);
 
-  document.getElementById("resetContainer").style.display = "none";
-  document.getElementById("result").textContent = "";
+  // 🔧 Ezt javítottuk itt:
+  document.getElementById("result").innerHTML = "";
   document.getElementById("chosenAttr").textContent = "";
   document.getElementById("battlefield").innerHTML = "";
   document.getElementById("player1Hand").innerHTML = "";
+
+  document.getElementById("resetContainer").style.display = "none";
 
   refillHands();
   updateUI();
