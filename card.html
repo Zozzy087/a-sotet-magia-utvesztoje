@@ -43,9 +43,9 @@
 <p id="turnInfo">Várakozás a játék indítására...</p>
 
 <div id="buttons">
-  <button onclick="startRound('power')">Erő</button>
-  <button onclick="startRound('agility')">Ügyesség</button>
-  <button onclick="startRound('wisdom')">Bölcsesség</button>
+  <button onclick="playerChooses('power')">Erő</button>
+  <button onclick="playerChooses('agility')">Ügyesség</button>
+  <button onclick="playerChooses('wisdom')">Bölcsesség</button>
 </div>
 
 <div id="cards"></div>
@@ -72,7 +72,7 @@ let round = 0;
 
 let lastWinner = null;
 let consecutiveWins = { player1: 0, player2: 0 };
-let currentTurn = "player1"; // kezdésnél 1-es kezd
+let currentTurn = "player1"; // elsőként Játékos 1 választhat
 
 function drawHands() {
   const shuffled = [...allCards].sort(() => Math.random() - 0.5);
@@ -85,26 +85,36 @@ function drawHands() {
   consecutiveWins = { player1: 0, player2: 0 };
   currentTurn = "player1";
   updateScore();
-  document.getElementById("result").textContent = "";
-  document.getElementById("cards").innerHTML = "";
   updateTurnInfo();
+  clearCardsAndResult();
+}
+
+function clearCardsAndResult() {
+  document.getElementById("cards").innerHTML = "";
+  document.getElementById("result").textContent = "";
 }
 
 function updateTurnInfo() {
-  let name = currentTurn === "player1" ? "Játékos 1" : "Játékos 2";
-  document.getElementById("turnInfo").textContent = `${name} választhat tulajdonságot`;
-}
-
-function startRound(attribute) {
-  if (round >= 8 || player1Wins >= 5 || player2Wins >= 5) {
-    document.getElementById("result").textContent = "A játék véget ért. Indíts új játékot!";
+  if (player1Wins >= 5 || player2Wins >= 5) {
+    document.getElementById("turnInfo").textContent = "A játék véget ért!";
     return;
   }
+  const name = currentTurn === "player1" ? "Játékos 1 választhat tulajdonságot" : "Bot választ...";
+  document.getElementById("turnInfo").textContent = name;
+}
 
-  // Kör eleji reset
-  document.getElementById("result").textContent = "";
-  document.getElementById("cards").innerHTML = "";
+function updateScore() {
+  document.getElementById("score").textContent = `Állás: Játékos 1 - ${player1Wins} | Játékos 2 - ${player2Wins}`;
+}
 
+function playerChooses(attribute) {
+  if (player1Wins >= 5 || player2Wins >= 5) return;
+  if (currentTurn !== "player1") return;
+  clearCardsAndResult();
+  setTimeout(() => playRound(attribute), 200);
+}
+
+function playRound(attribute) {
   const card1 = player1Deck[round];
   const card2 = player2Deck[round];
 
@@ -135,7 +145,6 @@ function startRound(attribute) {
     lastWinner = "player2";
   } else {
     resultText = "Döntetlen!";
-    // nem változik a döntési jog
   }
 
   document.getElementById("cards").innerHTML = `
@@ -159,28 +168,35 @@ function startRound(attribute) {
   document.getElementById("result").textContent = resultText;
   updateScore();
 
-  // Győzelemellenőrzés
   if (player1Wins >= 5) {
     document.getElementById("result").innerHTML += " <span class='winner'>Játékos 1 a győztes!</span>";
     return;
-  } else if (player2Wins >= 5) {
+  }
+  if (player2Wins >= 5) {
     document.getElementById("result").innerHTML += " <span class='winner'>Játékos 2 a győztes!</span>";
     return;
   }
 
-  // Következő döntő játékos meghatározása
-  if (lastWinner === "player1" && consecutiveWins.player1 >= 2) {
-    currentTurn = "player2";
-  } else if (lastWinner === "player2" && consecutiveWins.player2 >= 2) {
+  // Döntési jog váltása
+  if (lastWinner === "player1" && consecutiveWins.player1 < 2) {
     currentTurn = "player1";
-  } else if (lastWinner) {
-    currentTurn = lastWinner;
+  } else if (lastWinner === "player2" && consecutiveWins.player2 < 2) {
+    currentTurn = "player2";
+  } else {
+    currentTurn = lastWinner === "player1" ? "player2" : "player1";
   }
-  updateTurnInfo();
-}
 
-function updateScore() {
-  document.getElementById("score").textContent = `Állás: Játékos 1 - ${player1Wins} | Játékos 2 - ${player2Wins}`;
+  updateTurnInfo();
+
+  if (currentTurn === "player2") {
+    // bot automatikusan választ egy véletlen attribútumot
+    setTimeout(() => {
+      const attributes = ["power", "agility", "wisdom"];
+      const attr = attributes[Math.floor(Math.random() * attributes.length)];
+      clearCardsAndResult();
+      setTimeout(() => playRound(attr), 200);
+    }, 1000);
+  }
 }
 
 drawHands();
