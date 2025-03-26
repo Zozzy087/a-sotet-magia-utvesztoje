@@ -114,19 +114,16 @@ function updateUI() {
   document.getElementById("battlefield").innerHTML = "";
 
   renderPlayer1Hand();
+
+  // BOT VÁLASZT TULAJDONSÁGOT, de nem játszik automatikusan
   if (lastWinner === "player2" && !selectedAttribute && !roundInProgress) {
-  setTimeout(() => {
-    const attrs = ["power", "agility", "wisdom"];
-    selectedAttribute = attrs[Math.floor(Math.random() * 3)];
-    document.getElementById("chosenAttr").textContent = `Kiválasztott tulajdonság: ${attributeHu(selectedAttribute)}`;
-
-    // Bot kiválasztja a legjobb lapját a kiválasztott tulajdonság alapján
-    const bestBotIndex = getBestCardIndex(player2Deck, selectedAttribute);
-    const dummyIndex = Math.floor(Math.random() * player1Deck.length); // dummy, nem számít
-    playRound(dummyIndex, bestBotIndex, true); // true jelzi, hogy a bot kezd
-
-  }, 1000);
-}
+    setTimeout(() => {
+      const attrs = ["power", "agility", "wisdom"];
+      selectedAttribute = attrs[Math.floor(Math.random() * 3)];
+      document.getElementById("chosenAttr").textContent = `Kiválasztott tulajdonság: ${attributeHu(selectedAttribute)}`;
+      updateUI();
+    }, 1000);
+  }
 
   const buttons = document.querySelectorAll("#attributeButtons button");
   buttons.forEach(btn => {
@@ -169,15 +166,14 @@ function playRound(player1Index, botIndex = null, botInitiated = false) {
   roundInProgress = true;
 
   const player1Card = botInitiated
-  ? player1Deck.splice(Math.floor(Math.random() * player1Deck.length), 1)[0] // ha bot hívja, dummy lap
-  : player1Deck.splice(player1Index, 1)[0];
+    ? player1Deck.splice(Math.floor(Math.random() * player1Deck.length), 1)[0]
+    : player1Deck.splice(player1Index, 1)[0];
 
-  // Bot döntés: választhatna okosan is, most véletlenszerű
   const finalBotIndex = botIndex !== null 
-  ? botIndex 
-  : getBestCardIndex(player2Deck, selectedAttribute, player1Card[selectedAttribute]);
+    ? botIndex 
+    : getBestCardIndex(player2Deck, selectedAttribute, player1Card[selectedAttribute]);
 
-const player2Card = player2Deck.splice(finalBotIndex, 1)[0];
+  const player2Card = player2Deck.splice(finalBotIndex, 1)[0];
 
   const val1 = player1Card[selectedAttribute];
   const val2 = player2Card[selectedAttribute];
@@ -211,7 +207,7 @@ const player2Card = player2Deck.splice(finalBotIndex, 1)[0];
     lastWinner = "player2";
   } else {
     resultText = "Döntetlen!";
-    // Döntetlennél megtartjuk az előző nyertest
+    // NEM változtatunk lastWinnert
   }
 
   document.getElementById("result").textContent = resultText;
@@ -235,25 +231,21 @@ function disableAll() {
   document.getElementById("player1Hand").innerHTML = "";
 }
 
-  function getBestCardIndex(deck, attribute, playerCardValue = null) {
+function getBestCardIndex(deck, attribute, playerCardValue = null) {
   if (playerCardValue !== null) {
-    // Megnézzük, van-e olyan lap, ami legyőzheti vagy legalább döntetlen
     let candidates = deck
       .map((card, index) => ({ value: card[attribute], index }))
       .filter(entry => entry.value >= playerCardValue);
 
     if (candidates.length > 0) {
-      // Ha van olyan, ami legalább döntetlen, akkor a leggyengébbet választjuk közülük
       candidates.sort((a, b) => a.value - b.value);
       return candidates[0].index;
     } else {
-      // Ha nincs esélye, akkor dobja el a leggyengébb lapját
       let weakest = deck.map((card, index) => ({ value: card[attribute], index }));
       weakest.sort((a, b) => a.value - b.value);
       return weakest[0].index;
     }
   } else {
-    // Bot választott tulajdonságot – játsszon a legerősebbjével
     let bestValue = -1;
     let bestIndex = 0;
     deck.forEach((card, index) => {
