@@ -114,13 +114,19 @@ function updateUI() {
   document.getElementById("battlefield").innerHTML = "";
 
   renderPlayer1Hand();
-  if (lastWinner === "player2" && !selectedAttribute) {
-    setTimeout(() => {
-      const attrs = ["power", "agility", "wisdom"];
-      selectedAttribute = attrs[Math.floor(Math.random() * 3)];
-      document.getElementById("chosenAttr").textContent = `Kiválasztott tulajdonság: ${attributeHu(selectedAttribute)}`;
-    }, 1000);
-  }
+  if (lastWinner === "player2" && !selectedAttribute && !roundInProgress) {
+  setTimeout(() => {
+    const attrs = ["power", "agility", "wisdom"];
+    selectedAttribute = attrs[Math.floor(Math.random() * 3)];
+    document.getElementById("chosenAttr").textContent = `Kiválasztott tulajdonság: ${attributeHu(selectedAttribute)}`;
+
+    // Bot kiválasztja a legjobb lapját a kiválasztott tulajdonság alapján
+    const bestBotIndex = getBestCardIndex(player2Deck, selectedAttribute);
+    const dummyIndex = Math.floor(Math.random() * player1Deck.length); // dummy, nem számít
+    playRound(dummyIndex, bestBotIndex, true); // true jelzi, hogy a bot kezd
+
+  }, 1000);
+}
 
   const buttons = document.querySelectorAll("#attributeButtons button");
   buttons.forEach(btn => {
@@ -158,15 +164,17 @@ function renderPlayer1Hand() {
   });
 }
 
-function playRound(player1Index) {
+function playRound(player1Index, botIndex = null, botInitiated = false) {
   if (!selectedAttribute || roundInProgress) return;
   roundInProgress = true;
 
-  const player1Card = player1Deck.splice(player1Index, 1)[0];
+  const player1Card = botInitiated
+  ? player1Deck.splice(Math.floor(Math.random() * player1Deck.length), 1)[0] // ha bot hívja, dummy lap
+  : player1Deck.splice(player1Index, 1)[0];
 
   // Bot döntés: választhatna okosan is, most véletlenszerű
-  const botIndex = Math.floor(Math.random() * player2Deck.length);
-  const player2Card = player2Deck.splice(botIndex, 1)[0];
+  const finalBotIndex = botIndex !== null ? botIndex : Math.floor(Math.random() * player2Deck.length);
+const player2Card = player2Deck.splice(finalBotIndex, 1)[0];
 
   const val1 = player1Card[selectedAttribute];
   const val2 = player2Card[selectedAttribute];
@@ -222,6 +230,18 @@ function disableAll() {
   const buttons = document.querySelectorAll("button");
   buttons.forEach(btn => btn.disabled = true);
   document.getElementById("player1Hand").innerHTML = "";
+}
+
+  function getBestCardIndex(deck, attribute) {
+  let bestValue = -1;
+  let bestIndex = 0;
+  deck.forEach((card, index) => {
+    if (card[attribute] > bestValue) {
+      bestValue = card[attribute];
+      bestIndex = index;
+    }
+  });
+  return bestIndex;
 }
 
 startGame();
