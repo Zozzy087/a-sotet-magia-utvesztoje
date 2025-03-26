@@ -216,11 +216,39 @@ function updateUI() {
 
   renderPlayer1Hand();
 
-  // Bot választ automatikusan
+  // Bot választ automatikusan - okosabb stratégiával
   if (lastWinner === "player2" && !selectedAttribute && !roundInProgress) {
     setTimeout(() => {
-      const attrs = ["power", "agility", "wisdom"];
-      selectedAttribute = attrs[Math.floor(Math.random() * 3)];
+      // Bot intelligensen választ tulajdonságot a saját kártyái alapján
+      if (player2Deck.length > 0) {
+        // Kiszámoljuk a bot paklijának átlagos értékeit minden tulajdonságra
+        const avgPower = player2Deck.reduce((sum, card) => sum + card.power, 0) / player2Deck.length;
+        const avgAgility = player2Deck.reduce((sum, card) => sum + card.agility, 0) / player2Deck.length;
+        const avgWisdom = player2Deck.reduce((sum, card) => sum + card.wisdom, 0) / player2Deck.length;
+        
+        // Meghatározzuk a legnagyobb átlagértékű tulajdonságot
+        const averages = [
+          { attr: "power", value: avgPower },
+          { attr: "agility", value: avgAgility },
+          { attr: "wisdom", value: avgWisdom }
+        ];
+        
+        // Keressük a bot legerősebb tulajdonságát
+        averages.sort((a, b) => b.value - a.value);
+        
+        // 20% eséllyel véletlen tulajdonságot választunk (hogy kevésbé legyen kiszámítható)
+        if (Math.random() < 0.2) {
+          const attrs = ["power", "agility", "wisdom"];
+          selectedAttribute = attrs[Math.floor(Math.random() * 3)];
+        } else {
+          // 80% eséllyel a legerősebb tulajdonságot választjuk
+          selectedAttribute = averages[0].attr;
+        }
+      } else {
+        // Ha nincs kártya, véletlen választunk
+        const attrs = ["power", "agility", "wisdom"];
+        selectedAttribute = attrs[Math.floor(Math.random() * 3)];
+      }
       updateUI();
     }, 1000);
   }
@@ -305,7 +333,7 @@ function playRound(player1Index) {
     refillHands();
     roundInProgress = false;
     updateUI();
-  }, 1500);
+  }, 5000); // Megnövelt késleltetés 5 másodpercre, hogy több idő legyen összehasonlítani a kártyákat
 }
 
 function disableAll() {
@@ -315,18 +343,38 @@ function disableAll() {
 }
 
 function getBestCardIndex(deck, attribute, playerCardValue) {
-  const candidates = deck
-    .map((card, index) => ({ value: card[attribute], index }))
-    .filter(entry => entry.value >= playerCardValue);
-
-  if (candidates.length > 0) {
-    candidates.sort((a, b) => a.value - b.value);
-    return candidates[0].index;
-  } else {
-    return deck
-      .map((card, index) => ({ value: card[attribute], index }))
-      .sort((a, b) => a.value - b.value)[0].index;
+  // Okosabb bot stratégia
+  
+  // Ha van kártya, ami legyőzheti a játékos kártyáját, használja a legalacsonyabb értékűt
+  const winningCards = deck
+    .map((card, index) => ({ card, index, value: card[attribute] }))
+    .filter(entry => entry.value > playerCardValue);
+    
+  if (winningCards.length > 0) {
+    // A nyerő lapok közül a legalacsonyabb értékűt választja (erőforrás-takarékosság)
+    winningCards.sort((a, b) => a.value - b.value);
+    return winningCards[0].index;
   }
+  
+  // Ha nincs nyerő lap, keressük a legkisebb veszteséget okozót
+  // Vagyis azt a lapot, amelyen a legkisebb a különbség a játékos lap értékével
+  const sortedByLoss = deck
+    .map((card, index) => ({ 
+      card, 
+      index, 
+      value: card[attribute],
+      loss: playerCardValue - card[attribute]
+    }))
+    .sort((a, b) => a.loss - b.loss);
+    
+  // Ha azonos értékű lap van, azt válasszuk (döntetlen)
+  const equalCards = sortedByLoss.filter(c => c.value === playerCardValue);
+  if (equalCards.length > 0) {
+    return equalCards[0].index;
+  }
+  
+  // Különben a legkisebb veszteségű lapot válasszuk
+  return sortedByLoss[0].index;
 }
 
 startGame();
