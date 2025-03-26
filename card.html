@@ -37,75 +37,12 @@
       margin: 10px auto;
       box-shadow: 0 0 10px rgba(127, 0, 255, 0.4);
       text-align: center;
+      width: 100%;
+      max-width: 500px;
     }
     #attributeButtons {
       display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 10px auto;
-    }
-    button {
-      background-color: #7f00ff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 10px 20px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      box-shadow: 0 0 10px #7f00ff;
-      transition: transform 0.2s, box-shadow 0.3s;
-    }
-    button:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 15px #a94bff;
-    }
-    .hand {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-      margin-top: 20px;
-    }
-    .card {
-      background-color: rgba(0, 0, 0, 0.8);
-      border: 2px solid #7f00ff;
-      padding: 12px;
-      width: 140px;
-      color: #fff;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.3s;
-      box-shadow: 0 0 10px rgba(127, 0, 255, 0.3);
-      border-radius: 8px;
-      text-align: left;
-    }
-    .card:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(127, 0, 255, 0.6);
-    }
-    .disabled {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-    .winner {
-      color: #7fff7f;
-      font-weight: bold;
-      text-shadow: 1px 1px 4px black;
-    }
-    #battlefield {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    #resetContainer {
-      margin-top: 20px;
-      display: none;
-    }
-    #chosenAttr:empty, #result:empty {
-      display: none;
-    }
+      justify-content:
   </style>
 </head>
 <body>
@@ -149,6 +86,14 @@ let lastWinner = "player1";
 let selectedAttribute = null;
 let roundInProgress = false;
 
+// Játékos szokásainak követése
+let playerChoices = {
+  power: 0,
+  agility: 0,
+  wisdom: 0,
+  lastChoices: []
+};
+
 function drawCard() {
   if (deckPool.length === 0) return null;
   return deckPool.splice(Math.floor(Math.random() * deckPool.length), 1)[0];
@@ -175,6 +120,14 @@ function startGame() {
   lastWinner = "player1";
   selectedAttribute = null;
   roundInProgress = false;
+  
+  // Játékos szokásainak nullázása új játék kezdetén
+  playerChoices = {
+    power: 0,
+    agility: 0,
+    wisdom: 0,
+    lastChoices: []
+  };
 
   // Gombok újra engedélyezése
   const allButtons = document.querySelectorAll("button");
@@ -216,10 +169,10 @@ function updateUI() {
 
   renderPlayer1Hand();
 
-  // Bot választ automatikusan - okosabb stratégiával
+  // Bot választ automatikusan - még okosabb stratégiával, figyeli a játékos szokásait
   if (lastWinner === "player2" && !selectedAttribute && !roundInProgress) {
     setTimeout(() => {
-      // Bot intelligensen választ tulajdonságot a saját kártyái alapján
+      // Bot intelligensen választ tulajdonságot a saját kártyái és a játékos szokásai alapján
       if (player2Deck.length > 0) {
         // Kiszámoljuk a bot paklijának átlagos értékeit minden tulajdonságra
         const avgPower = player2Deck.reduce((sum, card) => sum + card.power, 0) / player2Deck.length;
@@ -236,12 +189,50 @@ function updateUI() {
         // Keressük a bot legerősebb tulajdonságát
         averages.sort((a, b) => b.value - a.value);
         
-        // 20% eséllyel véletlen tulajdonságot választunk (hogy kevésbé legyen kiszámítható)
-        if (Math.random() < 0.2) {
+        // Analizáljuk a játékos választási mintáit
+        let predictedPlayerChoice = null;
+        
+        // Ha van elég előzmény, megpróbáljuk előrejelezni a következő választását
+        if (playerChoices.lastChoices.length >= 3) {
+          // Megvizsgáljuk, van-e ismétlődő minta
+          const lastThree = playerChoices.lastChoices.slice(-3);
+          
+          // Ha sorban ismétli ugyanazt a tulajdonságot
+          if (lastThree[0] === lastThree[1] && lastThree[1] === lastThree[2]) {
+            predictedPlayerChoice = lastThree[0];
+          }
+          
+          // Ha váltogatja két tulajdonság között
+          else if (lastThree[0] === lastThree[2] && lastThree[0] !== lastThree[1]) {
+            predictedPlayerChoice = lastThree[0];
+          }
+        }
+        
+        // 10% eséllyel véletlenszerű tulajdonságot választunk (hogy teljesen kiszámíthatatlanok ne legyünk)
+        if (Math.random() < 0.1) {
           const attrs = ["power", "agility", "wisdom"];
           selectedAttribute = attrs[Math.floor(Math.random() * 3)];
-        } else {
-          // 80% eséllyel a legerősebb tulajdonságot választjuk
+        }
+        // Ha sikerült megjósolni a játékos következő választását és megfelelő kártyáink vannak hozzá
+        else if (predictedPlayerChoice && averages.find(a => a.attr === predictedPlayerChoice).value > 5) {
+          selectedAttribute = predictedPlayerChoice;
+        }
+        // 60% eséllyel a leggyakrabban választott tulajdonságot ellenőrizzük
+        else if (Math.random() < 0.6 && playerChoices.power + playerChoices.agility + playerChoices.wisdom > 3) {
+          // Játékos leggyakoribb választása
+          const playerFavorite = ["power", "agility", "wisdom"].reduce((max, attr) => 
+            playerChoices[attr] > playerChoices[max] ? attr : max, "power");
+          
+          // Ha a bot elég erős ebben a tulajdonságban, akkor használjuk
+          if (averages.find(a => a.attr === playerFavorite).value > 5) {
+            selectedAttribute = playerFavorite;
+          } else {
+            // Különben a saját legjobb tulajdonságot választjuk
+            selectedAttribute = averages[0].attr;
+          }
+        } 
+        // 30% eséllyel a bot legerősebb tulajdonságát választjuk
+        else {
           selectedAttribute = averages[0].attr;
         }
       } else {
@@ -262,6 +253,15 @@ function updateUI() {
 
 function chooseAttribute(attr) {
   if (lastWinner !== "player1" || selectedAttribute !== null) return;
+  
+  // Rögzítjük a játékos választását a szokások követéséhez
+  playerChoices[attr]++;
+  playerChoices.lastChoices.push(attr);
+  // Csak az utolsó 5 választást tartjuk meg
+  if (playerChoices.lastChoices.length > 5) {
+    playerChoices.lastChoices.shift();
+  }
+  
   selectedAttribute = attr;
   updateUI();
 }
@@ -333,7 +333,7 @@ function playRound(player1Index) {
     refillHands();
     roundInProgress = false;
     updateUI();
-  }, 5000); // Megnövelt késleltetés 5 másodpercre, hogy több idő legyen összehasonlítani a kártyákat
+  }, 3000); // Megnövelt késleltetés 3 másodpercre, hogy több idő legyen összehasonlítani a kártyákat
 }
 
 function disableAll() {
