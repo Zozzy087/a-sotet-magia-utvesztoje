@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Kártyapárbaj</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #222;
+      color: #eee;
+      text-align: center;
+      padding: 20px;
+    }
+    .card {
+      background: #444;
+      border: 1px solid #888;
+      padding: 10px;
+      margin: 10px;
+      display: inline-block;
+      width: 150px;
+    }
+    .winner {
+      font-weight: bold;
+      color: lightgreen;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 10px;
+    }
+    #cards {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Kártyapárbaj</h1>
+<p>Válassz egy tulajdonságot, amiben megmérkőztök:</p>
+<div>
+  <button onclick="startRound('power')">Erő</button>
+  <button onclick="startRound('agility')">Ügyesség</button>
+  <button onclick="startRound('wisdom')">Bölcsesség</button>
+</div>
+
+<div id="cards"></div>
+<h2 id="result"></h2>
+<h3 id="score"></h3>
+
+<script>
+const allCards = [];
+for (let i = 1; i <= 30; i++) {
+  allCards.push({
+    id: i,
+    name: "Kártya " + i,
+    power: Math.floor(Math.random() * 10) + 1,
+    agility: Math.floor(Math.random() * 10) + 1,
+    wisdom: Math.floor(Math.random() * 10) + 1
+  });
+}
+
+let player1Deck = [];
+let player2Deck = [];
+let player1Wins = 0;
+let player2Wins = 0;
+let round = 0;
+
+function drawHands() {
+  const shuffled = [...allCards].sort(() => Math.random() - 0.5);
+  player1Deck = shuffled.slice(0, 8);
+  player2Deck = shuffled.slice(8, 16);
+  player1Wins = 0;
+  player2Wins = 0;
+  round = 0;
+  updateScore();
+  document.getElementById("result").textContent = "A játék elkezdődött!";
+  document.getElementById("cards").innerHTML = "";
+}
+
+function startRound(attribute) {
+  if (round >= 8 || player1Wins >= 5 || player2Wins >= 5) {
+    document.getElementById("result").textContent = "A játék véget ért. Indíts új játékot!";
+    return;
+  }
+
+  const card1 = player1Deck[round];
+  const card2 = player2Deck[round];
+
+  const value1 = card1[attribute];
+  const value2 = card2[attribute];
+
+  let resultText = "";
+
+  if (value1 > value2) {
+    player1Wins++;
+    resultText = "Játékos 1 nyerte ezt a kört!";
+  } else if (value2 > value1) {
+    player2Wins++;
+    resultText = "Játékos 2 nyerte ezt a kört!";
+  } else {
+    resultText = "Döntetlen!";
+  }
+
+  document.getElementById("cards").innerHTML = `
+    <div class="card">
+      <h3>Játékos 1</h3>
+      <p>${card1.name}</p>
+      <p>Erő: ${card1.power}</p>
+      <p>Ügyesség: ${card1.agility}</p>
+      <p>Bölcsesség: ${card1.wisdom}</p>
+    </div>
+    <div class="card">
+      <h3>Játékos 2</h3>
+      <p>${card2.name}</p>
+      <p>Erő: ${card2.power}</p>
+      <p>Ügyesség: ${card2.agility}</p>
+      <p>Bölcsesség: ${card2.wisdom}</p>
+    </div>
+  `;
+
+  round++;
+  document.getElementById("result").textContent = resultText;
+  updateScore();
+
+  if (player1Wins >= 5) {
+    document.getElementById("result").innerHTML += " <span class='winner'>Játékos 1 a győztes!</span>";
+  } else if (player2Wins >= 5) {
+    document.getElementById("result").innerHTML += " <span class='winner'>Játékos 2 a győztes!</span>";
+  }
+}
+
+function updateScore() {
+  document.getElementById("score").textContent = `Állás: Játékos 1 - ${player1Wins} | Játékos 2 - ${player2Wins}`;
+}
+
+drawHands();
+</script>
+
+</body>
+</html>
