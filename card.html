@@ -1,436 +1,423 @@
 <!DOCTYPE html>
- <html lang="hu">
- <head>
-   <meta charset="UTF-8">
-   <title>Kártyapárbaj</title>
-   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
-   <style>
-     * {
-       box-sizing: border-box;
-     }
- 
-     body {
-       font-family: 'Cinzel', serif;
-       background-image: url('images/background.jpg.jpg');
-       background-size: cover;
-       background-position: center;
-       background-repeat: no-repeat;
-       color: #ffffff;
-       margin: 0;
-       padding: 20px;
-       min-height: 100vh;
-       display: flex;
-       flex-direction: column;
-       align-items: center;
-     }
- 
-     h1 {
-       font-weight: 700;
-       font-size: 2.5rem;
-       background-color: rgba(0, 0, 0, 0.8);
-       padding: 10px 20px;
-       border-radius: 5px;
-       margin-bottom: 20px;
-       box-shadow: 0 0 15px rgba(127, 0, 255, 0.7);
-       text-align: center;
-     }
- 
-     #turnInfo, #chosenAttr, #result, #score {
-       background-color: rgba(0, 0, 0, 0.7);
-       padding: 8px 15px;
-       border-radius: 5px;
-       margin: 10px auto;
-       box-shadow: 0 0 10px rgba(127, 0, 255, 0.4);
-       text-align: center;
-     }
- 
-     #attributeButtons {
-       display: flex;
-       justify-content: center;
-       flex-wrap: wrap;
-       gap: 10px;
-       margin: 10px auto;
-     }
- 
-     button {
-       background-color: #7f00ff;
-       color: white;
-       border: none;
-       border-radius: 5px;
-       padding: 10px 20px;
-       font-size: 1.1rem;
-       cursor: pointer;
-       box-shadow: 0 0 10px #7f00ff;
-       transition: transform 0.2s, box-shadow 0.3s;
-     }
- 
-     button:hover {
-       transform: scale(1.1);
-       box-shadow: 0 0 15px #a94bff;
-     }
- 
-     .hand {
-       display: flex;
-       flex-wrap: wrap;
-       justify-content: center;
-       gap: 15px;
-       margin-top: 20px;
-     }
- 
-     .card {
-       background-color: rgba(0, 0, 0, 0.8);
-       border: 2px solid #7f00ff;
-       padding: 12px;
-       width: 140px;
-       color: #fff;
-       cursor: pointer;
-       transition: transform 0.2s, box-shadow 0.3s;
-       box-shadow: 0 0 10px rgba(127, 0, 255, 0.3);
-       border-radius: 8px;
-       text-align: left;
-     }
- 
-     .card:hover {
-       transform: scale(1.05);
-       box-shadow: 0 0 20px rgba(127, 0, 255, 0.6);
-     }
- 
-     .disabled {
-       opacity: 0.5;
-       pointer-events: none;
-     }
- 
-     .winner {
-       color: #7fff7f;
-       font-weight: bold;
-       text-shadow: 1px 1px 4px black;
-     }
- 
-     #battlefield {
-       margin-top: 20px;
-       display: flex;
-       justify-content: center;
-       gap: 20px;
-       flex-wrap: wrap;
-     }
- 
-     #resetContainer {
-       margin-top: 20px;
-       display: none;
-     }
- 
-     @media (max-width: 768px) {
-       h1 {
-         font-size: 1.6rem;
-         padding: 8px 15px;
-       }
- 
-       .card {
-         width: 90%;
-         font-size: 0.95rem;
-       }
- 
-       button {
-         font-size: 1rem;
-         padding: 8px 15px;
-         width: 90%;
-       }
- 
-       #turnInfo, #chosenAttr, #result, #score {
-         font-size: 0.95rem;
-         width: 90%;
-       }
- 
-       #attributeButtons {
-         flex-direction: column;
-         align-items: center;
-       }
- 
-       #battlefield {
-         flex-direction: column;
-         align-items: center;
-       }
- 
- .card::before,
- .card::after,
- #player1Hand::before,
- #player1Hand::after,
- #battlefield::before,
- #battlefield::after {
-   content: none !important;
-   display: none !important;
- }
- 
-       /* Ezek rejtik el a scroll-indikátorokat minden elemről */
- body::-webkit-scrollbar,
- div::-webkit-scrollbar {
-   display: none;
- }
- 
- body, div {
-   -ms-overflow-style: none;  /* Internet Explorer 10+ */
-   scrollbar-width: none;     /* Firefox */
- }
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Kártyapárbaj</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Cinzel', serif;
+      background-image: url('images/background.jpg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #ffffff;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-weight: 700;
+      font-size: 2.5rem;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 10px 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 15px rgba(127, 0, 255, 0.7);
+      text-align: center;
+    }
+
+    #turnInfo, #chosenAttr, #result, #score {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 8px 15px;
+      border-radius: 5px;
+      margin: 10px auto;
+      box-shadow: 0 0 10px rgba(127, 0, 255, 0.4);
+      text-align: center;
+    }
+
+    #attributeButtons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 10px auto;
+    }
+
+    button {
+      background-color: #7f00ff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px #7f00ff;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px #a94bff;
+    }
+
+    .hand {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background-color: rgba(0, 0, 0, 0.8);
+      border: 2px solid #7f00ff;
+      padding: 12px;
+      width: 140px;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s;
+      box-shadow: 0 0 10px rgba(127, 0, 255, 0.3);
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(127, 0, 255, 0.6);
+    }
+
+    .disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .winner {
+      color: #7fff7f;
+      font-weight: bold;
+      text-shadow: 1px 1px 4px black;
+    }
+
+    #battlefield {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    #resetContainer {
+      margin-top: 20px;
+      display: none;
+    }
+
+    /* EZ A FONTOS RÉSZ – GLOBÁLIS CSS! */
+    #chosenAttr:empty,
+    #result:empty {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.6rem;
+        padding: 8px 15px;
+      }
+
+      .card {
+        width: 90%;
+        font-size: 0.95rem;
+      }
+
+      button {
+        font-size: 1rem;
+        padding: 8px 15px;
+        width: 90%;
+      }
+
+      #turnInfo, #chosenAttr, #result, #score {
+        font-size: 0.95rem;
+        width: 90%;
+      }
+
+      #attributeButtons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #battlefield {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .card::before,
+      .card::after,
+      #player1Hand::before,
+      #player1Hand::after,
+      #battlefield::before,
+      #battlefield::after {
+        content: none !important;
+        display: none !important;
+      }
+
+      body::-webkit-scrollbar,
+      div::-webkit-scrollbar {
+        display: none;
+      }
+
+      body, div {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
 
       button::before,
-button::after,
-#attributeButtons::before,
-#attributeButtons::after,
-body::before,
-body::after,
-.hand::before,
-.hand::after {
-  content: none !important;
-  display: none !important;
-}
-      
-#chosenAttr:empty {
-  display: none;
-}
+      button::after,
+      #attributeButtons::before,
+      #attributeButtons::after,
+      body::before,
+      body::after,
+      .hand::before,
+      .hand::after {
+        content: none !important;
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
 
-      #result:empty {
-  display: none;
-}
+<h1>Kártyapárbaj</h1>
 
-     }
-   </style>
- </head>
- <body>
- 
- <h1>Kártyapárbaj</h1>
- 
- <p id="turnInfo">Várakozás a játék indítására...</p>
- 
- <div id="attributeButtons">
-   <button onclick="chooseAttribute('power')">Erő</button>
-   <button onclick="chooseAttribute('agility')">Ügyesség</button>
-   <button onclick="chooseAttribute('wisdom')">Bölcsesség</button>
- </div>
- 
- <h2 id="chosenAttr"></h2>
- 
- <div class="hand" id="player1Hand"></div>
- 
- <div id="battlefield"></div>
- 
- <h2 id="result" style="display: none;"></h2>
- <h3 id="score"></h3>
- 
- <div id="resetContainer">
-   <button onclick="startGame()">Új játék</button>
- </div>
- 
- <script>
- const allCards = [];
- for (let i = 0; i < 100; i++) {
-   allCards.push({
-     power: Math.floor(Math.random() * 10) + 1,
-     agility: Math.floor(Math.random() * 10) + 1,
-     wisdom: Math.floor(Math.random() * 10) + 1
-   });
- }
- 
- let deckPool = [...allCards];
- let player1Deck = [];
- let player2Deck = [];
- let player1Wins = 0;
- let player2Wins = 0;
- let lastWinner = "player1";
- let selectedAttribute = null;
- let roundInProgress = false;
- 
- function drawCard() {
-   if (deckPool.length === 0) return null;
-   return deckPool.splice(Math.floor(Math.random() * deckPool.length), 1)[0];
- }
- 
- function refillHands() {
-   while (player1Deck.length < 8) {
-     const card = drawCard();
-     if (card) player1Deck.push(card);
-     else break;
-   }
-   while (player2Deck.length < 8) {
-     const card = drawCard();
-     if (card) player2Deck.push(card);
-     else break;
-   }
- }
- 
- function startGame() {
-   document.getElementById("resetContainer").style.display = "none";
-   deckPool = [...allCards];
-   player1Deck = [];
-   player2Deck = [];
-   player1Wins = 0;
-   player2Wins = 0;
-   lastWinner = "player1";
-   selectedAttribute = null;
-   roundInProgress = false;
-   refillHands();
-   updateUI();
- }
- 
- function updateUI() {
-   document.getElementById("result").textContent = "";
-   const chosen = document.getElementById("chosenAttr");
-if (selectedAttribute) {
-  chosen.textContent = `Kiválasztott tulajdonság: ${attributeHu(selectedAttribute)}`;
-  chosen.style.display = "block";
-} else {
-  chosen.textContent = "";
-  chosen.style.display = "none";
-}
+<p id="turnInfo">Várakozás a játék indítására...</p>
 
-   document.getElementById("score").textContent = `Állás: Játékos 1 - ${player1Wins} | Játékos 2 - ${player2Wins}`;
-   document.getElementById("turnInfo").textContent = lastWinner === "player1" ? "Játékos 1 választhat tulajdonságot." : "Bot választ...";
-   document.getElementById("player1Hand").innerHTML = "";
-   document.getElementById("battlefield").innerHTML = "";
- 
-   renderPlayer1Hand();
- 
-   if (lastWinner === "player2" && !selectedAttribute && !roundInProgress) {
-     setTimeout(() => {
-       const attrs = ["power", "agility", "wisdom"];
-       selectedAttribute = attrs[Math.floor(Math.random() * 3)];
-       document.getElementById("chosenAttr").textContent = `Kiválasztott tulajdonság: ${attributeHu(selectedAttribute)}`;
-       updateUI();
-     }, 1000);
-   }
- 
-   const buttons = document.querySelectorAll("#attributeButtons button");
-   buttons.forEach(btn => {
-     btn.disabled = lastWinner !== "player1" || selectedAttribute !== null;
-   });
- }
- 
- function attributeHu(attr) {
-   return attr === "power" ? "Erő" : attr === "agility" ? "Ügyesség" : "Bölcsesség";
- }
- 
- function chooseAttribute(attr) {
-   if (lastWinner !== "player1" || selectedAttribute !== null) return;
-   selectedAttribute = attr;
-   document.getElementById("chosenAttr").textContent = `Kiválasztott tulajdonság: ${attributeHu(selectedAttribute)}`;
-   updateUI();
- }
- 
- function renderPlayer1Hand() {
-   player1Deck.forEach((card, index) => {
-     const div = document.createElement("div");
-     div.className = "card";
-     div.innerHTML = `
-       Erő: ${card.power}<br>
-       Ügyesség: ${card.agility}<br>
-       Bölcsesség: ${card.wisdom}
-     `;
-     if (!selectedAttribute || roundInProgress) {
-       div.classList.add("disabled");
-     } else {
-       div.onclick = () => playRound(index);
-     }
-     document.getElementById("player1Hand").appendChild(div);
-   });
- }
- 
- function playRound(player1Index, botIndex = null, botInitiated = false) {
-   if (!selectedAttribute || roundInProgress) return;
-   roundInProgress = true;
- 
-   const player1Card = botInitiated
-     ? player1Deck.splice(Math.floor(Math.random() * player1Deck.length), 1)[0]
-     : player1Deck.splice(player1Index, 1)[0];
- 
-   const finalBotIndex = botIndex !== null
-     ? botIndex
-     : getBestCardIndex(player2Deck, selectedAttribute, player1Card[selectedAttribute]);
- 
-   const player2Card = player2Deck.splice(finalBotIndex, 1)[0];
- 
-   const val1 = player1Card[selectedAttribute];
-   const val2 = player2Card[selectedAttribute];
- 
-   const battleDiv = document.getElementById("battlefield");
-   battleDiv.innerHTML = `
-     <div class="card">
-       <h3>Játékos 1</h3>
-       <p>Erő: ${player1Card.power}</p>
-       <p>Ügyesség: ${player1Card.agility}</p>
-       <p>Bölcsesség: ${player1Card.wisdom}</p>
-     </div>
-     <div class="card">
-       <h3>Játékos 2</h3>
-       <p>Erő: ${player2Card.power}</p>
-       <p>Ügyesség: ${player2Card.agility}</p>
-       <p>Bölcsesség: ${player2Card.wisdom}</p>
-     </div>
-   `;
- 
-   let resultText = "";
-   if (val1 > val2) {
-     player1Wins++;
-     resultText = "Játékos 1 nyerte a kört!";
-     lastWinner = "player1";
-   } else if (val2 > val1) {
-     player2Wins++;
-     resultText = "Játékos 2 nyerte a kört!";
-     lastWinner = "player2";
-   } else {
-     resultText = "Döntetlen!";
-   }
- 
-   document.getElementById("result").textContent = resultText;
-   selectedAttribute = null;
- 
-   if (player1Wins >= 5 || player2Wins >= 5) {
-     document.getElementById("result").innerHTML += `<br><span class="winner">${player1Wins >= 5 ? "Játékos 1" : "Játékos 2"} győzött a játékban!</span>`;
-     disableAll();
-     document.getElementById("resetContainer").style.display = "block";
-     return;
-   }
- 
-   setTimeout(() => {
-     refillHands();
-     roundInProgress = false;
-     updateUI();
-   }, 1500);
- }
- 
- function disableAll() {
-   const buttons = document.querySelectorAll("button");
-   buttons.forEach(btn => btn.disabled = true);
-   document.getElementById("player1Hand").innerHTML = "";
- }
- 
- function getBestCardIndex(deck, attribute, playerCardValue = null) {
-   if (playerCardValue !== null) {
-     let candidates = deck
-       .map((card, index) => ({ value: card[attribute], index }))
-       .filter(entry => entry.value >= playerCardValue);
- 
-     if (candidates.length > 0) {
-       candidates.sort((a, b) => a.value - b.value);
-       return candidates[0].index;
-     } else {
-       let weakest = deck.map((card, index) => ({ value: card[attribute], index }));
-       weakest.sort((a, b) => a.value - b.value);
-       return weakest[0].index;
-     }
-   } else {
-     let bestValue = -1;
-     let bestIndex = 0;
-     deck.forEach((card, index) => {
-       if (card[attribute] > bestValue) {
-         bestValue = card[attribute];
-         bestIndex = index;
-       }
-     });
-     return bestIndex;
-   }
- }
- 
- startGame();
- </script>
- 
- </body>
- </html>
+<div id="attributeButtons">
+  <button onclick="chooseAttribute('power')">Erő</button>
+  <button onclick="chooseAttribute('agility')">Ügyesség</button>
+  <button onclick="chooseAttribute('wisdom')">Bölcsesség</button>
+</div>
+
+<h2 id="chosenAttr"></h2>
+
+<div class="hand" id="player1Hand"></div>
+
+<div id="battlefield"></div>
+
+<h2 id="result"></h2>
+<h3 id="score"></h3>
+
+<div id="resetContainer">
+  <button onclick="startGame()">Új játék</button>
+</div>
+
+<script>
+  const allCards = [];
+  for (let i = 0; i < 100; i++) {
+    allCards.push({
+      power: Math.floor(Math.random() * 10) + 1,
+      agility: Math.floor(Math.random() * 10) + 1,
+      wisdom: Math.floor(Math.random() * 10) + 1
+    });
+  }
+
+  let deckPool = [...allCards];
+  let player1Deck = [];
+  let player2Deck = [];
+  let player1Wins = 0;
+  let player2Wins = 0;
+  let lastWinner = "player1";
+  let selectedAttribute = null;
+  let roundInProgress = false;
+
+  function drawCard() {
+    if (deckPool.length === 0) return null;
+    return deckPool.splice(Math.floor(Math.random() * deckPool.length), 1)[0];
+  }
+
+  function refillHands() {
+    while (player1Deck.length < 8) {
+      const card = drawCard();
+      if (card) player1Deck.push(card);
+      else break;
+    }
+    while (player2Deck.length < 8) {
+      const card = drawCard();
+      if (card) player2Deck.push(card);
+      else break;
+    }
+  }
+
+  function startGame() {
+    document.getElementById("resetContainer").style.display = "none";
+    deckPool = [...allCards];
+    player1Deck = [];
+    player2Deck = [];
+    player1Wins = 0;
+    player2Wins = 0;
+    lastWinner = "player1";
+    selectedAttribute = null;
+    roundInProgress = false;
+    refillHands();
+    updateUI();
+  }
+
+  function updateUI() {
+    document.getElementById("result").textContent = "";
+    document.getElementById("chosenAttr").textContent = selectedAttribute ? `Kiválasztott tulajdonság: ${attributeHu(selectedAttribute)}` : "";
+    document.getElementById("score").textContent = `Állás: Játékos 1 - ${player1Wins} | Játékos 2 - ${player2Wins}`;
+    document.getElementById("turnInfo").textContent = lastWinner === "player1" ? "Játékos 1 választhat tulajdonságot." : "Bot választ...";
+    document.getElementById("player1Hand").innerHTML = "";
+    document.getElementById("battlefield").innerHTML = "";
+
+    renderPlayer1Hand();
+
+    if (lastWinner === "player2" && !selectedAttribute && !roundInProgress) {
+      setTimeout(() => {
+        const attrs = ["power", "agility", "wisdom"];
+        selectedAttribute = attrs[Math.floor(Math.random() * 3)];
+        updateUI();
+      }, 1000);
+    }
+
+    const buttons = document.querySelectorAll("#attributeButtons button");
+    buttons.forEach(btn => {
+      btn.disabled = lastWinner !== "player1" || selectedAttribute !== null;
+    });
+  }
+
+  function attributeHu(attr) {
+    return attr === "power" ? "Erő" : attr === "agility" ? "Ügyesség" : "Bölcsesség";
+  }
+
+  function chooseAttribute(attr) {
+    if (lastWinner !== "player1" || selectedAttribute !== null) return;
+    selectedAttribute = attr;
+    updateUI();
+  }
+
+  function renderPlayer1Hand() {
+    player1Deck.forEach((card, index) => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `
+        Erő: ${card.power}<br>
+        Ügyesség: ${card.agility}<br>
+        Bölcsesség: ${card.wisdom}
+      `;
+      if (!selectedAttribute || roundInProgress) {
+        div.classList.add("disabled");
+      } else {
+        div.onclick = () => playRound(index);
+      }
+      document.getElementById("player1Hand").appendChild(div);
+    });
+  }
+
+  function playRound(player1Index, botIndex = null, botInitiated = false) {
+    if (!selectedAttribute || roundInProgress) return;
+    roundInProgress = true;
+
+    const player1Card = botInitiated
+      ? player1Deck.splice(Math.floor(Math.random() * player1Deck.length), 1)[0]
+      : player1Deck.splice(player1Index, 1)[0];
+
+    const finalBotIndex = botIndex !== null
+      ? botIndex
+      : getBestCardIndex(player2Deck, selectedAttribute, player1Card[selectedAttribute]);
+
+    const player2Card = player2Deck.splice(finalBotIndex, 1)[0];
+
+    const val1 = player1Card[selectedAttribute];
+    const val2 = player2Card[selectedAttribute];
+
+    const battleDiv = document.getElementById("battlefield");
+    battleDiv.innerHTML = `
+      <div class="card">
+        <h3>Játékos 1</h3>
+        <p>Erő: ${player1Card.power}</p>
+        <p>Ügyesség: ${player1Card.agility}</p>
+        <p>Bölcsesség: ${player1Card.wisdom}</p>
+      </div>
+      <div class="card">
+        <h3>Játékos 2</h3>
+        <p>Erő: ${player2Card.power}</p>
+        <p>Ügyesség: ${player2Card.agility}</p>
+        <p>Bölcsesség: ${player2Card.wisdom}</p>
+      </div>
+    `;
+
+    let resultText = "";
+    if (val1 > val2) {
+      player1Wins++;
+      resultText = "Játékos 1 nyerte a kört!";
+      lastWinner = "player1";
+    } else if (val2 > val1) {
+      player2Wins++;
+      resultText = "Játékos 2 nyerte a kört!";
+      lastWinner = "player2";
+    } else {
+      resultText = "Döntetlen!";
+    }
+
+    const resultDiv = document.getElementById("result");
+    resultDiv.textContent = resultText;
+
+    if (player1Wins >= 5 || player2Wins >= 5) {
+      resultDiv.innerHTML += `<br><span class="winner">${player1Wins >= 5 ? "Játékos 1" : "Játékos 2"} győzött a játékban!</span>`;
+      disableAll();
+      document.getElementById("resetContainer").style.display = "block";
+      return;
+    }
+
+    selectedAttribute = null;
+    setTimeout(() => {
+      refillHands();
+      roundInProgress = false;
+      updateUI();
+    }, 1500);
+  }
+
+  function disableAll() {
+    const buttons = document.querySelectorAll("button");
+    buttons.forEach(btn => btn.disabled = true);
+    document.getElementById("player1Hand").innerHTML = "";
+  }
+
+  function getBestCardIndex(deck, attribute, playerCardValue = null) {
+    if (playerCardValue !== null) {
+      let candidates = deck
+        .map((card, index) => ({ value: card[attribute], index }))
+        .filter(entry => entry.value >= playerCardValue);
+
+      if (candidates.length > 0) {
+        candidates.sort((a, b) => a.value - b.value);
+        return candidates[0].index;
+      } else {
+        let weakest = deck.map((card, index) => ({ value: card[attribute], index }));
+        weakest.sort((a, b) => a.value - b.value);
+        return weakest[0].index;
+      }
+    } else {
+      let bestValue = -1;
+      let bestIndex = 0;
+      deck.forEach((card, index) => {
+        if (card[attribute] > bestValue) {
+          bestValue = card[attribute];
+          bestIndex = index;
+        }
+      });
+      return bestIndex;
+    }
+  }
+
+  startGame();
+</script>
+
+</body>
+</html>
