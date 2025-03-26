@@ -27,6 +27,7 @@
       padding: 10px 20px;
       font-size: 16px;
       margin: 10px;
+      cursor: pointer;
     }
     #cards {
       display: flex;
@@ -38,8 +39,10 @@
 <body>
 
 <h1>Kártyapárbaj</h1>
-<p>Válassz egy tulajdonságot, amiben megmérkőztök:</p>
-<div>
+
+<p id="turnInfo">Várakozás a játék indítására...</p>
+
+<div id="buttons">
   <button onclick="startRound('power')">Erő</button>
   <button onclick="startRound('agility')">Ügyesség</button>
   <button onclick="startRound('wisdom')">Bölcsesség</button>
@@ -67,6 +70,10 @@ let player1Wins = 0;
 let player2Wins = 0;
 let round = 0;
 
+let lastWinner = null;
+let consecutiveWins = { player1: 0, player2: 0 };
+let currentTurn = "player1"; // kezdésnél 1-es kezd
+
 function drawHands() {
   const shuffled = [...allCards].sort(() => Math.random() - 0.5);
   player1Deck = shuffled.slice(0, 8);
@@ -74,9 +81,18 @@ function drawHands() {
   player1Wins = 0;
   player2Wins = 0;
   round = 0;
+  lastWinner = null;
+  consecutiveWins = { player1: 0, player2: 0 };
+  currentTurn = "player1";
   updateScore();
-  document.getElementById("result").textContent = "A játék elkezdődött!";
+  document.getElementById("result").textContent = "";
   document.getElementById("cards").innerHTML = "";
+  updateTurnInfo();
+}
+
+function updateTurnInfo() {
+  let name = currentTurn === "player1" ? "Játékos 1" : "Játékos 2";
+  document.getElementById("turnInfo").textContent = `${name} választhat tulajdonságot`;
 }
 
 function startRound(attribute) {
@@ -84,6 +100,10 @@ function startRound(attribute) {
     document.getElementById("result").textContent = "A játék véget ért. Indíts új játékot!";
     return;
   }
+
+  // Kör eleji reset
+  document.getElementById("result").textContent = "";
+  document.getElementById("cards").innerHTML = "";
 
   const card1 = player1Deck[round];
   const card2 = player2Deck[round];
@@ -96,11 +116,26 @@ function startRound(attribute) {
   if (value1 > value2) {
     player1Wins++;
     resultText = "Játékos 1 nyerte ezt a kört!";
+    if (lastWinner === "player1") {
+      consecutiveWins.player1++;
+    } else {
+      consecutiveWins.player1 = 1;
+      consecutiveWins.player2 = 0;
+    }
+    lastWinner = "player1";
   } else if (value2 > value1) {
     player2Wins++;
     resultText = "Játékos 2 nyerte ezt a kört!";
+    if (lastWinner === "player2") {
+      consecutiveWins.player2++;
+    } else {
+      consecutiveWins.player2 = 1;
+      consecutiveWins.player1 = 0;
+    }
+    lastWinner = "player2";
   } else {
     resultText = "Döntetlen!";
+    // nem változik a döntési jog
   }
 
   document.getElementById("cards").innerHTML = `
@@ -124,11 +159,24 @@ function startRound(attribute) {
   document.getElementById("result").textContent = resultText;
   updateScore();
 
+  // Győzelemellenőrzés
   if (player1Wins >= 5) {
     document.getElementById("result").innerHTML += " <span class='winner'>Játékos 1 a győztes!</span>";
+    return;
   } else if (player2Wins >= 5) {
     document.getElementById("result").innerHTML += " <span class='winner'>Játékos 2 a győztes!</span>";
+    return;
   }
+
+  // Következő döntő játékos meghatározása
+  if (lastWinner === "player1" && consecutiveWins.player1 >= 2) {
+    currentTurn = "player2";
+  } else if (lastWinner === "player2" && consecutiveWins.player2 >= 2) {
+    currentTurn = "player1";
+  } else if (lastWinner) {
+    currentTurn = lastWinner;
+  }
+  updateTurnInfo();
 }
 
 function updateScore() {
