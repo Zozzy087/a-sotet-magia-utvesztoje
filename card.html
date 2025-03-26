@@ -11,17 +11,28 @@
       text-align: center;
       padding: 20px;
     }
+    .hand {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 10px 0;
+    }
     .card {
       background: #444;
-      border: 1px solid #888;
+      border: 2px solid #888;
+      border-radius: 5px;
       padding: 10px;
-      margin: 10px;
-      display: inline-block;
-      width: 150px;
+      margin: 5px;
+      width: 120px;
+      cursor: pointer;
+      transition: transform 0.2s;
     }
-    .winner {
-      font-weight: bold;
-      color: lightgreen;
+    .card:hover {
+      transform: scale(1.05);
+      background: #555;
+    }
+    .selected {
+      border-color: gold;
     }
     button {
       padding: 10px 20px;
@@ -29,10 +40,15 @@
       margin: 10px;
       cursor: pointer;
     }
-    #cards {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
+    #cards, #result {
+      margin-top: 20px;
+    }
+    .winner {
+      font-weight: bold;
+      color: lightgreen;
+    }
+    .hidden {
+      visibility: hidden;
     }
   </style>
 </head>
@@ -41,20 +57,24 @@
 <h1>Kártyapárbaj</h1>
 
 <p id="turnInfo">Várakozás a játék indítására...</p>
-
-<div id="buttons">
-  <button onclick="playerChooses('power')">Erő</button>
-  <button onclick="playerChooses('agility')">Ügyesség</button>
-  <button onclick="playerChooses('wisdom')">Bölcsesség</button>
+<div id="attributeButtons" class="hidden">
+  <button onclick="chooseAttribute('power')">Erő</button>
+  <button onclick="chooseAttribute('agility')">Ügyesség</button>
+  <button onclick="chooseAttribute('wisdom')">Bölcsesség</button>
 </div>
 
-<div id="cards"></div>
+<h3>Játékos 1 lapjai</h3>
+<div id="player1Hand" class="hand"></div>
+
+<h3 id="roundLabel">Kijátszott lapok</h3>
+<div id="cards" class="hand"></div>
+
 <h2 id="result"></h2>
 <h3 id="score"></h3>
 
 <script>
 const allCards = [];
-for (let i = 1; i <= 30; i++) {
+for (let i = 1; i <= 50; i++) {
   allCards.push({
     id: i,
     name: "Kártya " + i,
@@ -72,7 +92,9 @@ let round = 0;
 
 let lastWinner = null;
 let consecutiveWins = { player1: 0, player2: 0 };
-let currentTurn = "player1"; // elsőként Játékos 1 választhat
+let currentTurn = "player1";
+let currentAttribute = null;
+let selectedCard = null;
 
 function drawHands() {
   const shuffled = [...allCards].sort(() => Math.random() - 0.5);
@@ -84,14 +106,18 @@ function drawHands() {
   lastWinner = null;
   consecutiveWins = { player1: 0, player2: 0 };
   currentTurn = "player1";
+  currentAttribute = null;
+  selectedCard = null;
   updateScore();
   updateTurnInfo();
-  clearCardsAndResult();
+  displayHand();
+  document.getElementById("result").textContent = "";
+  document.getElementById("cards").innerHTML = "";
+  document.getElementById("attributeButtons").classList.add("hidden");
 }
 
-function clearCardsAndResult() {
-  document.getElementById("cards").innerHTML = "";
-  document.getElementById("result").textContent = "";
+function updateScore() {
+  document.getElementById("score").textContent = `Állás: Játékos 1 - ${player1Wins} | Játékos 2 - ${player2Wins}`;
 }
 
 function updateTurnInfo() {
@@ -99,103 +125,124 @@ function updateTurnInfo() {
     document.getElementById("turnInfo").textContent = "A játék véget ért!";
     return;
   }
-  const name = currentTurn === "player1" ? "Játékos 1 választhat tulajdonságot" : "Bot választ...";
-  document.getElementById("turnInfo").textContent = name;
+  const who = currentTurn === "player1" ? "Te választhatsz tulajdonságot!" : "A bot választ...";
+  document.getElementById("turnInfo").textContent = who;
+  if (currentTurn === "player1") {
+    document.getElementById("attributeButtons").classList.remove("hidden");
+  } else {
+    document.getElementById("attributeButtons").classList.add("hidden");
+    setTimeout(() => {
+      const attrs = ["power", "agility", "wisdom"];
+      const attr = attrs[Math.floor(Math.random() * 3)];
+      chooseAttribute(attr);
+    }, 800);
+  }
 }
 
-function updateScore() {
-  document.getElementById("score").textContent = `Állás: Játékos 1 - ${player1Wins} | Játékos 2 - ${player2Wins}`;
+function chooseAttribute(attr) {
+  currentAttribute = attr;
+  document.getElementById("turnInfo").textContent = `Tulajdonság: ${attr.toUpperCase()} – válassz egy lapot a kezedből!`;
+  document.getElementById("attributeButtons").classList.add("hidden");
 }
 
-function playerChooses(attribute) {
-  if (player1Wins >= 5 || player2Wins >= 5) return;
-  if (currentTurn !== "player1") return;
-  clearCardsAndResult();
-  setTimeout(() => playRound(attribute), 200);
+function displayHand() {
+  const container = document.getElementById("player1Hand");
+  container.innerHTML = "";
+  player1Deck.forEach((card, index) => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <strong>${card.name}</strong><br>
+      Erő: ${card.power}<br>
+      Ügyesség: ${card.agility}<br>
+      Bölcsesség: ${card.wisdom}
+    `;
+    div.onclick = () => {
+      if (!currentAttribute) return;
+      selectedCard = card;
+      player1Deck.splice(index, 1);
+      container.innerHTML = "";
+      playBotTurn(card);
+    };
+    container.appendChild(div);
+  });
 }
 
-function playRound(attribute) {
-  const card1 = player1Deck[round];
-  const card2 = player2Deck[round];
+function playBotTurn(playerCard) {
+  // Bot kiválasztja a legjobb lapját az adott attribútum alapján
+  const sorted = [...player2Deck].sort((a, b) => b[currentAttribute] - a[currentAttribute]);
+  const botCard = sorted[0];
+  const botIndex = player2Deck.indexOf(botCard);
+  player2Deck.splice(botIndex, 1);
 
-  const value1 = card1[attribute];
-  const value2 = card2[attribute];
-
+  // Eredmény kiszámítása
+  const val1 = playerCard[currentAttribute];
+  const val2 = botCard[currentAttribute];
   let resultText = "";
 
-  if (value1 > value2) {
+  if (val1 > val2) {
     player1Wins++;
-    resultText = "Játékos 1 nyerte ezt a kört!";
-    if (lastWinner === "player1") {
-      consecutiveWins.player1++;
-    } else {
-      consecutiveWins.player1 = 1;
-      consecutiveWins.player2 = 0;
-    }
+    resultText = "Ezt a kört Játékos 1 nyerte!";
     lastWinner = "player1";
-  } else if (value2 > value1) {
+    consecutiveWins.player1++;
+    consecutiveWins.player2 = 0;
+  } else if (val2 > val1) {
     player2Wins++;
-    resultText = "Játékos 2 nyerte ezt a kört!";
-    if (lastWinner === "player2") {
-      consecutiveWins.player2++;
-    } else {
-      consecutiveWins.player2 = 1;
-      consecutiveWins.player1 = 0;
-    }
+    resultText = "Ezt a kört Játékos 2 (bot) nyerte!";
     lastWinner = "player2";
+    consecutiveWins.player2++;
+    consecutiveWins.player1 = 0;
   } else {
     resultText = "Döntetlen!";
+    // nem változik a döntő
   }
 
+  // Kijátszott lapok megjelenítése
   document.getElementById("cards").innerHTML = `
-    <div class="card">
-      <h3>Játékos 1</h3>
-      <p>${card1.name}</p>
-      <p>Erő: ${card1.power}</p>
-      <p>Ügyesség: ${card1.agility}</p>
-      <p>Bölcsesség: ${card1.wisdom}</p>
+    <div class="card selected">
+      <h4>Játékos 1</h4>
+      <strong>${playerCard.name}</strong><br>
+      Erő: ${playerCard.power}<br>
+      Ügyesség: ${playerCard.agility}<br>
+      Bölcsesség: ${playerCard.wisdom}
     </div>
-    <div class="card">
-      <h3>Játékos 2</h3>
-      <p>${card2.name}</p>
-      <p>Erő: ${card2.power}</p>
-      <p>Ügyesség: ${card2.agility}</p>
-      <p>Bölcsesség: ${card2.wisdom}</p>
+    <div class="card selected">
+      <h4>Játékos 2</h4>
+      <strong>${botCard.name}</strong><br>
+      Erő: ${botCard.power}<br>
+      Ügyesség: ${botCard.agility}<br>
+      Bölcsesség: ${botCard.wisdom}
     </div>
   `;
-
-  round++;
   document.getElementById("result").textContent = resultText;
   updateScore();
+  round++;
 
-  if (player1Wins >= 5) {
-    document.getElementById("result").innerHTML += " <span class='winner'>Játékos 1 a győztes!</span>";
-    return;
-  }
-  if (player2Wins >= 5) {
-    document.getElementById("result").innerHTML += " <span class='winner'>Játékos 2 a győztes!</span>";
+  // Győzelem ellenőrzés
+  if (player1Wins >= 5 || player2Wins >= 5) {
+    document.getElementById("result").innerHTML += ` <span class='winner'>${player1Wins > player2Wins ? "Játékos 1 győzött!" : "Játékos 2 (bot) győzött!"}</span>`;
     return;
   }
 
-  // Döntési jog váltása
+  // Ki választ legközelebb?
   if (lastWinner === "player1" && consecutiveWins.player1 < 2) {
     currentTurn = "player1";
   } else if (lastWinner === "player2" && consecutiveWins.player2 < 2) {
     currentTurn = "player2";
   } else {
     currentTurn = lastWinner === "player1" ? "player2" : "player1";
+    consecutiveWins = { player1: 0, player2: 0 }; // reset
   }
 
-  updateTurnInfo();
+  currentAttribute = null;
+  selectedCard = null;
 
-    if (currentTurn === "player2") {
-    setTimeout(() => {
-      clearCardsAndResult();
-      const attributes = ["power", "agility", "wisdom"];
-      const attr = attributes[Math.floor(Math.random() * attributes.length)];
-      playRound(attr);
-    }, 800);
-  }
+  setTimeout(() => {
+    updateTurnInfo();
+    displayHand();
+    document.getElementById("cards").innerHTML = "";
+    document.getElementById("result").textContent = "";
+  }, 1500);
 }
 
 drawHands();
