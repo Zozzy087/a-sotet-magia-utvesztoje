@@ -188,14 +188,13 @@ function playRound(attribute) {
 
   updateTurnInfo();
 
-  if (currentTurn === "player2") {
-    // bot automatikusan választ egy véletlen attribútumot
+    if (currentTurn === "player2") {
     setTimeout(() => {
+      clearCardsAndResult();
       const attributes = ["power", "agility", "wisdom"];
       const attr = attributes[Math.floor(Math.random() * attributes.length)];
-      clearCardsAndResult();
-      setTimeout(() => playRound(attr), 200);
-    }, 1000);
+      playRound(attr);
+    }, 800);
   }
 }
 
