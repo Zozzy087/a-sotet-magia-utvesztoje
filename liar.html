@@ -501,7 +501,7 @@ function combineDice(dice) {
   let sorted = [...dice].sort((a, b) => b - a);
   
   // Csínytevés ellenőrzése (2 és 1)
-  if (dice.includes(2) && dice.includes(1)) {
+  if ((dice[0] === 2 && dice[1] === 1) || (dice[0] === 1 && dice[1] === 2)) {
     return MISCHIEF_VALUE;
   }
   
@@ -546,30 +546,35 @@ function getRank(value) {
   return REGULAR_VALUES.indexOf(value) + 1;
 }
 
-// Lehetséges lépések generálása
+// Lehetséges lépések generálása - JAVÍTOTT VÁLTOZAT
 function generateClaimButtons() {
   claimButtonsEl.innerHTML = '';
   const actualValue = combineDice(currentDice);
   
-  // Ha ez az első kör, vagy az előző körben az ellenfél kihívott minket,
-  // akkor bármilyen érték bejelenthető
+  // Speciális eset: Ha az ellenfél Csínytevést jelentett be, csak Csínytevést lehet bejelenteni
+  if (claimedValue === MISCHIEF_VALUE) {
+    addClaimButton(MISCHIEF_VALUE, actualValue === MISCHIEF_VALUE);
+    return;
+  }
+  
+  // Ha az előző körben volt bejelentés, akkor annál magasabbat kell mondani
   const minRank = claimedValue ? getRank(claimedValue) + 1 : 1;
   
-  // Reguláris értékek
+  // Reguláris értékek hozzáadása, amelyek a minimum fölött vannak
   for (const value of REGULAR_VALUES) {
     if (getRank(value) >= minRank) {
       addClaimButton(value, actualValue === value);
     }
   }
   
-  // Fortélyok
+  // Fortélyok hozzáadása, amelyek a minimum fölött vannak
   for (const value of TRICK_VALUES) {
     if (getRank(value) >= minRank) {
       addClaimButton(value, actualValue === value);
     }
   }
   
-  // Csínytevés
+  // Csínytevés hozzáadása, ha a minimum fölött van
   if (getRank(MISCHIEF_VALUE) >= minRank) {
     addClaimButton(MISCHIEF_VALUE, actualValue === MISCHIEF_VALUE);
   }
@@ -652,11 +657,6 @@ function believe() {
   } else {
     resultEl.textContent = `Odin elhitte a bejelentésedet (${formatValue(claimedValue)}). Most ő következik.`;
     currentPlayer = 'opponent';
-  }
-  
-  // Csínytevés speciális szabálya
-  if (claimedValue === MISCHIEF_VALUE) {
-    resultEl.textContent += " Csínytevés bejelentve! Csak egy másik Csínytevés képes legyőzni.";
   }
   
   roundCounter++;
@@ -851,28 +851,34 @@ function decideAIResponse() {
 function makeAIDecision() {
   const actualValue = combineDice(currentDice); // Az AI igazi dobásának értéke
   const actualRank = getRank(actualValue);
-  const minRank = claimedValue ? getRank(claimedValue) + 1 : 1;
   
-  // Lehetséges bejelenthető értékek
-  const possibleClaims = [];
+  let possibleClaims = [];
   
-  // Reguláris értékek
-  for (const value of REGULAR_VALUES) {
-    if (getRank(value) >= minRank) {
-      possibleClaims.push(value);
-    }
-  }
-  
-  // Fortélyok
-  for (const value of TRICK_VALUES) {
-    if (getRank(value) >= minRank) {
-      possibleClaims.push(value);
-    }
-  }
-  
-  // Csínytevés
-  if (getRank(MISCHIEF_VALUE) >= minRank) {
+  // JAVÍTÁS: a Csínytevés speciális esete
+  if (claimedValue === MISCHIEF_VALUE) {
+    // Ha Csínytevést jelentettek be nekünk, csak Csínytevést jelenthetünk
     possibleClaims.push(MISCHIEF_VALUE);
+  } else {
+    const minRank = claimedValue ? getRank(claimedValue) + 1 : 1;
+    
+    // Reguláris értékek
+    for (const value of REGULAR_VALUES) {
+      if (getRank(value) >= minRank) {
+        possibleClaims.push(value);
+      }
+    }
+    
+    // Fortélyok
+    for (const value of TRICK_VALUES) {
+      if (getRank(value) >= minRank) {
+        possibleClaims.push(value);
+      }
+    }
+    
+    // Csínytevés
+    if (getRank(MISCHIEF_VALUE) >= minRank) {
+      possibleClaims.push(MISCHIEF_VALUE);
+    }
   }
   
   if (possibleClaims.length === 0) {
@@ -889,7 +895,7 @@ function makeAIDecision() {
   let selectedClaim;
   
   // Ha az AI-nak megfelelő dobása van, elsősorban azt jelenti be
-  if (actualRank >= minRank) {
+  if (possibleClaims.includes(actualValue)) {
     // 70% eséllyel igazat mond, ha tud
     if (Math.random() < 0.7) {
       selectedClaim = actualValue;
@@ -900,34 +906,41 @@ function makeAIDecision() {
   if (!selectedClaim) {
     // Lehetséges bejelentések alapján stratégia
     
-    // Játék állása alapján
-    if (opponentSparks === 1) {
-      // Veszélyben van, kockázatosabb játék
-      const highClaims = possibleClaims.filter(c => getRank(c) >= Math.floor(totalRanks * 0.7));
-      if (highClaims.length > 0) {
-        // Magas értékek közül választ egyet
-        selectedClaim = highClaims[Math.floor(Math.random() * highClaims.length)];
-      }
+    // Speciális eset: Ha csak Csínytevést jelenthetünk be, de nem dobtunk, akkor hazudni kell
+    if (possibleClaims.length === 1 && possibleClaims[0] === MISCHIEF_VALUE && actualValue !== MISCHIEF_VALUE) {
+      selectedClaim = MISCHIEF_VALUE;
     }
-    
-    if (playerSparks === 1) {
-      // Játékos veszélyben van, óvatosabb játék
-      const lowClaims = possibleClaims.filter(c => getRank(c) <= Math.floor(minRank + 3));
-      if (lowClaims.length > 0) {
-        // Alacsonyabb értékek közül választ egyet
-        selectedClaim = lowClaims[Math.floor(Math.random() * lowClaims.length)];
+    // Egyéb esetekben
+    else {
+      // Játék állása alapján
+      if (opponentSparks === 1) {
+        // Veszélyben van, kockázatosabb játék
+        const highClaims = possibleClaims.filter(c => getRank(c) >= Math.floor(21 * 0.7));
+        if (highClaims.length > 0) {
+          // Magas értékek közül választ egyet
+          selectedClaim = highClaims[Math.floor(Math.random() * highClaims.length)];
+        }
       }
-    }
-    
-    // Ha még mindig nincs döntés
-    if (!selectedClaim) {
-      // Alap esetben véletlenszerűen választ, de előnyben részesíti az alacsonyabb értékeket
-      const lowerClaims = possibleClaims.filter(c => getRank(c) <= Math.floor(minRank + 5));
-      if (lowerClaims.length > 0 && Math.random() < 0.7) {
-        selectedClaim = lowerClaims[Math.floor(Math.random() * lowerClaims.length)];
-      } else {
-        // Teljesen véletlenszerű választás
-        selectedClaim = possibleClaims[Math.floor(Math.random() * possibleClaims.length)];
+      
+      if (playerSparks === 1 && !selectedClaim) {
+        // Játékos veszélyben van, óvatosabb játék
+        const lowClaims = possibleClaims.filter(c => getRank(c) <= Math.floor(getRank(claimedValue || 0) + 3));
+        if (lowClaims.length > 0) {
+          // Alacsonyabb értékek közül választ egyet
+          selectedClaim = lowClaims[Math.floor(Math.random() * lowClaims.length)];
+        }
+      }
+      
+      // Ha még mindig nincs döntés
+      if (!selectedClaim) {
+        // Alap esetben véletlenszerűen választ, de előnyben részesíti az alacsonyabb értékeket
+        const lowerClaims = possibleClaims.filter(c => getRank(c) <= Math.floor(getRank(claimedValue || 0) + 5));
+        if (lowerClaims.length > 0 && Math.random() < 0.7) {
+          selectedClaim = lowerClaims[Math.floor(Math.random() * lowerClaims.length)];
+        } else {
+          // Teljesen véletlenszerű választás
+          selectedClaim = possibleClaims[Math.floor(Math.random() * possibleClaims.length)];
+        }
       }
     }
   }
