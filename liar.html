@@ -87,4 +87,94 @@ function playerRoll() {
 function showClaimOptions() {
   const max = playerDice[0]*2 + playerDice[1] + playerDice[2];
   const min = 4; // legkisebb reális minimum
-  let html = "<p
+  let html = "<p>Milyen értéket mondasz be?</p>";
+  for (let i = min; i <= max + 4; i++) {
+    html += `<button onclick="makeClaim(${i})">${i}</button>`;
+  }
+  document.getElementById("actions").innerHTML = html;
+}
+
+function makeClaim(value) {
+  claimValue = value;
+  roundPhase = 2;
+  document.getElementById("log").textContent = `☠️ Bemondtad: ${value}`;
+  showOpponentDecision();
+}
+
+function showOpponentDecision() {
+  const html = `
+    <p>A másik játékos dönt:</p>
+    <button onclick="opponentCall()">⚖️ Elfogadja</button>
+    <button onclick="opponentDoubt()">🧠 Blöfföt hív</button>
+  `;
+  document.getElementById("actions").innerHTML = html;
+}
+
+function calculateTotal(dice) {
+  return dice[0]*2 + dice[1] + dice[2];
+}
+
+function opponentCall() {
+  const actual = calculateTotal(playerDice);
+  document.getElementById("opponentRolls").textContent = `🕯️ Valós értéked: ${actual}`;
+  if (actual >= claimValue) {
+    playerEssence++;
+    document.getElementById("log").textContent += `\n✅ Igazat mondtál! +1 esszencia.`;
+  } else {
+    opponentEssence++;
+    document.getElementById("log").textContent += `\n❌ Hazudtál! Ellenfél kap 1 esszenciát.`;
+  }
+  endRound();
+}
+
+function opponentDoubt() {
+  const actual = calculateTotal(playerDice);
+  document.getElementById("opponentRolls").textContent = `🕯️ Valós értéked: ${actual}`;
+  if (actual >= claimValue) {
+    playerEssence++;
+    document.getElementById("log").textContent += `\n🧠 Hiba! Igazat mondott. Te veszítesz 1 esszenciát.`;
+  } else {
+    opponentEssence++;
+    document.getElementById("log").textContent += `\n🔮 Jól tippeltél! +1 esszencia neked.`;
+  }
+  endRound();
+}
+
+function updateStatus() {
+  document.getElementById("status").innerHTML = `
+    🌑 Lélekesszenciák: <br>
+    👤 Játékos: ${playerEssence} / 5 &nbsp;&nbsp;&nbsp;
+    🤖 Ellenfél: ${opponentEssence} / 5
+  `;
+}
+
+function endRound() {
+  updateStatus();
+  if (playerEssence >= 5) {
+    document.getElementById("log").textContent += `\n🕯️🕯️ Megidézted a Végzet Démonát! Győzelem!`;
+    document.getElementById("actions").innerHTML = `<button onclick="resetGame()">🔁 Új játék</button>`;
+  } else if (opponentEssence >= 5) {
+    document.getElementById("log").textContent += `\n💀 Az ellenfeled idézett meg valamit... és vesztettél.`;
+    document.getElementById("actions").innerHTML = `<button onclick="resetGame()">🔁 Új játék</button>`;
+  } else {
+    document.getElementById("actions").innerHTML = `<button onclick="playerRoll()">🎲 Következő kör</button>`;
+  }
+}
+
+function resetGame() {
+  playerEssence = 0;
+  opponentEssence = 0;
+  playerDice = [];
+  opponentDice = [];
+  document.getElementById("playerRolls").textContent = "";
+  document.getElementById("opponentRolls").textContent = "";
+  document.getElementById("log").textContent = "";
+  updateStatus();
+  document.getElementById("actions").innerHTML = `<button onclick="playerRoll()">🎲 Dobás</button>`;
+}
+
+resetGame();
+</script>
+
+</body>
+</html>
