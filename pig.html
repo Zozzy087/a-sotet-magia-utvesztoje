@@ -296,7 +296,7 @@ const symbols = [
   { character: '&#x2620;', name: 'Halál', value: 1, effect: 'Elveszted a kör pontjait!' },
   { character: '&#x1F577;', name: 'Pók', value: 2, effect: '2 pont' },
   { character: '&#x1F426;', name: 'Holló', value: 3, effect: '3 pont' },
-  { character: '&#x1F5E1;', name: 'Harci Szekerce', value: 4, effect: '4 pont' },
+  { character: '&#x1F5E1;', name: 'Kard', value: 4, effect: '4 pont' },
   { character: '&#x1F525;', name: 'Tűz', value: 5, effect: '5 pont' },
   { character: '&#x1F479;', name: 'Démon', value: 6, effect: '6 pont' }
 ];
@@ -540,12 +540,12 @@ function botStrategy() {
       }
     } else {
       // Végzet dobás - elveszti a kör pontjait
-      displayMessage('A Sötét Nagyúr is aláveti magát a végzetnek! Az erejét elnyelte a káosz.');
+      displayMessage('A Sötét Nagyúr is aláveti magát a végzetnek! Az erejét elnyelte a halál.');
       currentScore = 0;
       document.getElementById('botCurrentScore').textContent = '0';
       setTimeout(switchPlayer, 2000);
     }
-  }, 1500);
+  }, 3000);
 }
 
 // Játékos kockázatvállalási hajlandóságának elemzése
