@@ -136,6 +136,20 @@
       transform: scale(1.1);
       box-shadow: 0 0 15px #a94bff;
     }
+    
+    /* Eltávolítjuk a fekete téglalapot mobilnézetben */
+    @media (max-width: 768px) {
+      /* Minden olyan elemre, ami a zavaró fekete téglalap lehet */
+      #battlefield::after, 
+      body::after, 
+      .black-rectangle,
+      div[style*="background-color: #000"],
+      div:not([class]):not([id]) {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+      }
+    }
   </style>
 </head>
 <body>
