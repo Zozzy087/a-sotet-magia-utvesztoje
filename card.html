@@ -242,7 +242,10 @@ function updateUI() {
     document.getElementById("turnInfo").textContent = "A kör folyamatban...";
     disableButtons();
   } else {
+    // Ha új kör kezdődik, töröljük az előző eredményt
     document.getElementById("turnInfo").textContent = "Válassz egy elemet!";
+    document.getElementById("battlefield").innerHTML = "";
+    document.getElementById("result").textContent = "";
     enableButtons();
   }
 }
