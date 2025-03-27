@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Sötét Lelkek Kockajátéka</title>
-  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Pirata One', cursive;
+      font-family: 'MedievalSharp', cursive;
       background-image: url('images/background.jpg.jpg');
       background-size: cover;
       background-position: center;
-      color: #d1c3af;
+      color: #e9e0d1;
       margin: 0;
       padding: 20px;
       text-align: center;
@@ -78,7 +78,7 @@
     h2 {
       margin-top: 0;
       font-size: 1.8rem;
-      color: #d1c3af;
+      color: #e9e0d1;
     }
     .score {
       font-size: 2.8rem;
@@ -130,25 +130,16 @@
       background-color: #291d14;
       border-radius: 10px;
       box-shadow: 0 0 15px rgba(255, 100, 0, 0.3);
-      color: #d1c3af;
+      color: #e9e0d1;
       overflow: hidden;
       position: relative;
-    }
-    .symbol-inner {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 3.5rem;
     }
     #controls {
       margin-top: 30px;
     }
     button {
-      font-family: 'Pirata One', cursive;
+      font-family: 'MedievalSharp', cursive;
       font-size: 1.3rem;
       padding: 12px 25px;
       margin: 10px;
@@ -156,7 +147,7 @@
       border: none;
       cursor: pointer;
       background-color: #482c17;
-      color: #d1c3af;
+      color: #e9e0d1;
       box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
       transition: all 0.3s;
       letter-spacing: 1px;
@@ -195,7 +186,7 @@
       background-color: rgba(20, 14, 10, 0.7);
       padding: 10px;
       border-radius: 5px;
-      max-width: 600px;
+      max-width: 800px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -205,7 +196,7 @@
       margin: 5px 10px;
     }
     .small-symbol {
-      font-size: 1.5rem;
+      font-size: 2rem;
       margin-right: 10px;
       width: 40px;
       height: 40px;
@@ -217,35 +208,17 @@
       box-shadow: 0 0 8px rgba(255, 100, 0, 0.2);
     }
     .symbol-text {
-      font-size: 1rem;
+      font-size: 1.1rem;
       text-align: left;
     }
-    .symbol-skull {
-      font-size: 2rem;
-    }
-    .symbol-spider {
-      width: 32px;
-      height: 32px;
-    }
-    .symbol-raven {
-      width: 32px;
-      height: 32px;
-    }
-    .symbol-axe {
-      width: 32px;
-      height: 32px;
-    }
-    .symbol-fire {
-      width: 32px;
-      height: 32px;
-    }
-    .symbol-demon {
-      width: 32px;
-      height: 32px;
-    }
-    .symbol-d20 {
-      width: 32px;
-      height: 32px;
+    
+    /* Kelta stílusú díszítőelemek */
+    .celtic-border {
+      border: 2px solid;
+      border-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="none" stroke="%23e9e0d1" stroke-width="4" d="M25,2 C25,2 75,25 75,50 C75,75 25,98 25,98 M75,2 C75,2 25,25 25,50 C25,75 75,98 75,98 M2,25 C2,25 25,75 50,75 C75,75 98,25 98,25 M2,75 C2,75 25,25 50,25 C75,25 98,75 98,75" /></svg>');
+      border-image-slice: 30;
+      border-image-width: 30px;
+      border-image-outset: 10px;
     }
   </style>
 </head>
@@ -255,54 +228,27 @@
 
 <div class="symbol-legend">
   <div class="symbol-item">
-    <div class="small-symbol">
-      <svg class="symbol-skull" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#ff6400" d="M50,10 C30,10 20,25 20,45 C20,55 25,65 35,70 L35,80 L40,80 L40,85 L60,85 L60,80 L65,80 L65,70 C75,65 80,55 80,45 C80,25 70,10 50,10 Z M35,50 C30,50 25,45 25,40 C25,35 30,30 35,30 C40,30 45,35 45,40 C45,45 40,50 35,50 Z M65,50 C60,50 55,45 55,40 C55,35 60,30 65,30 C70,30 75,35 75,40 C75,45 70,50 65,50 Z M40,60 L60,60 L60,65 L40,65 Z" />
-      </svg>
-    </div>
+    <div class="small-symbol">☠️</div>
     <div class="symbol-text">Végzet: Elveszted a kör pontjait!</div>
   </div>
   <div class="symbol-item">
-    <div class="small-symbol">
-      <svg class="symbol-spider" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="50" r="15" fill="#d1c3af" />
-        <circle cx="50" cy="40" r="10" fill="#d1c3af" />
-        <path stroke="#d1c3af" stroke-width="4" fill="none" d="M25,25 L40,40 M75,25 L60,40 M25,75 L40,60 M75,75 L60,60 M15,45 L35,50 M85,45 L65,50 M15,55 L35,50 M85,55 L65,50" />
-      </svg>
-    </div>
+    <div class="small-symbol">🕷️</div>
     <div class="symbol-text">Pók: 2 pont</div>
   </div>
   <div class="symbol-item">
-    <div class="small-symbol">
-      <svg class="symbol-raven" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#d1c3af" d="M65,35 C75,25 85,30 85,40 C85,45 75,45 65,50 L80,60 L65,65 L75,80 L60,70 L55,85 L50,60 C40,65 35,75 25,70 C15,65 20,55 35,50 C15,45 15,25 30,20 C45,15 55,45 50,60 L65,35 Z" />
-      </svg>
-    </div>
+    <div class="small-symbol">🦅</div>
     <div class="symbol-text">Holló: 3 pont</div>
   </div>
   <div class="symbol-item">
-    <div class="small-symbol">
-      <svg class="symbol-axe" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#d1c3af" d="M30,80 L45,35 L35,30 C35,30 35,20 45,15 C55,10 65,15 70,20 L80,10 L90,20 L80,30 C85,35 90,45 85,55 C80,65 70,65 70,65 L65,55 L20,70 L30,80 Z" />
-      </svg>
-    </div>
+    <div class="small-symbol">🪓</div>
     <div class="symbol-text">Harci Szekerce: 4 pont</div>
   </div>
   <div class="symbol-item">
-    <div class="small-symbol">
-      <svg class="symbol-fire" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#ff6400" d="M50,10 C55,25 65,30 70,40 C75,50 75,60 70,70 C65,80 55,85 50,85 C45,85 35,80 30,70 C25,60 25,50 30,40 C30,55 45,55 45,40 C45,55 60,50 55,70 C65,60 60,40 50,35 C55,30 45,15 50,10 Z" />
-      </svg>
-    </div>
+    <div class="small-symbol">🔥</div>
     <div class="symbol-text">Tűz: 5 pont</div>
   </div>
   <div class="symbol-item">
-    <div class="small-symbol">
-      <svg class="symbol-demon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#d1c3af" d="M50,10 C40,10 25,20 25,35 C25,45 30,50 30,55 C20,60 20,80 30,85 C30,85 40,75 50,75 C60,75 70,85 70,85 C80,80 80,60 70,55 C70,50 75,45 75,35 C75,20 60,10 50,10 Z M35,35 C35,30 45,30 45,35 C45,40 35,40 35,35 Z M65,35 C65,30 55,30 55,35 C55,40 65,40 65,35 Z M40,60 L60,55 L60,65 L40,60 Z" />
-        <path fill="#d1c3af" d="M25,25 L15,15 M75,25 L85,15 M40,10 L35,5 M60,10 L65,5" />
-      </svg>
-    </div>
+    <div class="small-symbol">👹</div>
     <div class="symbol-text">Démon: 6 pont</div>
   </div>
 </div>
@@ -320,13 +266,7 @@
   <div id="diceSection">
     <div class="dice-container">
       <div id="dice" class="dice">
-        <div class="dice-symbol">
-          <div class="symbol-inner">
-            <svg class="symbol-d20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <path fill="#d1c3af" d="M50,5 L95,30 L95,70 L50,95 L5,70 L5,30 Z M50,20 L20,35 L20,65 L50,80 L80,65 L80,35 Z" />
-            </svg>
-          </div>
-        </div>
+        <div class="dice-symbol">🎲</div>
       </div>
       <div class="dice-shadow"></div>
     </div>
@@ -362,65 +302,15 @@ let gameActive = true;
 let playerHistory = []; // Játékos korábbi döntéseinek követése
 let gameRound = 0; // Játék körök száma
 
-// Szimbólumok és értékek
+// Szimbólumok és értékek - most csak egyszerű emoji karakterekkel
 const symbols = [
-  {
-    name: 'Végzet',
-    value: 1,
-    effect: 'Elveszted a kör pontjait!',
-    svg: `<svg class="symbol-skull" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <path fill="#ff6400" d="M50,10 C30,10 20,25 20,45 C20,55 25,65 35,70 L35,80 L40,80 L40,85 L60,85 L60,80 L65,80 L65,70 C75,65 80,55 80,45 C80,25 70,10 50,10 Z M35,50 C30,50 25,45 25,40 C25,35 30,30 35,30 C40,30 45,35 45,40 C45,45 40,50 35,50 Z M65,50 C60,50 55,45 55,40 C55,35 60,30 65,30 C70,30 75,35 75,40 C75,45 70,50 65,50 Z M40,60 L60,60 L60,65 L40,65 Z" />
-    </svg>`
-  },
-  {
-    name: 'Pók',
-    value: 2,
-    effect: '2 pont',
-    svg: `<svg class="symbol-spider" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="50" cy="50" r="15" fill="#d1c3af" />
-      <circle cx="50" cy="40" r="10" fill="#d1c3af" />
-      <path stroke="#d1c3af" stroke-width="4" fill="none" d="M25,25 L40,40 M75,25 L60,40 M25,75 L40,60 M75,75 L60,60 M15,45 L35,50 M85,45 L65,50 M15,55 L35,50 M85,55 L65,50" />
-    </svg>`
-  },
-  {
-    name: 'Holló',
-    value: 3,
-    effect: '3 pont',
-    svg: `<svg class="symbol-raven" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <path fill="#d1c3af" d="M65,35 C75,25 85,30 85,40 C85,45 75,45 65,50 L80,60 L65,65 L75,80 L60,70 L55,85 L50,60 C40,65 35,75 25,70 C15,65 20,55 35,50 C15,45 15,25 30,20 C45,15 55,45 50,60 L65,35 Z" />
-    </svg>`
-  },
-  {
-    name: 'Harci Szekerce',
-    value: 4,
-    effect: '4 pont',
-    svg: `<svg class="symbol-axe" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <path fill="#d1c3af" d="M30,80 L45,35 L35,30 C35,30 35,20 45,15 C55,10 65,15 70,20 L80,10 L90,20 L80,30 C85,35 90,45 85,55 C80,65 70,65 70,65 L65,55 L20,70 L30,80 Z" />
-    </svg>`
-  },
-  {
-    name: 'Tűz',
-    value: 5,
-    effect: '5 pont',
-    svg: `<svg class="symbol-fire" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <path fill="#ff6400" d="M50,10 C55,25 65,30 70,40 C75,50 75,60 70,70 C65,80 55,85 50,85 C45,85 35,80 30,70 C25,60 25,50 30,40 C30,55 45,55 45,40 C45,55 60,50 55,70 C65,60 60,40 50,35 C55,30 45,15 50,10 Z" />
-    </svg>`
-  },
-  {
-    name: 'Démon',
-    value: 6,
-    effect: '6 pont',
-    svg: `<svg class="symbol-demon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <path fill="#d1c3af" d="M50,10 C40,10 25,20 25,35 C25,45 30,50 30,55 C20,60 20,80 30,85 C30,85 40,75 50,75 C60,75 70,85 70,85 C80,80 80,60 70,55 C70,50 75,45 75,35 C75,20 60,10 50,10 Z M35,35 C35,30 45,30 45,35 C45,40 35,40 35,35 Z M65,35 C65,30 55,30 55,35 C55,40 65,40 65,35 Z M40,60 L60,55 L60,65 L40,60 Z" />
-      <path fill="#d1c3af" d="M25,25 L15,15 M75,25 L85,15 M40,10 L35,5 M60,10 L65,5" />
-    </svg>`
-  }
+  { symbol: '☠️', name: 'Végzet', value: 1, effect: 'Elveszted a kör pontjait!' },
+  { symbol: '🕷️', name: 'Pók', value: 2, effect: '2 pont' },
+  { symbol: '🦅', name: 'Holló', value: 3, effect: '3 pont' },
+  { symbol: '🪓', name: 'Harci Szekerce', value: 4, effect: '4 pont' },
+  { symbol: '🔥', name: 'Tűz', value: 5, effect: '5 pont' },
+  { symbol: '👹', name: 'Démon', value: 6, effect: '6 pont' }
 ];
-
-// D20 szimbólum az alapállapothoz
-const d20Symbol = `<svg class="symbol-d20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-  <path fill="#d1c3af" d="M50,5 L95,30 L95,70 L50,95 L5,70 L5,30 Z M50,20 L20,35 L20,65 L50,80 L80,65 L80,35 Z" />
-</svg>`;
 
 // DOM elemek
 const diceEl = document.getElementById('dice');
@@ -457,7 +347,7 @@ function startGame() {
 
 // Kocka visszaállítása alapállapotba
 function resetDice() {
-  diceEl.querySelector('.dice-symbol .symbol-inner').innerHTML = d20Symbol;
+  diceEl.querySelector('.dice-symbol').textContent = '🎲';
   diceEl.classList.remove('dice-roll');
 }
 
@@ -476,7 +366,7 @@ function rollDice() {
   const symbol = symbols[diceValue-1]; // A megfelelő szimbólum
   
   // Kocka animáció
-  diceEl.querySelector('.dice-symbol .symbol-inner').innerHTML = symbol.svg;
+  diceEl.querySelector('.dice-symbol').textContent = symbol.symbol;
   diceEl.classList.remove('dice-roll');
   void diceEl.offsetWidth; // Trükk az animáció újraindításához
   diceEl.classList.add('dice-roll');
@@ -581,7 +471,7 @@ function botStrategy() {
     const symbol = symbols[diceValue-1]; // A megfelelő szimbólum
     
     // Kocka animáció
-    diceEl.querySelector('.dice-symbol .symbol-inner').innerHTML = symbol.svg;
+    diceEl.querySelector('.dice-symbol').textContent = symbol.symbol;
     diceEl.classList.remove('dice-roll');
     void diceEl.offsetWidth; // Trükk az animáció újraindításához
     diceEl.classList.add('dice-roll');
