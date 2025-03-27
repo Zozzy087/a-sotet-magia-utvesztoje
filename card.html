@@ -45,6 +45,21 @@
       gap: 15px;
       margin: 20px auto;
     }
+    button {
+      background-color: #7f00ff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px #7f00ff;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px #a94bff;
+    }
     .choice-btn {
       background-color: rgba(0, 0, 0, 0.8);
       border: 2px solid #7f00ff;
@@ -161,7 +176,7 @@
     <span>Ügyesség</span>
   </button>
   <button class="choice-btn" onclick="makeChoice('wisdom')">
-    <i class="fa-solid fa-brain choice-icon"></i>
+    <i class="fas fa-brain choice-icon"></i>
     <span>Bölcsesség</span>
   </button>
 </div>
@@ -200,7 +215,7 @@ const rules = {
 const icons = {
   power: '<i class="fas fa-fist-raised choice-icon"></i>',
   agility: '<i class="fas fa-running choice-icon"></i>',
-  wisdom: '<i class="fa-solid fa-brain choice-icon"></i>'
+  wisdom: '<i class="fas fa-brain choice-icon"></i>'
 };
 
 // Tulajdonságok magyar neve
@@ -379,6 +394,9 @@ function determineWinner(playerChoice, botChoice) {
   setTimeout(() => {
     roundInProgress = false;
     enableButtons();
+    // Az előző eredmény törlése
+    document.getElementById("battlefield").innerHTML = "";
+    document.getElementById("result").textContent = "";
     document.getElementById("turnInfo").textContent = "Válassz egy kártyát!";
   }, 3000);
 }
