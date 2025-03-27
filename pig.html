@@ -40,12 +40,10 @@
       border-radius: 5px;
       min-width: 260px;
       border: 1px solid #482c17;
-      transition: all 0.3s ease;
     }
     .active-player {
-      border: 3px solid #7f00ff;
-      box-shadow: 0 0 25px rgba(127, 0, 255, 0.6);
-      transform: scale(1.03);
+      border: 2px solid #7f00ff;
+      box-shadow: 0 0 20px #7f00ff;
     }
     h2 {
       margin-top: 0;
@@ -174,17 +172,6 @@
       font-size: 1rem;
       text-align: left;
     }
-    
-    /* Aktív játékos kiemelése */
-    @keyframes pulse {
-      0% { box-shadow: 0 0 15px rgba(127, 0, 255, 0.6); }
-      50% { box-shadow: 0 0 25px rgba(127, 0, 255, 0.8); }
-      100% { box-shadow: 0 0 15px rgba(127, 0, 255, 0.6); }
-    }
-    
-    .active-player {
-      animation: pulse 2s infinite;
-    }
   </style>
 </head>
 <body>
@@ -205,7 +192,7 @@
     <div class="symbol-text">Holló: 3 pont</div>
   </div>
   <div class="symbol-item">
-    <div class="small-symbol"><i class="fas fa-sword"></i></div>
+    <div class="small-symbol"><i class="fas fa-khanda"></i></div>
     <div class="symbol-text">Kard: 4 pont</div>
   </div>
   <div class="symbol-item">
@@ -270,7 +257,7 @@ const symbols = [
   { icon: 'fas fa-skull', name: 'Végzet', value: 1, effect: 'Elveszted a kör pontjait!' },
   { icon: 'fas fa-spider', name: 'Pók', value: 2, effect: '2 pont' },
   { icon: 'fas fa-crow', name: 'Holló', value: 3, effect: '3 pont' },
-  { icon: 'fas fa-sword', name: 'Kard', value: 4, effect: '4 pont' },
+  { icon: 'fas fa-khanda', name: 'Kard', value: 4, effect: '4 pont' },
   { icon: 'fas fa-fire', name: 'Tűz', value: 5, effect: '5 pont' },
   { icon: 'fas fa-dragon', name: 'Démon', value: 6, effect: '6 pont' }
 ];
@@ -459,21 +446,6 @@ function gameWon() {
 function displayMessage(message) {
   resultEl.textContent = message;
 }
-
-// Ha a Font Awesome nem támogatja a 'fa-sword' ikont, használjunk fallback ikont
-document.addEventListener('DOMContentLoaded', function() {
-  // Ellenőrizzük, hogy a kard ikon renderelődik-e
-  const swordIcon = document.querySelector('.fas.fa-sword');
-  
-  // Ha nem létezik, használjunk egy másik ikont helyette
-  if (swordIcon && window.getComputedStyle(swordIcon, ':before').content === '') {
-    // Frissítsük a tömböt
-    symbols[3].icon = 'fas fa-gavel'; // Kalapács ikon helyette
-    
-    // Frissítsük a legendát
-    document.querySelectorAll('.symbol-item')[3].querySelector('.small-symbol i').className = 'fas fa-gavel';
-  }
-});
 
 // Játék indítása
 startGame();
