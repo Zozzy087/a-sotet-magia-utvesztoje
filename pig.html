@@ -44,8 +44,8 @@
     }
     .active-player {
       border: 3px solid #7f00ff;
-      box-shadow: 0 0 25px rgba(127, 0, 255, 0.6);
-      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(127, 0, 255, 0.6);
+      transform: scale(1.03);
     }
     h2 {
       margin-top: 0;
@@ -116,15 +116,15 @@
       border: none;
       cursor: pointer;
       background-color: #7f00ff;
-      color: #ffffff;
-      box-shadow: 0 0 10px rgba(127, 0, 255, 0.5);
+      color: #fff;
+      box-shadow: 0 0 10px #7f00ff;
       transition: all 0.3s;
       letter-spacing: 1px;
     }
     button:hover {
       background-color: #a94bff;
       transform: scale(1.05);
-      box-shadow: 0 0 15px rgba(127, 0, 255, 0.7);
+      box-shadow: 0 0 15px #7f00ff;
     }
     #result {
       font-size: 1.3rem;
@@ -142,7 +142,7 @@
       margin-top: 30px;
     }
     .winner {
-      color: #a94bff;
+      color: #7f00ff;
       font-weight: bold;
       text-shadow: 0 0 10px rgba(127, 0, 255, 0.7);
     }
@@ -194,7 +194,7 @@
     <div class="symbol-text">Holló: 3 pont</div>
   </div>
   <div class="symbol-item">
-    <div class="small-symbol"><i class="fas fa-sword"></i></div>
+    <div class="small-symbol"><i class="fas fa-sword fa-solid fa-sword"></i></div>
     <div class="symbol-text">Kard: 4 pont</div>
   </div>
   <div class="symbol-item">
@@ -259,7 +259,7 @@ const symbols = [
   { icon: 'fas fa-skull', name: 'Végzet', value: 1, effect: 'Elveszted a kör pontjait!' },
   { icon: 'fas fa-spider', name: 'Pók', value: 2, effect: '2 pont' },
   { icon: 'fas fa-crow', name: 'Holló', value: 3, effect: '3 pont' },
-  { icon: 'fas fa-sword', name: 'Kard', value: 4, effect: '4 pont' },
+  { icon: 'fas fa-sword fa-solid fa-sword', name: 'Kard', value: 4, effect: '4 pont' },
   { icon: 'fas fa-fire', name: 'Tűz', value: 5, effect: '5 pont' },
   { icon: 'fas fa-dragon', name: 'Démon', value: 6, effect: '6 pont' }
 ];
@@ -282,7 +282,7 @@ function startGame() {
   document.getElementById('botTotalScore').textContent = '0';
   document.getElementById('playerCurrentScore').textContent = '0';
   document.getElementById('botCurrentScore').textContent = '0';
-  diceEl.innerHTML = '<div class="dice-symbol"><i class="fas fa-dice-d20"></i></div>';
+  resetDice();
   resultEl.textContent = 'Eljött a döntés ideje. Merj kockáztatni a hatalomért?';
   document.getElementById('resetContainer').style.display = 'none';
   
@@ -293,6 +293,12 @@ function startGame() {
   // Aktív játékos kijelölése
   playerSection.classList.add('active-player');
   botSection.classList.remove('active-player');
+}
+
+// Kocka visszaállítása alapállapotba
+function resetDice() {
+  diceEl.innerHTML = '<div class="dice-symbol"><i class="fas fa-dice-d20"></i></div>';
+  diceEl.classList.remove('dice-roll');
 }
 
 // Kockadobás funkció
@@ -358,8 +364,7 @@ function switchPlayer() {
   document.getElementById(`${activePlayer === 0 ? 'player' : 'bot'}CurrentScore`).textContent = '0';
   
   // Kocka visszaállítása alapállapotba
-  diceEl.innerHTML = '<div class="dice-symbol"><i class="fas fa-dice-d20"></i></div>';
-  diceEl.classList.remove('dice-roll');
+  resetDice();
   
   activePlayer = activePlayer === 0 ? 1 : 0;
   
@@ -453,15 +458,6 @@ function displayMessage(message) {
 
 // Játék indítása
 startGame();
-
-// A Font Awesome 6 nem tartalmazza a sword ikont, ezért létrehozunk egy egyedi CSS szabályt neki
-document.head.insertAdjacentHTML('beforeend', `
-  <style>
-    .fa-sword::before {
-      content: "⚔️";
-    }
-  </style>
-`);
 </script>
 
 </body>
