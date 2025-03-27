@@ -100,6 +100,21 @@
       color: #d1c3af;
       box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
       transition: all 0.3s ease;
+      position: relative;
+    }
+    .dice.wild {
+      background-color: #3a0a0a;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    }
+    .wild-marker {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 15px;
+      height: 15px;
+      background-color: #ff0000;
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
     }
     .hidden-dice {
       background-color: #23170f;
@@ -120,6 +135,26 @@
       0% { transform: rotateY(0deg) rotateX(0deg); }
       50% { transform: rotateY(720deg) rotateX(360deg); }
       100% { transform: rotateY(1440deg) rotateX(720deg); }
+    }
+    .player-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    .power-meter {
+      width: 100%;
+      height: 8px;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+    .power-bar {
+      height: 100%;
+      background-image: linear-gradient(to right, #7f00ff, #ff6400);
+      width: 0%;
+      transition: width 0.5s;
     }
     .controls {
       margin-top: 20px;
@@ -149,7 +184,10 @@
       background-color: rgba(0, 0, 0, 0.5);
       padding: 5px 10px;
       border-radius: 4px;
-      margin-top: 5px;
+    }
+    .player-status {
+      font-size: 0.9rem;
+      opacity: 0.8;
     }
     button {
       font-family: "Eczar", serif;
@@ -173,6 +211,14 @@
     button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+    }
+    button.special-ability {
+      background-color: #7f00ff;
+      box-shadow: 0 0 10px rgba(127, 0, 255, 0.5);
+    }
+    button.special-ability:hover:not(:disabled) {
+      background-color: #9620ff;
+      box-shadow: 0 0 15px rgba(127, 0, 255, 0.7);
     }
     select, input {
       font-family: "Eczar", serif;
@@ -221,7 +267,7 @@
       background-color: rgba(20, 14, 10, 0.7);
       padding: 10px;
       border-radius: 5px;
-      max-width: 600px;
+      max-width: 800px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -284,9 +330,186 @@
     .history-log .result {
       color: #7fff7f;
     }
+    .history-log .special {
+      color: #7f00ff;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      overflow: auto;
+    }
+    .modal-content {
+      background-color: rgba(20, 14, 10, 0.95);
+      margin: 5% auto;
+      padding: 20px;
+      border: 2px solid #7f00ff;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 600px;
+      box-shadow: 0 0 25px rgba(127, 0, 255, 0.5);
+    }
+    .close-modal {
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close-modal:hover {
+      color: #ff6400;
+    }
+    .fade-in {
+      animation: fadeIn 0.5s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .splash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+    }
+    .splash h1 {
+      font-size: 4rem;
+      margin-bottom: 30px;
+      text-shadow: 0 0 20px #ff6400;
+    }
+    .splash-message {
+      font-size: 1.8rem;
+      margin-bottom: 40px;
+      max-width: 800px;
+    }
+    .difficulty-select {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .difficulty-btn {
+      padding: 15px 30px;
+      font-size: 1.4rem;
+      transition: all 0.3s;
+    }
+    .difficulty-btn:hover {
+      transform: scale(1.1);
+    }
+    #easyBtn {
+      background-color: #285A00;
+    }
+    #normalBtn {
+      background-color: #AA6C39;
+    }
+    #hardBtn {
+      background-color: #8B0000;
+    }
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      margin-left: 5px;
+      cursor: help;
+    }
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 200px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #d1c3af;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -100px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.9rem;
+      pointer-events: none;
+    }
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+    .streak-counter {
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.9rem;
+      margin-top: 5px;
+      display: inline-block;
+    }
+    .streak-icon {
+      color: #ff6400;
+      margin-right: 5px;
+    }
+    .ability-description {
+      text-align: left;
+      margin: 20px 0;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+    }
+    .ability-description h3 {
+      color: #7f00ff;
+      margin-top: 0;
+    }
+    .ability-description p {
+      margin-bottom: 5px;
+    }
+    .ability-icon {
+      font-size: 2rem;
+      margin-right: 10px;
+      vertical-align: middle;
+      color: #7f00ff;
+    }
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(127, 0, 255, 0.8);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .toast.show {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
+
+<div id="splash" class="splash">
+  <h1>Sötét Mágia Blöff</h1>
+  <div class="splash-message">
+    Az ősi mágia kövei különös erővel bírnak. A Sötét Nagyúr kihívott egy végzetes játszmára, 
+    ahol a kövek mágikus erejét kell irányítanod, miközben átlátod ellenséged cselvetéseit.
+    Válaszd meg nehézségi szintedet...
+  </div>
+  <div class="difficulty-select">
+    <button id="easyBtn" class="difficulty-btn">Egyszerű</button>
+    <button id="normalBtn" class="difficulty-btn">Közepes</button>
+    <button id="hardBtn" class="difficulty-btn">Nehéz</button>
+  </div>
+</div>
 
 <h1>Sötét Mágia Blöff</h1>
 
@@ -315,18 +538,46 @@
     <div class="small-symbol">&#x1F479;</div>
     <div class="symbol-text">Démon</div>
   </div>
+  <div class="symbol-item">
+    <div class="small-symbol">&#x1F9FF;</div>
+    <div class="symbol-text">Vad (Joker) - Bármely értéket helyettesíthet</div>
+  </div>
 </div>
 
 <div id="gameArea">
   <div id="playerSection" class="player-section active-player">
     <h2>Kalandor</h2>
-    <div class="dice-count">Mágikus kövek: <span id="playerDiceCount">5</span></div>
+    <div class="player-info">
+      <div class="dice-count">Mágikus kövek: <span id="playerDiceCount">5</span></div>
+      <div class="streak-counter" id="playerStreak"><i class="fas fa-fire-alt streak-icon"></i>0</div>
+    </div>
+    <div class="power-meter">
+      <div id="playerPower" class="power-bar" style="width: 0%"></div>
+    </div>
+    <div class="player-status">
+      Állapot: <span id="playerStatus">Varázslatra kész</span>
+      <span class="tooltip"><i class="fas fa-info-circle"></i>
+        <span class="tooltiptext">A játékos állapota hatással lehet az elérhető képességekre</span>
+      </span>
+    </div>
     <div id="playerDice" class="dice-area"></div>
   </div>
   
   <div id="botSection" class="player-section">
     <h2>Sötét Nagyúr</h2>
-    <div class="dice-count">Mágikus kövek: <span id="botDiceCount">5</span></div>
+    <div class="player-info">
+      <div class="dice-count">Mágikus kövek: <span id="botDiceCount">5</span></div>
+      <div class="streak-counter" id="botStreak"><i class="fas fa-fire-alt streak-icon"></i>0</div>
+    </div>
+    <div class="power-meter">
+      <div id="botPower" class="power-bar" style="width: 0%"></div>
+    </div>
+    <div class="player-status">
+      Állapot: <span id="botStatus">Fenyegető</span>
+      <span class="tooltip"><i class="fas fa-info-circle"></i>
+        <span class="tooltiptext">A Sötét Nagyúr állapota befolyásolja viselkedését</span>
+      </span>
+    </div>
     <div id="botDice" class="dice-area"></div>
   </div>
 </div>
@@ -360,6 +611,7 @@
   <div>
     <button id="betButton" onclick="placeBet()">Tét Megtétele</button>
     <button id="callButton" onclick="callBluff()">Leleplezés!</button>
+    <button id="abilityButton" class="special-ability" onclick="showAbilityModal()" disabled>Mágikus Képesség</button>
   </div>
 </div>
 
@@ -373,6 +625,44 @@
   <p>A mágikus játszma kezdetét veszi...</p>
 </div>
 
+<!-- Mágikus képességek modális ablak -->
+<div id="abilityModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeModal()">&times;</span>
+    <h2>Válassz mágikus képességet</h2>
+    <div id="abilityList">
+      <!-- Itt jelennek meg a választható képességek -->
+    </div>
+  </div>
+</div>
+
+<!-- Információs modális ablak -->
+<div id="infoModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeModal()">&times;</span>
+    <h2>Játékszabályok</h2>
+    <p>A Sötét Mágia Blöff egy stratégiai kockajáték, ahol a cél ellenfeled utolsó mágikus kövének megszerzése.</p>
+    
+    <h3>Alapszabályok:</h3>
+    <ul>
+      <li>Minden játékos saját, titkos kockakészlettel rendelkezik.</li>
+      <li>Felváltva kell tippelni, hogy a játéktéren összesen hány darab adott értékű szimbólum van.</li>
+      <li>A tétnek mindig magasabbnak kell lennie az előzőnél (vagy több szimbólum, vagy ugyanannyi de magasabb értékű).</li>
+      <li>Ha úgy gondolod, az ellenfél blöfföl, "leleplezheted".</li>
+      <li>A vesztes játékos veszít egy mágikus követ.</li>
+    </ul>
+    
+    <h3>Különleges szabályok:</h3>
+    <ul>
+      <li>A "Vad" szimbólum bármilyen értéket helyettesíthet.</li>
+      <li>Győzelmi sorozatok mágikus erőt adnak, amit képességekre válthatsz.</li>
+      <li>A képességek megfordíthatják a játék menetét, használd őket bölcsen!</li>
+    </ul>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
 <script>
 // Játék állapot változók
 let playerDice = []; // A játékos kockái
@@ -383,6 +673,58 @@ let currentBet = null; // {count: 3, value: 4} - pl. 3 db 4-es
 let gameActive = true;
 let isPlayerTurn = true;
 let gameHistory = [];
+let difficultyLevel = 'normal'; // easy, normal, hard
+let wildSymbolActive = false;
+let playerStreakCount = 0;
+let botStreakCount = 0;
+let playerPowerLevel = 0;
+let botPowerLevel = 0;
+let playerStatus = 'normal';
+let botStatus = 'normal';
+let isTutorialMode = true;
+
+// Bot memória és stílus
+let botMemory = {
+  playerBluffs: 0,
+  playerHonesty: 0,
+  playerTotalCalls: 0,
+  playerPreferredSymbols: {},
+  playerRiskTaking: 0.5, // 0.0 - 1.0 között
+  botBluffSuccess: 0,
+  botBluffFail: 0,
+  playerCallRate: 0.5,
+  lastRounds: []
+};
+
+// Bot személyiségek
+const botPersonalities = {
+  cautious: {
+    name: "Óvatos",
+    bluffRate: 0.2,
+    callThreshold: 0.7,
+    description: "A Sötét Nagyúr megfontoltan játszik, ritkán blöfföl."
+  },
+  aggressive: {
+    name: "Agresszív",
+    bluffRate: 0.5,
+    callThreshold: 0.5,
+    description: "A Sötét Nagyúr gyakran blöfföl és kockáztat."
+  },
+  adaptive: {
+    name: "Alkalmazkodó",
+    bluffRate: 0.35,
+    callThreshold: 0.6,
+    description: "A Sötét Nagyúr elemzi a játékstílusodat."
+  },
+  chaotic: {
+    name: "Kiszámíthatatlan",
+    bluffRate: 0.4,
+    callThreshold: 0.55,
+    description: "A Sötét Nagyúr viselkedése szeszélyes és változó."
+  }
+};
+
+let currentBotPersonality = botPersonalities.adaptive;
 
 // Szimbólumok és értékek
 const symbols = [
@@ -391,7 +733,66 @@ const symbols = [
   { value: 3, symbol: '&#x1F426;', name: 'Holló' },
   { value: 4, symbol: '&#x1F5E1;', name: 'Kard' },
   { value: 5, symbol: '&#x1F525;', name: 'Tűz' },
-  { value: 6, symbol: '&#x1F479;', name: 'Démon' }
+  { value: 6, symbol: '&#x1F479;', name: 'Démon' },
+  { value: 7, symbol: '&#x1F9FF;', name: 'Vad' } // Joker - bármely értéket helyettesíthet
+];
+
+// Játékos képességek
+const playerAbilities = [
+  {
+    id: 'vision',
+    name: 'Tisztánlátás',
+    description: 'Pillants az ellenfél egy véletlenszerű kockájára.',
+    cost: 20,
+    effect: revealEnemyDie,
+    icon: 'fa-eye'
+  },
+  {
+    id: 'reroll',
+    name: 'Újradobás',
+    description: 'Dobj újra egy vagy több kockáddal.',
+    cost: 30,
+    effect: rerollPlayerDice,
+    icon: 'fa-dice'
+  },
+  {
+    id: 'wild',
+    name: 'Vad Mágia',
+    description: 'A következő körben egy vad (joker) kockát kapsz.',
+    cost: 50,
+    effect: activateWildSymbol,
+    icon: 'fa-magic'
+  },
+  {
+    id: 'insight',
+    name: 'Mágikus Intuíció',
+    description: 'Csökkenti a tétet anélkül, hogy az ellenfél tudná.',
+    cost: 30,
+    effect: reduceBet,
+    icon: 'fa-low-vision'
+  }
+];
+
+// Bot képességek
+const botAbilities = [
+  {
+    id: 'confuse',
+    name: 'Zavar Varázslat',
+    description: 'Összezavarja a játékost, aki nehezebben látja a kockákat.',
+    effect: confusePlayer
+  },
+  {
+    id: 'predict',
+    name: 'Jóslat',
+    description: 'A Sötét Nagyúr előre látja a következő dobásodat.',
+    effect: predictPlayerMove
+  },
+  {
+    id: 'wild',
+    name: 'Sötét Mágia',
+    description: 'A Sötét Nagyúr egy vad (joker) kockát kap.',
+    effect: activateWildSymbolForBot
+  }
 ];
 
 // DOM elemek
@@ -407,6 +808,213 @@ const historyLogEl = document.getElementById('historyLog');
 const revealContainerEl = document.getElementById('revealContainer');
 const revealDiceEl = document.getElementById('revealDice');
 const revealResultEl = document.getElementById('revealResult');
+const playerStreakEl = document.getElementById('playerStreak');
+const botStreakEl = document.getElementById('botStreak');
+const playerPowerEl = document.getElementById('playerPower');
+const botPowerEl = document.getElementById('botPower');
+const playerStatusEl = document.getElementById('playerStatus');
+const botStatusEl = document.getElementById('botStatus');
+const abilityButtonEl = document.getElementById('abilityButton');
+const abilityModalEl = document.getElementById('abilityModal');
+const abilityListEl = document.getElementById('abilityList');
+const infoModalEl = document.getElementById('infoModal');
+const toastEl = document.getElementById('toast');
+const splashEl = document.getElementById('splash');
+
+// Eseménykezelők beállítása
+document.getElementById('easyBtn').addEventListener('click', () => {
+  difficultyLevel = 'easy';
+  startGame();
+  hideSplash();
+});
+
+document.getElementById('normalBtn').addEventListener('click', () => {
+  difficultyLevel = 'normal';
+  startGame();
+  hideSplash();
+});
+
+document.getElementById('hardBtn').addEventListener('click', () => {
+  difficultyLevel = 'hard';
+  startGame();
+  hideSplash();
+});
+
+// Nyitóképernyő elrejtése
+function hideSplash() {
+  splashEl.style.display = 'none';
+}
+
+// Toast üzenet megjelenítése
+function showToast(message, duration = 3000) {
+  toastEl.textContent = message;
+  toastEl.classList.add('show');
+  
+  setTimeout(() => {
+    toastEl.classList.remove('show');
+  }, duration);
+}
+
+// Modális ablak bezárása
+function closeModal() {
+  abilityModalEl.style.display = 'none';
+  infoModalEl.style.display = 'none';
+}
+
+// Képesség modális ablak megjelenítése
+function showAbilityModal() {
+  if (playerPowerLevel < 20) {
+    showMessage("Nincs elég mágikus erőd képesség használatához.");
+    return;
+  }
+  
+  // Képességek listázása
+  abilityListEl.innerHTML = '';
+  playerAbilities.forEach(ability => {
+    // Csak azokat a képességeket jelenítjük meg, amelyeket meg tud fizetni
+    if (ability.cost <= playerPowerLevel) {
+      const abilityDiv = document.createElement('div');
+      abilityDiv.className = 'ability-description fade-in';
+      abilityDiv.innerHTML = `
+        <h3><i class="fas ${ability.icon} ability-icon"></i>${ability.name} (${ability.cost} erő)</h3>
+        <p>${ability.description}</p>
+        <button onclick="useAbility('${ability.id}')">Használat</button>
+      `;
+      abilityListEl.appendChild(abilityDiv);
+    }
+  });
+  
+  abilityModalEl.style.display = 'block';
+}
+
+// Képesség használata
+function useAbility(abilityId) {
+  const ability = playerAbilities.find(a => a.id === abilityId);
+  
+  if (!ability) return;
+  
+  if (playerPowerLevel >= ability.cost) {
+    // Erőpont levonása
+    playerPowerLevel -= ability.cost;
+    updatePowerMeters();
+    
+    // Képesség hatás
+    ability.effect();
+    
+    // Modális ablak bezárása
+    closeModal();
+    
+    // Log
+    logEvent(`A Kalandor használta a(z) "${ability.name}" képességet!`, 'special');
+  } else {
+    showMessage("Nincs elég mágikus erőd ehhez a képességhez!");
+  }
+}
+
+// Képesség hatások
+function revealEnemyDie() {
+  if (botDice.length === 0) {
+    showMessage("A Sötét Nagyúrnak nincs látható köve!");
+    return;
+  }
+  
+  const randomIndex = Math.floor(Math.random() * botDice.length);
+  const revealedSymbol = symbols.find(s => s.value === botDice[randomIndex]);
+  
+  showMessage(`Látomásodban egy ${revealedSymbol.name} szimbólumot pillantasz meg a Sötét Nagyúr kövei között!`);
+}
+
+function rerollPlayerDice() {
+  // Random választunk 1-3 kockát az újradobáshoz
+  const rerollCount = Math.min(Math.ceil(Math.random() * 3), playerDice.length);
+  
+  for (let i = 0; i < rerollCount; i++) {
+    const randomIndex = Math.floor(Math.random() * playerDice.length);
+    playerDice[randomIndex] = Math.floor(Math.random() * 6) + 1;
+  }
+  
+  renderDice();
+  showMessage(`Újradobtál ${rerollCount} mágikus követ. A kövek új formát vettek fel.`);
+}
+
+function activateWildSymbol() {
+  wildSymbolActive = true;
+  
+  // Az egyik kockát kicseréljük egy vad szimbólumra
+  if (playerDice.length > 0) {
+    const randomIndex = Math.floor(Math.random() * playerDice.length);
+    playerDice[randomIndex] = 7; // Vad szimbólum értéke
+    renderDice();
+  }
+  
+  showMessage("Sikeresen aktiváltad a vad mágiát! A vad szimbólum bármilyen értéket helyettesíthet.");
+}
+
+function reduceBet() {
+  if (!currentBet || currentBet.count <= 1) {
+    showMessage("Nincs érvényes tét, amit csökkenthetnél!");
+    return;
+  }
+  
+  // Tét csökkentése
+  currentBet.count = Math.max(1, currentBet.count - 1);
+  
+  // UI frissítése
+  const symbolObj = symbols.find(s => s.value === currentBet.value);
+  currentBetEl.textContent = `A jelenlegi tét: ${currentBet.count} db ${symbolObj.symbol} (${symbolObj.name})`;
+  
+  showMessage("Mágikus intuíciód segítségével csökkentetted a tétet. A Sötét Nagyúr nincs tudatában ennek...");
+}
+
+// Bot képesség hatások
+function confusePlayer() {
+  playerStatus = 'confused';
+  playerStatusEl.textContent = 'Zavarodott';
+  
+  showMessage("A Sötét Nagyúr zavar varázslatot bocsát rád. A kövek képei elmosódnak szemed előtt...");
+  logEvent("Sötét Nagyúr: Zavar varázslatot bocsátott rád!", 'special');
+  
+  // Visszaállítás 2 kör után
+  setTimeout(() => {
+    if (playerStatus === 'confused') {
+      playerStatus = 'normal';
+      playerStatusEl.textContent = 'Varázslatra kész';
+      showMessage("A zavar hatása elmúlt. Ismét tisztán látsz.");
+    }
+  }, 20000); // 20 másodperc után megszűnik
+}
+
+function predictPlayerMove() {
+  botStatus = 'predicting';
+  botStatusEl.textContent = 'Jósol';
+  
+  showMessage("A Sötét Nagyúr mélyen a szemedbe néz... Mintha olvasna a gondolataidban!");
+  logEvent("Sötét Nagyúr: Jóslat varázslatot használt!", 'special');
+  
+  // Megnöveljük a bot esélyét, hogy elkapja a játékos blöffjét
+  currentBotPersonality.callThreshold -= 0.2;
+  
+  // Visszaállítás 1 kör után
+  setTimeout(() => {
+    if (botStatus === 'predicting') {
+      botStatus = 'normal';
+      botStatusEl.textContent = 'Fenyegető';
+      currentBotPersonality.callThreshold += 0.2;
+    }
+  }, 15000); // 15 másodperc után megszűnik
+}
+
+function activateWildSymbolForBot() {
+  // Az egyik bot kockát kicseréljük egy vad szimbólumra
+  if (botDice.length > 0) {
+    const randomIndex = Math.floor(Math.random() * botDice.length);
+    botDice[randomIndex] = 7; // Vad szimbólum értéke
+    renderDice();
+  }
+  
+  showMessage("A Sötét Nagyúr sötét mágiát idéz! Egyetlen köve különös fényben kezd ragyogni...");
+  logEvent("Sötét Nagyúr: Sötét Mágia varázslatot használt!", 'special');
+}
 
 // Játék indítása
 function startGame() {
@@ -416,6 +1024,29 @@ function startGame() {
   gameActive = true;
   isPlayerTurn = true;
   gameHistory = [];
+  playerStreakCount = 0;
+  botStreakCount = 0;
+  playerPowerLevel = 0;
+  botPowerLevel = 0;
+  playerStatus = 'normal';
+  botStatus = 'normal';
+  wildSymbolActive = false;
+  
+  // Bot személyiségének beállítása nehézségi szint szerint
+  setBotPersonality();
+  
+  // Bot memória tisztítása
+  botMemory = {
+    playerBluffs: 0,
+    playerHonesty: 0,
+    playerTotalCalls: 0,
+    playerPreferredSymbols: {},
+    playerRiskTaking: 0.5,
+    botBluffSuccess: 0,
+    botBluffFail: 0,
+    playerCallRate: 0.5,
+    lastRounds: []
+  };
   
   // Kockák generálása
   rollDice();
@@ -424,12 +1055,19 @@ function startGame() {
   playerDiceCountEl.textContent = playerDiceCount;
   botDiceCountEl.textContent = botDiceCount;
   currentBetEl.textContent = "A jelenlegi tét: Még nincs";
+  playerStreakEl.innerHTML = '<i class="fas fa-fire-alt streak-icon"></i>0';
+  botStreakEl.innerHTML = '<i class="fas fa-fire-alt streak-icon"></i>0';
+  playerStatusEl.textContent = 'Varázslatra kész';
+  botStatusEl.textContent = 'Fenyegető';
+  updatePowerMeters();
+  
   messageEl.textContent = "Lépj a mágikus kövek ősi játékterébe! A te lépésed következik.";
   historyLogEl.innerHTML = "<p>A mágikus játszma kezdetét veszi...</p>";
   
   // Gombok beállítása
   document.getElementById('betButton').disabled = false;
   document.getElementById('callButton').disabled = true;
+  abilityButtonEl.disabled = true;
   document.getElementById('resetContainer').style.display = 'none';
   revealContainerEl.style.display = 'none';
   
@@ -443,12 +1081,68 @@ function startGame() {
   
   // Minimum tét beállítása
   document.getElementById('betCount').min = "1";
+  
+  // Kezdő üzenet a nehézségi szintnek megfelelően
+  const difficultyMessages = {
+    easy: "A Sötét Nagyúr mintha nem figyelne teljes koncentrációval... Talán most jó esélyed van!",
+    normal: "A Sötét Nagyúr türelmetlenül várja az első lépésedet.",
+    hard: "A Sötét Nagyúr szemei izzanak, elméje élesen figyel minden mozdulatodra. Légy résen!"
+  };
+  
+  showMessage(difficultyMessages[difficultyLevel]);
+  
+  // Tutorial üzenet, ha ez az első játék
+  if (isTutorialMode) {
+    setTimeout(() => {
+      showToast("Tipp: A győzelmi sorozatok mágikus erőt adnak, amit különleges képességekre válthatsz!", 5000);
+    }, 3000);
+  }
+}
+
+// Bot személyiségének beállítása
+function setBotPersonality() {
+  switch(difficultyLevel) {
+    case 'easy':
+      // Könnyű szinten kiszámíthatóbb, kevesebbet blöfföl
+      currentBotPersonality = botPersonalities.cautious;
+      break;
+    case 'normal':
+      // Közepes szinten adaptív, tanul a játékostól
+      currentBotPersonality = botPersonalities.adaptive;
+      break;
+    case 'hard':
+      // Nehéz szinten agresszív vagy kiszámíthatatlan
+      currentBotPersonality = Math.random() < 0.5 ? 
+        botPersonalities.aggressive : botPersonalities.chaotic;
+      break;
+  }
+  
+  // Nehézségi szint hatása a bot képességére
+  if (difficultyLevel === 'hard') {
+    botPowerLevel = 20; // Nehéz szinten már van kezdeti ereje
+  }
+}
+
+// Erőpontok megjelenítésének frissítése
+function updatePowerMeters() {
+  playerPowerEl.style.width = `${Math.min(100, playerPowerLevel)}%`;
+  botPowerEl.style.width = `${Math.min(100, botPowerLevel)}%`;
+  
+  // A képesség gomb állapotának frissítése
+  abilityButtonEl.disabled = playerPowerLevel < 20;
 }
 
 // Kockák újradobása
 function rollDice() {
   playerDice = generateRandomDice(playerDiceCount);
   botDice = generateRandomDice(botDiceCount);
+  
+  // Ha aktív a vad szimbólum, adjuk hozzá
+  if (wildSymbolActive && playerDice.length > 0) {
+    const randomIndex = Math.floor(Math.random() * playerDice.length);
+    playerDice[randomIndex] = 7; // Vad szimbólum
+    wildSymbolActive = false; // Egyszer használatos
+  }
   
   renderDice();
 }
@@ -469,7 +1163,7 @@ function renderDice() {
   playerDice.forEach(die => {
     const symbol = symbols.find(s => s.value === die);
     const diceElement = document.createElement('div');
-    diceElement.className = 'dice dice-roll';
+    diceElement.className = die === 7 ? 'dice wild dice-roll' : 'dice dice-roll';
     diceElement.innerHTML = symbol.symbol;
     
     // Kis késleltetés az animációhoz
@@ -482,9 +1176,14 @@ function renderDice() {
   
   // Bot kockái (rejtve)
   botDiceEl.innerHTML = '';
-  botDice.forEach(() => {
+  botDice.forEach(die => {
     const diceElement = document.createElement('div');
-    diceElement.className = 'dice hidden-dice';
+    diceElement.className = die === 7 ? 'dice hidden-dice wild' : 'dice hidden-dice';
+    if (die === 7) {
+      const wildMarker = document.createElement('div');
+      wildMarker.className = 'wild-marker';
+      diceElement.appendChild(wildMarker);
+    }
     botDiceEl.appendChild(diceElement);
   });
 }
@@ -511,11 +1210,14 @@ function placeBet() {
   const symbolObj = symbols.find(s => s.value === betValue);
   currentBetEl.textContent = `A jelenlegi tét: ${betCount} db ${symbolObj.symbol} (${symbolObj.name})`;
   
+  // Játékos tét elemzése a bot számára
+  analyzeBet(true);
+  
   // Játékos körének befejezése
   endPlayerTurn();
   
   // Esemény rögzítése
-  logEvent(`Kalandor: "${betCount} ${symbolObj.name} szimbólum van a játékban."`, 'player-action');
+  logEvent(`Kalandor: "${betCount} ${symbolObj.name} szimbólum van a játéktéren."`, 'player-action');
   
   // Bot köre
   setTimeout(botTurn, 1500);
@@ -529,6 +1231,13 @@ function botTurn() {
   botSectionEl.classList.add('active-player');
   
   showMessage("A Sötét Nagyúr fontolgatja a lépését...");
+  
+  // Bot képesség használata, ha van elég ereje és megfelelő a helyzet
+  if (botPowerLevel >= 50 && Math.random() < 0.7) {
+    useBotAbility();
+    botPowerLevel -= 50;
+    updatePowerMeters();
+  }
   
   // Bot intelligens döntéshozatala
   setTimeout(() => {
@@ -549,7 +1258,7 @@ function botTurn() {
       showMessage(`A Sötét Nagyúr emeli a tétet: ${currentBet.count} db ${symbolObj.name} szimbólum!`);
       currentBetEl.textContent = `A jelenlegi tét: ${currentBet.count} db ${symbolObj.symbol} (${symbolObj.name})`;
       
-      logEvent(`Sötét Nagyúr: "${currentBet.count} ${symbolObj.name} szimbólum van a játékban."`, 'bot-action');
+      logEvent(`Sötét Nagyúr: "${currentBet.count} ${symbolObj.name} szimbólum van a játéktéren."`, 'bot-action');
       
       // Input mezők frissítése
       document.getElementById('betValue').value = "1";
@@ -562,67 +1271,190 @@ function botTurn() {
   }, 2000);
 }
 
-// Bot döntéshozatala
-function decideBotAction() {
-  // 1. Számoljuk meg a bot kockáin a jelenlegi tét értékét
-  const botDiceWithValue = botDice.filter(die => die === currentBet.value);
+// Bot képesség használata
+function useBotAbility() {
+  // Véletlenszerűen választunk egy képességet
+  const randomAbility = botAbilities[Math.floor(Math.random() * botAbilities.length)];
   
-  // 2. Becsüljük meg a játékos kockáin lévő értékeket
-  // (valószínűség alapján, feltételezve egyenletes eloszlást)
-  const expectedPlayerDiceWithValue = playerDiceCount / 6;
-  
-  // 3. Becsült teljes mennyiség
-  const estimatedTotal = botDiceWithValue.length + expectedPlayerDiceWithValue;
-  
-  // 4. Bot blöffölési hajlam (alapértelmezetten 20%)
-  let bluffThreshold = 0.2;
-  
-  // Növeljük a blöffölési hajlamot ha:
-  // - A bot kevés kockával rendelkezik (vesztésre áll)
-  // - A játékban már magas a tét (kockázatosabb)
-  if (botDiceCount < 3) bluffThreshold += 0.2;
-  if (currentBet.count > 7) bluffThreshold += 0.1;
-  
-  // 5. Döntés: blöffölni vagy leleplezni
-  
-  // Ha úgy gondolja, hogy nincs annyi érték, amennyit a játékos mondott
-  if (estimatedTotal < currentBet.count * 0.7) {
-    // Valószínűleg a játékos blöfföl, a bot leleplezi
-    // De kis eséllyel mégis folytatja a blöffölést
-    if (Math.random() < 0.15) {
-      return createBotBet(); // Ritkán folytatja akkor is, ha gyanús
-    } else {
-      return { action: 'call' };
+  // Ha a bot jósolni akar, de a játékos zavarodott, akkor más képességet használ
+  if (randomAbility.id === 'predict' && playerStatus === 'confused') {
+    const otherAbilities = botAbilities.filter(a => a.id !== 'predict');
+    if (otherAbilities.length > 0) {
+      randomAbility = otherAbilities[Math.floor(Math.random() * otherAbilities.length)];
     }
   }
   
-  // Ha a becsült érték közel van a téthez, akkor kockázatos a helyzet
-  if (estimatedTotal < currentBet.count * 0.9) {
-    // 50% eséllyel leleplezi, 50% eséllyel folytatja
-    if (Math.random() < 0.5) {
-      return { action: 'call' };
-    } else {
-      return createBotBet();
-    }
-  }
+  // Képesség végrehajtása
+  randomAbility.effect();
+}
+
+// Tét elemzése
+function analyzeBet(isPlayerBet) {
+  // Összeszámoljuk a tényleges kockák számát
+  const allDice = [...playerDice, ...botDice];
+  const targetValue = currentBet.value;
   
-  // Különben folytatja a játékot
-  // De ritkán akkor is leleplezhet, ha jó esélye lenne folytatni
-  if (Math.random() < 0.1) {
-    return { action: 'call' };
+  // Számoljuk a célérték kockákat és a vad szimbólumokat
+  let targetCount = allDice.filter(die => die === targetValue).length;
+  const wildCount = allDice.filter(die => die === 7).length;
+  
+  // A vad szimbólumok bármelyik értéket helyettesíthetik
+  targetCount += wildCount;
+  
+  // A tényleges kockák száma és a tét közötti különbség
+  const discrepancy = currentBet.count - targetCount;
+  
+  // Ha a játékos tette a tétet
+  if (isPlayerBet) {
+    // A játékos blöffölt-e
+    const playerBluffing = discrepancy > 0;
+    
+    if (playerBluffing) {
+      botMemory.playerBluffs++;
+      
+      // Jegyezzük meg ezt a szimbólumot
+      if (!botMemory.playerPreferredSymbols[targetValue]) {
+        botMemory.playerPreferredSymbols[targetValue] = 0;
+      }
+      botMemory.playerPreferredSymbols[targetValue]++;
+      
+      // Kockázatvállalás mértéke
+      botMemory.playerRiskTaking = Math.min(1.0, botMemory.playerRiskTaking + 0.05);
+    } else {
+      botMemory.playerHonesty++;
+      botMemory.playerRiskTaking = Math.max(0.0, botMemory.playerRiskTaking - 0.03);
+    }
   } else {
-    return createBotBet();
+    // A bot blöffölt-e
+    const botBluffing = discrepancy > 0;
+    
+    if (botBluffing) {
+      botMemory.botBluffSuccess = 0; // Alapértelmezetten sikertelen, majd a revealDice változtatja
+    }
+  }
+  
+  // Mentsük el a kört a memóriába
+  botMemory.lastRounds.push({
+    bet: {...currentBet},
+    actualCount: targetCount,
+    bluff: discrepancy > 0,
+    player: isPlayerBet
+  });
+  
+  // Csak az utolsó 10 kört tároljuk
+  if (botMemory.lastRounds.length > 10) {
+    botMemory.lastRounds.shift();
   }
 }
 
+// Bot döntéshozatala
+function decideBotAction() {
+  // 1. Számoljuk meg a bot kockáin a jelenlegi tét értékét
+  const botDiceWithValue = botDice.filter(die => die === currentBet.value || die === 7);
+  
+  // 2. Becsüljük meg a játékos kockáin lévő értékeket
+  // A bot személyisége és nehézségi szintje szerint adjuk meg a becslés pontosságát
+  let accuracyFactor = 0.8; // Alap pontossági tényező
+  
+  if (difficultyLevel === 'easy') {
+    accuracyFactor = 0.6; // Könnyű: Pontatlanabb becslés
+  } else if (difficultyLevel === 'hard') {
+    accuracyFactor = 0.9; // Nehéz: Pontosabb becslés
+  }
+  
+  // Ha a bot jósló módban van, pontosabban lát
+  if (botStatus === 'predicting') {
+    accuracyFactor = Math.min(1.0, accuracyFactor + 0.2);
+  }
+  
+  // Mintavételi becslés a játékos kockáira
+  let expectedPlayerDiceWithValue = 0;
+  
+  // Személyre szabott becslés a játékos múltbeli választásai alapján
+  if (botMemory.playerPreferredSymbols[currentBet.value] &&
+      botMemory.playerPreferredSymbols[currentBet.value] > 2) {
+    // A játékos előnyben részesíti ezt a szimbólumot
+    expectedPlayerDiceWithValue = playerDiceCount / 4;
+  } else {
+    // Alap becslés: egyenletes eloszlás
+    expectedPlayerDiceWithValue = playerDiceCount / 6;
+    
+    // Figyelembe vesszük a vad szimbólumok lehetőségét
+    if (wildSymbolActive || playerStatus === 'unstable') {
+      expectedPlayerDiceWithValue += 0.5;
+    }
+  }
+  
+  // 3. Becsült teljes mennyiség (a becslési pontosságtól függően)
+  const estimatedPlayerCount = expectedPlayerDiceWithValue * accuracyFactor;
+  const estimatedTotal = botDiceWithValue.length + estimatedPlayerCount;
+  
+  // 4. Bot blöffölési hajlam a személyisége szerint
+  let bluffThreshold = currentBotPersonality.bluffRate;
+  let callThreshold = currentBotPersonality.callThreshold;
+  
+  // Módosítjuk a blöffölési/leleplezési hajlamot a játékállás szerint
+  if (botDiceCount < playerDiceCount) {
+    // Ha a bot vesztésre áll, agresszívabban játszik
+    bluffThreshold += 0.1;
+    callThreshold -= 0.1;
+  } else if (botDiceCount > playerDiceCount + 1) {
+    // Ha a bot nagyobb előnyben van, óvatosabban játszik
+    bluffThreshold -= 0.1;
+    callThreshold += 0.1;
+  }
+  
+  // A játékos kockázatvállalási szintje is befolyásolja a döntést
+  if (botMemory.playerRiskTaking > 0.7) {
+    // Ha a játékos gyakran blöfföl, a bot gyakrabban leplezi le
+    callThreshold -= 0.15;
+  } else if (botMemory.playerRiskTaking < 0.3) {
+    // Ha a játékos ritkán blöfföl, a bot is kevésbé leplezi le
+    callThreshold += 0.1;
+  }
+  
+  // 5. Döntés: blöffölni, emelni vagy leleplezni
+  
+  // Ha a bot szerint szinte biztos, hogy nincs annyi érték
+  if (estimatedTotal < currentBet.count * 0.6) {
+    // Magas valószínűséggel leleplezi
+    if (Math.random() < callThreshold * 1.5) {
+      return { action: 'call' };
+    }
+  }
+  
+  // Ha valószínűleg nincs annyi, de nem biztos
+  if (estimatedTotal < currentBet.count * 0.8) {
+    // Mérsékelt valószínűséggel leleplezi
+    if (Math.random() < callThreshold) {
+      return { action: 'call' };
+    }
+  }
+  
+  // Ha közel van a becsült érték a téthez
+  if (estimatedTotal < currentBet.count * 1.1) {
+    // Minimális valószínűséggel leleplezi, általában folytatja
+    if (Math.random() < callThreshold * 0.7) {
+      return { action: 'call' };
+    }
+  }
+  
+  // Bot intelligens tét emelése
+  return { action: 'bet', bet: createBotBet(estimatedTotal) };
+}
+
 // Bot tét létrehozása
-function createBotBet() {
+function createBotBet(estimatedTotal) {
+  // Az aktuális tét alapján új tétet készítünk
+  let newBet = { ...currentBet };
+  
   // Bot ismeri a saját kockáit, és ezek alapján dönt
   
   // Számoljunk minden értékből
   const counts = {};
   for (let i = 1; i <= 6; i++) {
-    counts[i] = botDice.filter(die => die === i).length;
+    // Számoljuk az i értékű kockákat és a vad szimbólumokat
+    counts[i] = botDice.filter(die => die === i || die === 7).length;
   }
   
   // Keressük meg a leggyakoribb értéket a bot kockáiban
@@ -633,26 +1465,60 @@ function createBotBet() {
     }
   }
   
-  let newBet;
+  // Döntés a blöffölésről a bot személyisége alapján
+  const willBluff = Math.random() < currentBotPersonality.bluffRate;
   
-  // 30% esély a blöffölésre (magasabb tét, mint ami várható)
-  if (Math.random() < 0.3) {
-    // Blöffölés: emelés 1-2 értékkel a becsült fölé
-    const bluffExtraCount = Math.floor(Math.random() * 2) + 1;
-    newBet = {
-      count: currentBet.count + bluffExtraCount,
-      value: mostCommonValue
-    };
+  if (willBluff) {
+    // Blöffölés: magasabb tét, mint ami reális
+    
+    // A blöff mértéke a nehézségi szint függvénye
+    let bluffExtraCount = 1; // Alapértelmezett
+    
+    if (difficultyLevel === 'easy') {
+      // Könnyű szinten kisebb, átláthatóbb blöff
+      bluffExtraCount = 1;
+    } else if (difficultyLevel === 'hard') {
+      // Nehéz szinten kockázatosabb blöff
+      bluffExtraCount = Math.floor(Math.random() * 3) + 1;
+    } else {
+      // Közepes szinten változó blöff
+      bluffExtraCount = Math.floor(Math.random() * 2) + 1;
+    }
+    
+    // Megpróbáljuk a bot legjobb értékét használni
+    if (Math.random() < 0.6) {
+      newBet = {
+        count: currentBet.count + bluffExtraCount,
+        value: mostCommonValue
+      };
+    } else {
+      // Vagy kiválasztunk egy másik értéket
+      let bluffValue = currentBet.value;
+      
+      // Ha a jelenlegi érték magas, alacsonyabbat választunk
+      if (currentBet.value >= 5) {
+        bluffValue = Math.floor(Math.random() * 3) + 1;
+      } else {
+        // Különben magasabbat
+        bluffValue = Math.floor(Math.random() * 3) + 4;
+      }
+      
+      newBet = {
+        count: currentBet.count + bluffExtraCount,
+        value: bluffValue
+      };
+    }
   } else {
-    // Normál emelés az aktuális tét fölé
-    // Ha sok egyforma értéke van, azt érdemes mondani
+    // Normál emelés, a becsült érték közelében
+    
+    // Ha a bot sok egyforma értékkel rendelkezik, azt preferálja
     if (counts[mostCommonValue] >= 2) {
       newBet = {
         count: currentBet.count + 1,
         value: mostCommonValue
       };
     } else {
-      // Ha nincs sok egyforma, akkor minimál emelés
+      // Próbáljuk a legkisebb szükséges emelést
       if (currentBet.value === 6) {
         // Ha már 6-os a tét, akkor emelni kell a darabszámot
         newBet = {
@@ -669,7 +1535,7 @@ function createBotBet() {
     }
   }
   
-  return { action: 'bet', bet: newBet };
+  return newBet;
 }
 
 // Játékos körének kezdése
@@ -683,6 +1549,7 @@ function startPlayerTurn() {
   // Gombok aktiválása
   document.getElementById('betButton').disabled = false;
   document.getElementById('callButton').disabled = false;
+  abilityButtonEl.disabled = playerPowerLevel < 20;
 }
 
 // Játékos körének befejezése
@@ -690,11 +1557,17 @@ function endPlayerTurn() {
   isPlayerTurn = false;
   document.getElementById('betButton').disabled = true;
   document.getElementById('callButton').disabled = true;
+  abilityButtonEl.disabled = true;
 }
 
 // Blöff leleplezése
 function callBluff() {
   if (!gameActive || !isPlayerTurn || currentBet === null) return;
+  
+  // Frissítjük a bot memóriáját
+  botMemory.playerTotalCalls++;
+  botMemory.playerCallRate = botMemory.playerTotalCalls / 
+                           (botMemory.lastRounds.filter(r => !r.player).length || 1);
   
   endPlayerTurn();
   
@@ -712,15 +1585,21 @@ function revealDice() {
   // Minden kocka összegyűjtése
   const allDice = [...playerDice, ...botDice];
   
-  // Számoljuk meg a keresett értékeket
+  // Számoljuk meg a keresett értékeket és a vad szimbólumokat
   const targetSymbol = symbols.find(s => s.value === currentBet.value);
-  const targetCount = allDice.filter(die => die === currentBet.value).length;
+  let targetDice = allDice.filter(die => die === currentBet.value);
+  const wildDice = allDice.filter(die => die === 7);
+  
+  // A vad szimbólumok helyettesítik a keresett értéket
+  const totalTargetCount = targetDice.length + wildDice.length;
   
   // A kockák megjelenítése egymás után, animációval
   allDice.forEach((die, index) => {
     const symbol = symbols.find(s => s.value === die);
     const diceElement = document.createElement('div');
-    diceElement.className = 'dice hidden-dice';
+    
+    // Vad szimbólum jelölése
+    diceElement.className = die === 7 ? 'dice hidden-dice wild' : 'dice hidden-dice';
     
     // Késleltetett felfedés
     setTimeout(() => {
@@ -731,10 +1610,15 @@ function revealDice() {
         diceElement.classList.remove('hidden-dice', 'reveal-animation');
         diceElement.innerHTML = symbol.symbol;
         
+        // Ha vad szimbólum, kiemeljük
+        if (die === 7) {
+          diceElement.classList.add('wild');
+        }
+        
         // Ha ez az utolsó kocka, megmutatjuk az eredményt
         if (index === allDice.length - 1) {
           setTimeout(() => {
-            showRevealResult(targetSymbol, targetCount);
+            showRevealResult(targetSymbol, totalTargetCount);
           }, 500);
         }
       }, 500);
@@ -759,11 +1643,28 @@ function showRevealResult(targetSymbol, actualCount) {
       resultHtml = `<p class="winner">A leleplezés sikeres! A játéktéren csak ${actualCount} db ${targetSymbol.symbol} (${targetSymbol.name}) van, nem ${claim}.</p>`;
       loser = 'bot';
       logEvent(`Eredmény: A Sötét Nagyúr blöffölt! Csak ${actualCount} db ${targetSymbol.name} volt a játéktéren.`, 'result');
+      
+      // Frissítjük a bot memóriáját
+      botMemory.botBluffFail++;
+      
+      // Játékos győzelmi sorozat növelése
+      playerStreakCount++;
+      botStreakCount = 0;
+      
+      // Erőpontok adása a győzelemért
+      addPower(true, isBluff);
     } else {
       // A bot nem blöffölt, a játékos veszített
       resultHtml = `<p class="winner">A leleplezés sikertelen! A játéktéren valóban ${actualCount} db ${targetSymbol.symbol} (${targetSymbol.name}) van!</p>`;
       loser = 'player';
       logEvent(`Eredmény: A Sötét Nagyúr igazat mondott! Valóban ${actualCount} db ${targetSymbol.name} volt a játéktéren.`, 'result');
+      
+      // Bot győzelmi sorozat növelése
+      botStreakCount++;
+      playerStreakCount = 0;
+      
+      // Erőpontok adása a botnak
+      addPower(false, !isBluff);
     }
   } else { // A bot leplezte le a játékost
     if (isBluff) {
@@ -771,13 +1672,33 @@ function showRevealResult(targetSymbol, actualCount) {
       resultHtml = `<p class="winner">A Sötét Nagyúr sikeresen leleplezte blöffödet! A játéktéren csak ${actualCount} db ${targetSymbol.symbol} (${targetSymbol.name}) van, nem ${claim}.</p>`;
       loser = 'player';
       logEvent(`Eredmény: A Kalandor blöffölt! Csak ${actualCount} db ${targetSymbol.name} volt a játéktéren.`, 'result');
+      
+      // Bot győzelmi sorozat növelése
+      botStreakCount++;
+      playerStreakCount = 0;
+      
+      // Erőpontok adása a botnak
+      addPower(false, isBluff);
     } else {
       // A játékos nem blöffölt, a bot veszített
       resultHtml = `<p class="winner">A Sötét Nagyúr tévedett! A játéktéren valóban ${actualCount} db ${targetSymbol.symbol} (${targetSymbol.name}) van!</p>`;
       loser = 'bot';
       logEvent(`Eredmény: A Kalandor igazat mondott! Valóban ${actualCount} db ${targetSymbol.name} volt a játéktéren.`, 'result');
+      
+      // Frissítjük a bot memóriáját
+      botMemory.botBluffSuccess++;
+      
+      // Játékos győzelmi sorozat növelése
+      playerStreakCount++;
+      botStreakCount = 0;
+      
+      // Erőpontok adása a győzelemért
+      addPower(true, !isBluff);
     }
   }
+  
+  // Győzelmi sorozatok frissítése
+  updateStreaks();
   
   revealResultEl.innerHTML = resultHtml;
   
@@ -785,6 +1706,53 @@ function showRevealResult(targetSymbol, actualCount) {
   setTimeout(() => {
     nextRound(loser);
   }, 2500);
+}
+
+// Erőpont adása
+function addPower(isPlayer, isBluffWin) {
+  const basePoints = 10;
+  let bonusPoints = 0;
+  
+  // Bónusz a blöff sikeres leleplezéséért vagy sikeres blöffért
+  if (isBluffWin) {
+    bonusPoints += 5;
+  }
+  
+  // Bónusz a sorozatért
+  if (isPlayer) {
+    bonusPoints += Math.min(playerStreakCount * 3, 15);
+    playerPowerLevel += basePoints + bonusPoints;
+    
+    // Csak akkor mutatjuk az értesítést, ha jelentős erőt szerzett
+    if (basePoints + bonusPoints >= 15) {
+      showToast(`+${basePoints + bonusPoints} mágikus erő!`);
+    }
+  } else {
+    bonusPoints += Math.min(botStreakCount * 3, 15);
+    botPowerLevel += basePoints + bonusPoints;
+  }
+  
+  // Frissítjük a megjelenítést
+  updatePowerMeters();
+}
+
+// Győzelmi sorozatok frissítése
+function updateStreaks() {
+  playerStreakEl.innerHTML = `<i class="fas fa-fire-alt streak-icon"></i>${playerStreakCount}`;
+  botStreakEl.innerHTML = `<i class="fas fa-fire-alt streak-icon"></i>${botStreakCount}`;
+  
+  // A sorozat méretétől függő vizuális jelzés
+  if (playerStreakCount >= 3) {
+    playerStreakEl.style.color = '#ff6400';
+  } else {
+    playerStreakEl.style.color = '';
+  }
+  
+  if (botStreakCount >= 3) {
+    botStreakEl.style.color = '#ff6400';
+  } else {
+    botStreakEl.style.color = '';
+  }
 }
 
 // Következő kör
@@ -841,8 +1809,20 @@ function nextRound(loser) {
     // Gombok aktiválása
     document.getElementById('betButton').disabled = false;
     document.getElementById('callButton').disabled = true; // Első körben nincs mit leleplezni
+    abilityButtonEl.disabled = playerPowerLevel < 20;
     
     showMessage("Új kör kezdődik! Te következel.");
+  }
+  
+  // Bot személyiségének esetleges változtatása
+  if (difficultyLevel === 'hard' && Math.random() < 0.3) {
+    // Nehéz szinten a bot néha változtatja a személyiségét
+    const personalities = Object.values(botPersonalities);
+    currentBotPersonality = personalities[Math.floor(Math.random() * personalities.length)];
+    botStatus = currentBotPersonality.name.toLowerCase();
+    botStatusEl.textContent = currentBotPersonality.name;
+    
+    logEvent(`A Sötét Nagyúr viselkedése megváltozott: ${currentBotPersonality.description}`, 'special');
   }
 }
 
@@ -864,6 +1844,10 @@ function gameEnd(winner) {
   // Gombok letiltása
   document.getElementById('betButton').disabled = true;
   document.getElementById('callButton').disabled = true;
+  abilityButtonEl.disabled = true;
+  
+  // Már nem első játék
+  isTutorialMode = false;
 }
 
 // Üzenet megjelenítése
@@ -885,8 +1869,14 @@ function logEvent(message, className) {
   gameHistory.push({ message, type: className });
 }
 
-// Játék indítása
-startGame();
+// Eseménykezelők hozzáadása a modális ablakhoz
+window.onclick = function(event) {
+  if (event.target === abilityModalEl) {
+    abilityModalEl.style.display = "none";
+  } else if (event.target === infoModalEl) {
+    infoModalEl.style.display = "none";
+  }
+};
 </script>
 
 </body>
