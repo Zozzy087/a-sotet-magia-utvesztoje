@@ -23,75 +23,78 @@
       border-radius: 10px;
       display: inline-block;
     }
-    .game-container {
+    #gameArea {
       display: flex;
-      justify-content: space-around;
+      justify-content: center;
       flex-wrap: wrap;
-      max-width: 900px;
-      margin: 0 auto;
+      gap: 20px;
+      margin: 20px 0;
     }
-    .player-area {
+    .player-section {
       background-color: rgba(0, 0, 0, 0.6);
       padding: 15px;
-      border-radius: 8px;
-      margin: 10px;
-      width: 300px;
+      border-radius: 10px;
+      min-width: 250px;
     }
-    .current-area {
-      background-color: rgba(127, 0, 255, 0.3);
+    .active-player {
+      border: 2px solid #7f00ff;
+      box-shadow: 0 0 15px #7f00ff;
+    }
+    .score {
+      font-size: 2.5rem;
+      margin: 10px 0;
+    }
+    .current-box {
+      background-color: rgba(127, 0, 255, 0.4);
       padding: 10px;
       border-radius: 5px;
-      margin-top: 10px;
+      margin-top: 15px;
     }
     .dice {
-      font-size: 5rem;
-      margin: 20px;
-      display: inline-block;
+      font-size: 3.5rem;
+      margin: 20px 0;
+      animation: rollDice 0.5s ease-out;
+    }
+    @keyframes rollDice {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
     #controls {
       margin-top: 20px;
     }
     button {
-      font-size: 1rem;
+      font-size: 1.1rem;
       padding: 10px 20px;
-      margin: 10px;
+      margin: 5px;
       border-radius: 5px;
       border: none;
       cursor: pointer;
       background-color: #7f00ff;
       color: white;
       box-shadow: 0 0 10px #7f00ff;
-      transition: all 0.2s;
+      transition: transform 0.2s, box-shadow 0.3s;
     }
     button:hover {
       background-color: #a94bff;
       transform: scale(1.05);
+      box-shadow: 0 0 15px #a94bff;
     }
-    button:disabled {
-      background-color: #666;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-    #status {
+    #result {
       font-size: 1.2rem;
-      background-color: rgba(0, 0, 0, 0.7);
+      background-color: rgba(0, 0, 0, 0.6);
       padding: 10px;
-      border-radius: 5px;
-      margin: 15px auto;
-      max-width: 600px;
+      border-radius: 8px;
+      display: inline-block;
+      margin-top: 15px;
     }
     #resetContainer {
       display: none;
       margin-top: 20px;
     }
-    .active-player {
-      border: 2px solid #7f00ff;
-      box-shadow: 0 0 15px #7f00ff;
-    }
     .winner {
-      border: 2px solid gold;
-      box-shadow: 0 0 20px gold;
+      color: #7fff7f;
+      font-weight: bold;
+      text-shadow: 1px 1px 4px black;
     }
   </style>
 </head>
@@ -99,196 +102,223 @@
 
 <h1>Pig Kockajáték</h1>
 
-<div id="status">Dobj a kockával, vagy állj meg!</div>
-
-<div class="game-container">
-  <div id="playerArea" class="player-area active-player">
+<div id="gameArea">
+  <div id="playerSection" class="player-section active-player">
     <h2>Játékos</h2>
-    <h3>Összpontszám: <span id="playerScore">0</span></h3>
-    <div class="current-area">
-      <p>Aktuális kör: <span id="playerCurrent">0</span></p>
+    <div class="score" id="playerTotalScore">0</div>
+    <div class="current-box">
+      <p>Aktuális kör</p>
+      <div id="playerCurrentScore">0</div>
     </div>
   </div>
-
-  <div class="dice-container">
+  
+  <div id="diceSection">
     <div id="dice" class="dice">🎲</div>
-    <div id="controls">
-      <button id="rollBtn" onclick="rollDice()">Dobás</button>
-      <button id="holdBtn" onclick="hold()">Megállás</button>
-    </div>
   </div>
-
-  <div id="botArea" class="player-area">
+  
+  <div id="botSection" class="player-section">
     <h2>Számítógép</h2>
-    <h3>Összpontszám: <span id="botScore">0</span></h3>
-    <div class="current-area">
-      <p>Aktuális kör: <span id="botCurrent">0</span></p>
+    <div class="score" id="botTotalScore">0</div>
+    <div class="current-box">
+      <p>Aktuális kör</p>
+      <div id="botCurrentScore">0</div>
     </div>
   </div>
 </div>
+
+<div id="controls">
+  <button id="rollBtn" onclick="rollDice()">Dobás</button>
+  <button id="holdBtn" onclick="hold()">Tartás</button>
+</div>
+
+<div id="result"></div>
 
 <div id="resetContainer">
   <button onclick="startGame()">Új játék</button>
 </div>
 
 <script>
-// Játékállapot
-let playerScore = 0;
-let botScore = 0;
+// Játék változók
+let scores = [0, 0]; // [játékos, számítógép]
 let currentScore = 0;
-let activePlayer = 'player'; // 'player' vagy 'bot'
-let gameOver = false;
+let activePlayer = 0; // 0 = játékos, 1 = számítógép
+let gameActive = true;
 
-// Kocka értékek és emojik
-const diceEmojis = {
-  1: '⚀',
-  2: '⚁',
-  3: '⚂',
-  4: '⚃',
-  5: '⚄',
-  6: '⚅'
-};
+// DOM elemek
+const diceEl = document.getElementById('dice');
+const playerSection = document.getElementById('playerSection');
+const botSection = document.getElementById('botSection');
+const resultEl = document.getElementById('result');
 
+// Játék indítása
 function startGame() {
-  playerScore = 0;
-  botScore = 0;
+  scores = [0, 0];
   currentScore = 0;
-  activePlayer = 'player';
-  gameOver = false;
+  activePlayer = 0;
+  gameActive = true;
   
-  document.getElementById('playerScore').textContent = '0';
-  document.getElementById('botScore').textContent = '0';
-  document.getElementById('playerCurrent').textContent = '0';
-  document.getElementById('botCurrent').textContent = '0';
-  document.getElementById('dice').textContent = '🎲';
-  document.getElementById('status').textContent = 'Dobj a kockával, vagy állj meg!';
+  // UI visszaállítása
+  document.getElementById('playerTotalScore').textContent = '0';
+  document.getElementById('botTotalScore').textContent = '0';
+  document.getElementById('playerCurrentScore').textContent = '0';
+  document.getElementById('botCurrentScore').textContent = '0';
+  diceEl.textContent = '🎲';
+  resultEl.textContent = '';
   document.getElementById('resetContainer').style.display = 'none';
   
+  // Gombok engedélyezése
   document.getElementById('rollBtn').disabled = false;
   document.getElementById('holdBtn').disabled = false;
   
-  document.getElementById('playerArea').classList.add('active-player');
-  document.getElementById('botArea').classList.remove('active-player');
-  document.getElementById('playerArea').classList.remove('winner');
-  document.getElementById('botArea').classList.remove('winner');
+  // Aktív játékos kijelölése
+  playerSection.classList.add('active-player');
+  botSection.classList.remove('active-player');
+  
+  displayMessage('A játék kezdődik! Dobj a kockával.');
 }
 
+// Kockadobás funkció
 function rollDice() {
-  if (gameOver) return;
+  if (!gameActive) return;
   
-  // Kockadobás animáció
-  document.getElementById('dice').textContent = '🎲';
-  
-  setTimeout(() => {
-    // Random dobás 1-6
-    const roll = Math.floor(Math.random() * 6) + 1;
-    document.getElementById('dice').textContent = diceEmojis[roll];
-    
-    // Ha 1-est dob, elveszíti a körben szerzett pontokat
-    if (roll === 1) {
-      currentScore = 0;
-      document.getElementById(`${activePlayer}Current`).textContent = '0';
-      document.getElementById('status').textContent = `${activePlayer === 'player' ? 'Játékos' : 'Számítógép'} 1-est dobott! Körpontok elvesztek.`;
-      
-      // Játékos váltás
-      switchPlayer();
-    } else {
-      // Hozzáadja a dobott értéket a körpontokhoz
-      currentScore += roll;
-      document.getElementById(`${activePlayer}Current`).textContent = currentScore;
-      
-      // Status frissítése
-      document.getElementById('status').textContent = `${activePlayer === 'player' ? 'Játékos' : 'Számítógép'} ${roll}-t dobott. Körben: ${currentScore} pont.`;
-      
-      // Ha a bot következik, automatikusan játszik
-      if (activePlayer === 'bot') {
-        botPlay();
-      }
-    }
-  }, 500);
-}
-
-function hold() {
-  if (gameOver || activePlayer === 'bot') return;
-  
-  // Körpontok hozzáadása az összpontszámhoz
-  playerScore += currentScore;
-  document.getElementById('playerScore').textContent = playerScore;
-  document.getElementById('playerCurrent').textContent = '0';
-  
-  // Ellenőrizzük a győzelmet
-  if (playerScore >= 100) {
-    endGame('player');
+  // Ha a számítógép köre van, ne engedjük a játékosnak dobni
+  if (activePlayer === 1) {
+    displayMessage('A számítógép köre van, várj türelemmel!');
     return;
   }
   
-  document.getElementById('status').textContent = `Játékos megáll, ${currentScore} pontot szerzett. Bot következik.`;
-  currentScore = 0;
+  // Kockadobás animáció és eredmény
+  const diceValue = Math.floor(Math.random() * 6) + 1;
+  diceEl.style.animation = 'none';
+  setTimeout(() => {
+    diceEl.style.animation = 'rollDice 0.5s ease-out';
+    diceEl.textContent = `🎲${diceValue}`;
+  }, 10);
+  
+  // Dobás feldolgozása
+  if (diceValue !== 1) {
+    // Hozzáadjuk a pontokat az aktuális körhöz
+    currentScore += diceValue;
+    document.getElementById(`${activePlayer === 0 ? 'player' : 'bot'}CurrentScore`).textContent = currentScore;
+    displayMessage(`Dobtál egy ${diceValue}-t! Folytatod vagy tartod?`);
+  } else {
+    // Egyes dobás - körpontok elvesztése
+    displayMessage('Sajnos 1-est dobtál! A kör pontjai elvesztek.');
+    currentScore = 0;
+    document.getElementById(`${activePlayer === 0 ? 'player' : 'bot'}CurrentScore`).textContent = '0';
+    
+    // Játékos váltás
+    setTimeout(switchPlayer, 1500);
+  }
+}
+
+// Tartás funkció
+function hold() {
+  if (!gameActive || activePlayer === 1) return;
+  
+  // Kör pontjainak hozzáadása az összpontszámhoz
+  scores[activePlayer] += currentScore;
+  document.getElementById(`${activePlayer === 0 ? 'player' : 'bot'}TotalScore`).textContent = scores[activePlayer];
+  
+  // Győzelem ellenőrzése
+  if (scores[activePlayer] >= 100) {
+    gameWon();
+    return;
+  }
+  
+  displayMessage('Tartottad a pontokat! A számítógép következik.');
   
   // Játékos váltás
-  switchPlayer();
-  
-  // Bot jön
-  setTimeout(botPlay, 1000);
+  setTimeout(switchPlayer, 1000);
 }
 
+// Játékos váltás
 function switchPlayer() {
-  activePlayer = activePlayer === 'player' ? 'bot' : 'player';
   currentScore = 0;
+  document.getElementById(`${activePlayer === 0 ? 'player' : 'bot'}CurrentScore`).textContent = '0';
+  activePlayer = activePlayer === 0 ? 1 : 0;
   
-  // UI frissítése
-  document.getElementById('playerArea').classList.toggle('active-player');
-  document.getElementById('botArea').classList.toggle('active-player');
+  // Aktív játékos vizuális jelölése
+  playerSection.classList.toggle('active-player');
+  botSection.classList.toggle('active-player');
   
-  // Gombok frissítése
-  document.getElementById('rollBtn').disabled = activePlayer === 'bot';
-  document.getElementById('holdBtn').disabled = activePlayer === 'bot';
+  // Ha a számítógép következik
+  if (activePlayer === 1) {
+    displayMessage('A számítógép következik...');
+    setTimeout(botTurn, 1000);
+  } else {
+    displayMessage('Te következel! Dobj a kockával.');
+  }
 }
 
-function botPlay() {
-  if (gameOver || activePlayer !== 'bot') return;
+// Számítógép köre
+function botTurn() {
+  if (!gameActive) return;
   
-  // Bot stratégia: Dob, amíg legalább 20 pontot nem gyűjt, vagy 1-est nem dob
-  const botThinkTime = 1000;
-  
-  setTimeout(() => {
-    // Bot dönt, dob-e még
-    if (currentScore < 20) {
-      document.getElementById('status').textContent = 'Bot dobást választ...';
-      setTimeout(rollDice, botThinkTime);
-    } else {
-      // Bot megáll
-      botScore += currentScore;
-      document.getElementById('botScore').textContent = botScore;
-      document.getElementById('botCurrent').textContent = '0';
+  // Számítógép stratégiája: addig dob, amíg legalább 20 pontot nem gyűjt, vagy 1-est nem dob
+  const botThink = setTimeout(function botThinking() {
+    // Kockadobás
+    const diceValue = Math.floor(Math.random() * 6) + 1;
+    diceEl.style.animation = 'none';
+    setTimeout(() => {
+      diceEl.style.animation = 'rollDice 0.5s ease-out';
+      diceEl.textContent = `🎲${diceValue}`;
+    }, 10);
+    
+    // Dobás eredményének feldolgozása
+    if (diceValue !== 1) {
+      currentScore += diceValue;
+      document.getElementById('botCurrentScore').textContent = currentScore;
+      displayMessage(`A számítógép ${diceValue}-t dobott. Összesen: ${currentScore}`);
       
-      // Ellenőrizzük a győzelmet
-      if (botScore >= 100) {
-        endGame('bot');
-        return;
+      // Döntés: folytatja vagy tartja
+      if (currentScore >= 20 || scores[1] + currentScore >= 100 || Math.random() > 0.7) {
+        // Tartja a pontokat
+        setTimeout(() => {
+          displayMessage('A számítógép tartja a pontokat.');
+          scores[1] += currentScore;
+          document.getElementById('botTotalScore').textContent = scores[1];
+          
+          // Győzelem ellenőrzése
+          if (scores[1] >= 100) {
+            gameWon();
+            return;
+          }
+          
+          setTimeout(switchPlayer, 1000);
+        }, 1000);
+      } else {
+        // Újra dob
+        setTimeout(botThinking, 1500);
       }
-      
-      document.getElementById('status').textContent = `Bot megáll, ${currentScore} pontot szerzett. Játékos következik.`;
+    } else {
+      // Egyes dobás - elveszti a kör pontjait
+      displayMessage('A számítógép 1-est dobott! Elveszti a kör pontjait.');
       currentScore = 0;
-      
-      // Játékos váltás
-      switchPlayer();
+      document.getElementById('botCurrentScore').textContent = '0';
+      setTimeout(switchPlayer, 1500);
     }
-  }, botThinkTime);
+  }, 1500);
 }
 
-function endGame(winner) {
-  gameOver = true;
-  const winnerText = winner === 'player' ? 'Játékos' : 'Számítógép';
-  document.getElementById('status').textContent = `${winnerText} nyerte a játékot! Végeredmény: Játékos ${playerScore} - ${botScore} Számítógép`;
+// Játék megnyerése
+function gameWon() {
+  gameActive = false;
+  const winner = activePlayer === 0 ? 'Játékos' : 'Számítógép';
+  resultEl.innerHTML = `<span class="winner">${winner} nyerte a játékot ${scores[activePlayer]} ponttal!</span>`;
   document.getElementById('resetContainer').style.display = 'block';
+  
+  // Gombok letiltása
   document.getElementById('rollBtn').disabled = true;
   document.getElementById('holdBtn').disabled = true;
-  
-  // Győztes kiemelése
-  document.getElementById(`${winner}Area`).classList.add('winner');
 }
 
+// Üzenet megjelenítése
+function displayMessage(message) {
+  resultEl.textContent = message;
+}
+
+// Játék indítása
 startGame();
 </script>
 
