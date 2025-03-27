@@ -122,6 +122,21 @@
       margin-top: 20px;
       display: none;
     }
+    button {
+      background-color: #7f00ff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px #7f00ff;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px #a94bff;
+    }
     #result:empty {
       display: none;
     }
@@ -161,7 +176,7 @@
     <span>Ügyesség</span>
   </button>
   <button class="choice-btn" onclick="makeChoice('wisdom')">
-    <i class="fas fa-brain choice-icon"></i>
+    <i class="fas fa-owl choice-icon"></i>
     <span>Bölcsesség</span>
   </button>
 </div>
@@ -196,11 +211,11 @@ const rules = {
   wisdom: "power"      // Bölcsesség veri az Erőt
 };
 
-// Ikonok a megjelenítéshez
+  // Ikonok a megjelenítéshez
 const icons = {
   power: '<i class="fas fa-fist-raised choice-icon"></i>',
   agility: '<i class="fas fa-running choice-icon"></i>',
-  wisdom: '<i class="fas fa-brain choice-icon"></i>'
+  wisdom: '<i class="fas fa-owl choice-icon"></i>'
 };
 
 // Tulajdonságok magyar neve
@@ -380,6 +395,8 @@ function determineWinner(playerChoice, botChoice) {
     roundInProgress = false;
     enableButtons();
     document.getElementById("turnInfo").textContent = "Válassz egy kártyát!";
+    document.getElementById("battlefield").innerHTML = ""; // Előző eredmény eltüntetése
+    document.getElementById("result").textContent = ""; // Eredmény szöveg eltüntetése
   }, 3000);
 }
 
