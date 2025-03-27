@@ -2,1020 +2,1235 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Árnykocka – A Lélekpróba</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Philosopher:wght@400;700&display=swap" rel="stylesheet">
+  <title>Árnyéktrónok: Hitszegők Párbaja</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --main-color: #bb00ff;
-      --secondary-color: #7f00ff;
-      --accent-color: #ff6e00;
-      --dark-bg: #0e0e0e;
-      --light-text: #f2f2f2;
-      --panel-bg: rgba(30, 20, 40, 0.7);
-      --header-font: 'Cinzel', serif;
-      --body-font: 'Philosopher', sans-serif;
-    }
-    
     body {
-      font-family: var(--body-font);
-      background: var(--dark-bg) url('https://images.unsplash.com/photo-1511207538754-e8555f2bc187?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80') no-repeat center center fixed;
-      background-size: cover;
-      color: var(--light-text);
-      text-align: center;
-      padding: 20px;
-      margin: 0;
-      min-height: 100vh;
+      background: #0e0e0e;
+      color: #eee;
+      font-family: 'Cinzel', serif;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      position: relative;
-      overflow-x: hidden;
+      align-items: center;
+      padding: 30px;
+      background-image: linear-gradient(to bottom, #1e1e1e 0%, #0e0e0e 100%);
+      min-height: 100vh;
+      margin: 0;
     }
-    
-    body::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--dark-bg);
-      opacity: 0.7;
-      z-index: -1;
-    }
-    
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      position: relative;
-      z-index: 1;
-    }
-    
+
     h1 {
-      font-family: var(--header-font);
-      color: var(--main-color);
-      text-shadow: 0 0 15px var(--main-color), 0 0 25px var(--main-color);
       font-size: 2.5rem;
-      margin-bottom: 30px;
-      letter-spacing: 3px;
+      margin-bottom: 10px;
+      color: #bb86fc;
+      text-shadow: 0 0 10px rgba(187, 134, 252, 0.5);
     }
-    
-    .game-board {
-      background: var(--panel-bg);
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 0 20px rgba(127, 0, 255, 0.4);
-      margin-bottom: 20px;
-      border: 1px solid var(--secondary-color);
-      position: relative;
-      overflow: hidden;
+
+    .game-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 800px;
+      margin-top: 20px;
     }
-    
-    .game-board::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(127, 0, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
-      z-index: -1;
-      animation: pulse 8s infinite ease-in-out;
-    }
-    
-    @keyframes pulse {
-      0% { transform: scale(0.8); opacity: 0.3; }
-      50% { transform: scale(1.2); opacity: 0.5; }
-      100% { transform: scale(0.8); opacity: 0.3; }
-    }
-    
-    .status-panel {
+
+    .battlefield {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 20px;
-      padding: 10px;
-      border-radius: 10px;
-      background: rgba(0, 0, 0, 0.4);
-    }
-    
-    .player-info {
-      flex: 1;
-      padding: 10px;
-      text-align: center;
-      position: relative;
-    }
-    
-    .player-info.active {
-      background: rgba(127, 0, 255, 0.3);
-      border-radius: 8px;
-      box-shadow: 0 0 10px var(--secondary-color);
-    }
-    
-    .player-info h3 {
-      margin: 0 0 10px 0;
-      font-size: 1.2rem;
-      color: var(--accent-color);
-    }
-    
-    .essence-container {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin: 10px 0;
-    }
-    
-    .essence {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: rgba(187, 0, 255, 0.3);
-      border: 1px solid var(--main-color);
-      transition: all 0.3s ease;
-    }
-    
-    .essence.filled {
-      background: var(--main-color);
-      box-shadow: 0 0 10px var(--main-color);
-    }
-    
-    .dice-area {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
+      width: 100%;
       margin: 20px 0;
     }
-    
-    .dice-container {
-      position: relative;
-    }
-    
-    .dice-label {
-      font-size: 0.9rem;
-      margin-bottom: 5px;
-      opacity: 0.8;
-    }
-    
-    .dice {
-      width: 60px;
-      height: 60px;
-      background: linear-gradient(135deg, #331144, #110022);
-      border-radius: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 1.8rem;
-      font-weight: bold;
-      color: white;
-      box-shadow: 0 0 10px rgba(187, 0, 255, 0.5);
-      transition: transform 0.6s ease, box-shadow 0.6s ease;
-      transform-style: preserve-3d;
-      position: relative;
-      margin-bottom: 5px;
-    }
-    
-    .dice.d8 {
-      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-      background: linear-gradient(135deg, #441155, #220033);
-    }
-    
-    .dice.rolling {
-      animation: diceRoll 1s ease-out;
-    }
-    
-    @keyframes diceRoll {
-      0% { transform: rotateX(0) rotateY(0); }
-      25% { transform: rotateX(180deg) rotateY(90deg); }
-      50% { transform: rotateX(270deg) rotateY(180deg); }
-      75% { transform: rotateX(180deg) rotateY(270deg); }
-      100% { transform: rotateX(360deg) rotateY(360deg); }
-    }
-    
-    .dice-info {
-      font-size: 0.8rem;
-      opacity: 0.7;
-    }
-    
-    .actions {
-      margin: 20px 0;
-    }
-    
-    .claim-container {
+
+    .player-side, .enemy-side {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
-      margin: 15px 0;
+      gap: 15px;
+      padding: 15px;
+      background: rgba(30, 30, 30, 0.7);
+      border-radius: 15px;
+      width: 45%;
+      position: relative;
     }
-    
-    .claim-options {
+
+    .active-player {
+      box-shadow: 0 0 15px #bb86fc;
+      border: 1px solid #bb86fc;
+    }
+
+    .card {
+      width: 100px;
+      height: 150px;
+      background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+      border-radius: 8px;
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
       justify-content: center;
-      gap: 8px;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    
-    button {
-      background: var(--secondary-color);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      margin: 5px;
-      font-size: 1.1rem;
-      border-radius: 5px;
+      align-items: center;
       cursor: pointer;
-      box-shadow: 0 0 10px var(--secondary-color);
+      color: #eee;
+      font-size: 2.5rem;
+      position: relative;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
       transition: all 0.2s ease;
-      font-family: var(--body-font);
+      margin: 5px;
+      user-select: none;
     }
-    
-    button:hover {
-      background: var(--main-color);
-      transform: translateY(-2px);
-      box-shadow: 0 0 15px var(--main-color);
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.4);
     }
-    
-    button:active {
-      transform: translateY(1px);
+
+    .card-value {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      font-size: 1.2rem;
+      color: #ddd;
     }
-    
-    button.claim-btn {
-      padding: 8px 12px;
-      font-size: 0.9rem;
-      min-width: 40px;
+
+    .card-type {
+      position: absolute;
+      bottom: 5px;
+      font-size: 0.8rem;
+      color: #ddd;
     }
-    
-    button.primary {
-      background: var(--main-color);
-      padding: 12px 24px;
+
+    .hand {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
     }
-    
-    button.secondary {
-      background: rgba(127, 0, 255, 0.5);
+
+    .selected-card {
+      box-shadow: 0 0 15px #bb86fc;
+      border: 2px solid #bb86fc;
+      transform: translateY(-10px);
     }
-    
-    button:disabled {
-      background: #444;
-      cursor: not-allowed;
-      box-shadow: none;
-      opacity: 0.5;
+
+    .face-down {
+      background: linear-gradient(135deg, #3a1f5e 0%, #251040 100%);
+      color: transparent;
     }
-    
-    .log-container {
-      max-height: 200px;
-      overflow-y: auto;
-      background: rgba(0, 0, 0, 0.6);
+
+    .face-down .card-value, .face-down .card-type {
+      display: none;
+    }
+
+    .face-down::after {
+      content: "?";
+      font-size: 3rem;
+      color: rgba(187, 134, 252, 0.3);
+    }
+
+    #log {
+      background: rgba(30, 30, 30, 0.9);
       border: 1px solid #444;
       padding: 15px;
-      border-radius: 8px;
-      margin: 20px auto;
-      max-width: 600px;
-      text-align: left;
-      scrollbar-width: thin;
-      scrollbar-color: var(--secondary-color) rgba(0, 0, 0, 0.2);
-    }
-    
-    .log-container::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    .log-container::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 4px;
-    }
-    
-    .log-container::-webkit-scrollbar-thumb {
-      background-color: var(--secondary-color);
-      border-radius: 4px;
-    }
-    
-    .log-entry {
-      margin-bottom: 8px;
-      line-height: 1.4;
-      padding-left: 20px;
-      position: relative;
-    }
-    
-    .log-entry::before {
-      content: '◇';
-      position: absolute;
-      left: 0;
-      color: var(--main-color);
-    }
-    
-    .log-entry.important {
-      color: var(--accent-color);
-      font-weight: bold;
-    }
-    
-    .log-entry.system {
-      color: #aaa;
-      font-style: italic;
-    }
-    
-    .rules-toggle {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px solid var(--secondary-color);
-      padding: 8px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    
-    .rules-container {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
+      margin-top: 20px;
       width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      z-index: 100;
-      padding: 30px;
-      overflow-y: auto;
-    }
-    
-    .rules-content {
       max-width: 800px;
-      margin: 0 auto;
-      background: var(--panel-bg);
-      padding: 30px;
       border-radius: 10px;
-      border: 1px solid var(--main-color);
-      position: relative;
+      height: 150px;
+      overflow-y: auto;
+      font-family: 'Times New Roman', serif;
+      font-size: 0.9rem;
+      line-height: 1.4;
     }
-    
-    .close-rules {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: none;
+
+    .action-panel {
+      margin: 20px 0;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .claim-panel, .response-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+
+    select, button {
+      padding: 10px 15px;
+      font-size: 1rem;
+      font-family: 'Cinzel', serif;
+      border-radius: 8px;
       border: none;
-      color: var(--light-text);
-      font-size: 1.5rem;
+    }
+
+    select {
+      background: #2a2a2a;
+      color: #eee;
+      border: 1px solid #444;
+    }
+
+    button {
       cursor: pointer;
+      background: #7f00ff;
+      color: white;
+      box-shadow: 0 0 10px rgba(127, 0, 255, 0.5);
+      transition: all 0.2s ease-in-out;
+      min-width: 150px;
     }
-    
-    .rules-section {
-      margin-bottom: 20px;
-      text-align: left;
+
+    button:hover {
+      background: #a94bff;
+      box-shadow: 0 0 15px rgba(169, 75, 255, 0.7);
+      transform: translateY(-2px);
     }
-    
-    .rules-section h3 {
-      color: var(--accent-color);
-      border-bottom: 1px solid var(--secondary-color);
-      padding-bottom: 5px;
+
+    button:disabled {
+      background: #444;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
     }
-    
-    .opponent-thinking {
-      margin: 10px 0;
-      font-style: italic;
-      color: var(--accent-color);
-      animation: thinking 2s infinite;
-    }
-    
-    @keyframes thinking {
-      0% { opacity: 0.6; }
-      50% { opacity: 1; }
-      100% { opacity: 0.6; }
-    }
-    
-    .highlight {
-      color: var(--accent-color);
-      font-weight: bold;
-    }
-    
-    .bluff-meter {
+
+    .stats {
       display: flex;
       justify-content: space-between;
+      width: 100%;
+      max-width: 800px;
+      margin-top: 15px;
+    }
+
+    .player-stats, .enemy-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
       align-items: center;
-      margin: 20px auto;
-      max-width: 300px;
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 5px;
-      padding: 5px;
-      height: 30px;
+      padding: 10px;
+      background: rgba(30, 30, 30, 0.5);
+      border-radius: 10px;
+      min-width: 200px;
     }
-    
-    .bluff-label {
-      padding: 0 10px;
-      font-size: 0.8rem;
+
+    .life-bar {
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
-    
-    .bluff-bar {
-      flex-grow: 1;
-      height: 10px;
-      background: linear-gradient(to right, #00aa00, #ffaa00, #ff0000);
-      border-radius: 5px;
-      position: relative;
-      overflow: hidden;
+
+    .heart {
+      color: #ff5555;
+      font-size: 1.5rem;
+      text-shadow: 0 0 5px rgba(255, 85, 85, 0.7);
     }
-    
-    .bluff-marker {
-      position: absolute;
-      top: -5px;
-      width: 5px;
-      height: 20px;
-      background: white;
-      transform: translateX(-50%);
-      transition: left 0.5s ease;
+
+    .mana {
+      color: #5555ff;
+      font-size: 1.5rem;
+      text-shadow: 0 0 5px rgba(85, 85, 255, 0.7);
     }
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .dice-area {
-        flex-direction: column;
-        align-items: center;
-      }
-      
-      .status-panel {
-        flex-direction: column;
-      }
-      
-      .player-info {
-        margin-bottom: 10px;
-      }
+
+    .score {
+      color: #bb86fc;
+      font-weight: bold;
     }
-    
-    /* Dark to light transition animation */
-    @keyframes lightFade {
-      0% { opacity: 0; }
-      50% { opacity: 1; }
-      100% { opacity: 0; }
+
+    .power-bar {
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
-    
-    .light-effect {
+
+    .card-count {
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+
+    .game-over-screen {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: white;
-      opacity: 0;
-      z-index: 10;
-      pointer-events: none;
-    }
-    
-    .notification {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
       background: rgba(0, 0, 0, 0.8);
-      border: 2px solid var(--main-color);
-      border-radius: 10px;
-      padding: 20px;
-      z-index: 100;
-      box-shadow: 0 0 30px var(--main-color);
-      max-width: 80%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      gap: 30px;
       display: none;
     }
-    
-    .notification h2 {
-      color: var(--accent-color);
-      margin-top: 0;
+
+    .game-over-message {
+      font-size: 2.5rem;
+      color: #bb86fc;
+      text-shadow: 0 0 15px rgba(187, 134, 252, 0.8);
+      text-align: center;
     }
-    
-    .notification p {
-      margin-bottom: 20px;
+
+    .reveal-animation {
+      animation: reveal 1s ease-out;
     }
+
+    @keyframes reveal {
+      0% { transform: rotateY(90deg); opacity: 0; }
+      100% { transform: rotateY(0); opacity: 1; }
+    }
+
+    .battlefield-card {
+      margin: 0 auto;
+      transform-style: preserve-3d;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(30, 30, 30, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #7f00ff;
+      box-shadow: 0 0 20px rgba(127, 0, 255, 0.5);
+      z-index: 100;
+      font-size: 1.5rem;
+      color: #bb86fc;
+      animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    .effect-highlight {
+      animation: highlight 1s ease-in-out;
+    }
+
+    @keyframes highlight {
+      0% { box-shadow: 0 0 5px #bb86fc; }
+      50% { box-shadow: 0 0 30px #bb86fc; }
+      100% { box-shadow: 0 0 5px #bb86fc; }
+    }
+
+    .card-deck {
+      position: relative;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+
+    #startButton {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      padding: 15px 30px;
+    }
+
+    .instructions {
+      background: rgba(30, 30, 30, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 800px;
+      margin: 20px auto;
+      text-align: left;
+      line-height: 1.5;
+    }
+
+    .instructions h2 {
+      color: #bb86fc;
+      margin-top: 5px;
+    }
+
+    .card-icon {
+      font-size: 1.4rem;
+      margin-right: 5px;
+    }
+
+    /* Kártyatípus színek */
+    .card.warrior { border-left: 3px solid #ff5555; }
+    .card.mage { border-left: 3px solid #5555ff; }
+    .card.assassin { border-left: 3px solid #55ff55; }
+    .card.guardian { border-left: 3px solid #ffaa55; }
+    .card.betrayer { border-left: 3px solid #ff55ff; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Árnykocka – A Lélekpróba</h1>
-    
-    <div class="game-board">
-      <div class="status-panel">
-        <div id="playerInfo" class="player-info active">
-          <h3>Játékos</h3>
-          <div class="essence-container" id="playerEssence">
-            <div class="essence"></div>
-            <div class="essence"></div>
-            <div class="essence"></div>
-            <div class="essence"></div>
-            <div class="essence"></div>
-          </div>
-        </div>
-        
-        <div id="opponentInfo" class="player-info">
-          <h3>Sötét Entitás</h3>
-          <div class="essence-container" id="opponentEssence">
-            <div class="essence"></div>
-            <div class="essence"></div>
-            <div class="essence"></div>
-            <div class="essence"></div>
-            <div class="essence"></div>
-          </div>
-        </div>
-      </div>
+
+  <h1>Árnyéktrónok: Hitszegők Párbaja</h1>
+
+  <div id="startScreen">
+    <div class="instructions">
+      <h2>Játékszabályok</h2>
+      <p>Az <strong>Árnyéktrónok: Hitszegők Párbaja</strong> egy stratégiai kártyajáték, ahol a blöffölés és taktika találkozik.</p>
       
-      <div class="dice-area">
-        <div id="playerDiceContainer">
-          <div class="dice-label">Játékos kockái</div>
-          <div class="dice-container">
-            <div class="dice d8" id="playerDice0">?</div>
-            <div class="dice-info">Nagy (d8)</div>
-          </div>
-          <div class="dice-container">
-            <div class="dice" id="playerDice1">?</div>
-            <div class="dice-info">Normál</div>
-          </div>
-          <div class="dice-container">
-            <div class="dice" id="playerDice2">?</div>
-            <div class="dice-info">Normál</div>
-          </div>
-        </div>
-        
-        <div id="opponentDiceContainer" style="display: none;">
-          <div class="dice-label">Ellenfél kockái</div>
-          <div class="dice-container">
-            <div class="dice d8" id="opponentDice0">?</div>
-            <div class="dice-info">Nagy (d8)</div>
-          </div>
-          <div class="dice-container">
-            <div class="dice" id="opponentDice1">?</div>
-            <div class="dice-info">Normál</div>
-          </div>
-          <div class="dice-container">
-            <div class="dice" id="opponentDice2">?</div>
-            <div class="dice-info">Normál</div>
-          </div>
-        </div>
-      </div>
+      <p><strong>Célod:</strong> Nyerd meg a párbajt azzal, hogy elveszed az ellenfeled összes életpontját!</p>
       
-      <div id="bluffMeter" class="bluff-meter" style="display: none;">
-        <div class="bluff-label">Őszinte</div>
-        <div class="bluff-bar">
-          <div class="bluff-marker" id="bluffMarker" style="left: 50%;"></div>
-        </div>
-        <div class="bluff-label">Blöff</div>
-      </div>
+      <p><strong>Játékmenet:</strong>
+      <ol>
+        <li>Minden körben húzol egy kártyát.</li>
+        <li>Válassz egy kártyát a kezedből, játszd ki, és tegyél egy állítást (blöffölhetsz is).</li>
+        <li>Az ellenfeled vagy elhiszi az állításodat, vagy blöffnek nevezi.</li>
+        <li>Az eredménytől függően életpontokat veszíthetsz vagy szerezhetsz.</li>
+      </ol>
+      </p>
       
-      <div id="actions" class="actions">
-        <button id="rollBtn" class="primary" onclick="playerRoll()">🎲 Kockák Dobása</button>
-      </div>
+      <p><strong>Kártyatípusok:</strong>
+      <ul>
+        <li><span class="card-icon">⚔️</span><strong>Harcos (1-10):</strong> Alap erőkártyák</li>
+        <li><span class="card-icon">🔮</span><strong>Mágus (1-5):</strong> Speciális képességű kártyák</li>
+        <li><span class="card-icon">🗡️</span><strong>Orgyilkos (1-3):</strong> Legyőzhet erősebb kártyákat</li>
+        <li><span class="card-icon">🛡️</span><strong>Őrző (1-5):</strong> Védekező kártyák</li>
+        <li><span class="card-icon">🎭</span><strong>Áruló (1-3):</strong> Bünteti azokat, akik nem hívnak blöfföt</li>
+      </ul>
+      </p>
     </div>
-    
-    <div class="log-container" id="logContainer">
-      <div class="log-entry system">A játék kezdődik. Dobj a kockákkal...</div>
-    </div>
+    <button id="startButton" onclick="startGame()">Játék indítása</button>
   </div>
-  
-  <div class="rules-toggle" onclick="toggleRules()">Játékszabályok</div>
-  
-  <div class="rules-container" id="rulesContainer">
-    <div class="rules-content">
-      <button class="close-rules" onclick="toggleRules()">✕</button>
-      <h2>Árnykocka Játékszabályok</h2>
-      
-      <div class="rules-section">
-        <h3>A Játék Célja</h3>
-        <p>Az Árnykocka egy stratégiai kockajáték, ahol a cél 5 lélekesszencia összegyűjtése a túlvilági entitás megidézéséhez. Az esszenciák gyűjtéséhez le kell győznöd az ellenfeledet a blöffölés és logika keverékével.</p>
+
+  <div id="gameScreen" style="display: none;">
+    <div class="stats">
+      <div class="player-stats">
+        <h3>Kalandor</h3>
+        <div class="life-bar">Életerő: <span id="playerLives">❤️❤️❤️</span></div>
+        <div class="power-bar">Mana: <span id="playerMana">💎💎💎</span></div>
+        <div class="card-count">Pakli: <span id="playerDeckCount">20</span> kártya</div>
       </div>
-      
-      <div class="rules-section">
-        <h3>A Játék Menete</h3>
-        <ol>
-          <li>Minden körben mindkét játékos dob három kockával: egy nyolcoldalú (d8) és két hatoldalú (d6) kockával.</li>
-          <li>A d8 kocka értéke duplán számít a pontszám kiszámításakor!</li>
-          <li>A pontszámodat a következőképpen számolhatod ki: (d8 × 2) + első d6 + második d6</li>
-          <li>A saját dobásod látod, de az ellenfélét nem.</li>
-          <li>Bemondasz egy értéket, ami nem lehet kevesebb, mint a minimális valószínű pontszám (általában 4).</li>
-          <li>Az ellenfél dönthet, hogy:
-            <ul>
-              <li>Elfogadja a bemondást - ekkor felfeded a dobásodat</li>
-              <li>Blöfföt hív - ekkor szintén felfeded a dobásodat</li>
-            </ul>
-          </li>
-        </ol>
+      <div class="enemy-stats">
+        <h3>Sötét Nagyúr</h3>
+        <div class="life-bar">Életerő: <span id="enemyLives">❤️❤️❤️</span></div>
+        <div class="power-bar">Mana: <span id="enemyMana">💎💎💎</span></div>
+        <div class="card-count">Pakli: <span id="enemyDeckCount">20</span> kártya</div>
       </div>
-      
-      <div class="rules-section">
-        <h3>Pontozás</h3>
-        <ul>
-          <li>Ha a bemondott érték kisebb vagy egyenlő a tényleges kockaösszegnél, ÉS az ellenfél elfogadja: Te kapsz egy esszenciát.</li>
-          <li>Ha a bemondott érték nagyobb, mint a tényleges kockaösszeg, ÉS az ellenfél elfogadja: Az ellenfél kap egy esszenciát.</li>
-          <li>Ha az ellenfél blöfföt hív, ÉS a bemondott érték kisebb vagy egyenlő a tényleges kockaösszegnél: Te kapsz egy esszenciát.</li>
-          <li>Ha az ellenfél blöfföt hív, ÉS a bemondott érték nagyobb, mint a tényleges kockaösszeg: Az ellenfél kap egy esszenciát.</li>
-        </ul>
-      </div>
-      
-      <div class="rules-section">
-        <h3>Tippek a Játékhoz</h3>
-        <ul>
-          <li>Próbálj hihető értékeket bemondani - néha az igazság, néha a blöff a jó stratégia.</li>
-          <li>Figyelj az ellenfél mintáira! Ha túl sokszor blöfföl vagy mindig igazat mond, használd ki!</li>
-          <li>Kockáztatnod kell a győzelemért, de a túl merész blöffök könnyen lelepleződhetnek.</li>
-        </ul>
-      </div>
-      
-      <button class="primary" onclick="toggleRules()">Bezárás</button>
     </div>
+
+    <div class="game-area">
+      <div class="battlefield">
+        <div class="player-side" id="playerSide">
+          <h3>Te</h3>
+          <div id="playerBattlefield" class="battlefield-card"></div>
+        </div>
+        <div class="enemy-side" id="enemySide">
+          <h3>Ellenfél</h3>
+          <div id="enemyBattlefield" class="battlefield-card"></div>
+        </div>
+      </div>
+
+      <div class="action-panel">
+        <div class="claim-panel" id="claimPanel">
+          <div>
+            <label for="claimType">Kártyatípus: </label>
+            <select id="claimType">
+              <option value="warrior">Harcos ⚔️</option>
+              <option value="mage">Mágus 🔮</option>
+              <option value="assassin">Orgyilkos 🗡️</option>
+              <option value="guardian">Őrző 🛡️</option>
+              <option value="betrayer">Áruló 🎭</option>
+            </select>
+          </div>
+          <div>
+            <label for="claimValue">Erő: </label>
+            <select id="claimValue">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+            </select>
+          </div>
+          <button id="playCardBtn" onclick="submitClaim()">Kártya kijátszása</button>
+        </div>
+
+        <div class="response-panel" id="responsePanel" style="display:none;">
+          <button id="acceptBtn" onclick="respondToClaim(true)">Elhiszem</button>
+          <button id="challengeBtn" onclick="respondToClaim(false)">Blöff!</button>
+        </div>
+      </div>
+
+      <div class="hand" id="playerHand"></div>
+    </div>
+
+    <div id="log"></div>
   </div>
+
+  <div class="notification" id="notification"></div>
   
-  <div class="light-effect" id="lightEffect"></div>
-  
-  <div class="notification" id="notification">
-    <h2 id="notificationTitle">Játék Vége</h2>
-    <p id="notificationMessage">Gratulálunk! Nyertél!</p>
-    <button class="primary" onclick="hideNotification()">Rendben</button>
+  <div class="game-over-screen" id="gameOverScreen">
+    <div class="game-over-message" id="gameOverMessage"></div>
+    <button onclick="resetGame()">Új játék</button>
   </div>
 
   <script>
-    // Game variables
-    let playerEssence = 0;
-    let opponentEssence = 0;
-    let playerDice = [];
-    let opponentDice = [];
-    let roundPhase = 0; // 0 = dobás, 1 = bemondás, 2 = döntés, 3 = eredmény
-    let claimValue = 0;
-    let gameHistory = [];
-    let totalRounds = 0;
-    let opponentBluffRate = 0.4; // Starting bluff rate
-    let playerBluffHistory = []; // Track player's bluffing pattern
-    
-    // Helper functions
-    function randomDice(max = 6) {
-      return Math.floor(Math.random() * max) + 1;
-    }
-    
-    function calculateTotal(dice) {
-      return dice[0] * 2 + dice[1] + dice[2];
-    }
-    
-    function addLogEntry(message, type = '') {
-      const logContainer = document.getElementById('logContainer');
-      const entry = document.createElement('div');
-      entry.className = 'log-entry ' + type;
-      entry.textContent = message;
-      logContainer.appendChild(entry);
-      logContainer.scrollTop = logContainer.scrollHeight;
-    }
-    
-    function updateStatus() {
-      // Update player active status
-      document.getElementById('playerInfo').classList.toggle('active', roundPhase < 2);
-      document.getElementById('opponentInfo').classList.toggle('active', roundPhase >= 2);
-      
-      // Update essences
-      const playerEssenceElements = document.querySelectorAll('#playerEssence .essence');
-      const opponentEssenceElements = document.querySelectorAll('#opponentEssence .essence');
-      
-      for (let i = 0; i < 5; i++) {
-        playerEssenceElements[i].classList.toggle('filled', i < playerEssence);
-        opponentEssenceElements[i].classList.toggle('filled', i < opponentEssence);
+    // Játék állapot
+    let gameState = {
+      playerLife: 3,
+      enemyLife: 3,
+      playerMana: 3,
+      enemyMana: 3,
+      currentPlayer: 'player', // 'player' vagy 'enemy'
+      playerDeck: [],
+      enemyDeck: [],
+      playerHand: [],
+      enemyHand: [],
+      selectedCard: null,
+      playerBattlefield: null,
+      enemyBattlefield: null,
+      currentClaim: null,
+      gameOver: false,
+      turnCount: 0,
+      playerBluffHistory: [], // A játékos blöffölési mintáinak követése
+      enemyBluffHistory: []   // Az ellenfél blöffölési mintáinak követése
+    };
+
+    // Kártyák definíciói
+    const CARD_TYPES = {
+      warrior: {
+        name: "Harcos",
+        symbol: "⚔️",
+        maxValue: 10,
+        effect: "Nincs speciális hatás."
+      },
+      mage: {
+        name: "Mágus",
+        symbol: "🔮",
+        maxValue: 5,
+        effect: "Ha nem hívják blöffnek, +1 mana."
+      },
+      assassin: {
+        name: "Orgyilkos",
+        symbol: "🗡️",
+        maxValue: 3,
+        effect: "Megöli a Mágusokat. Ha blöffnek hívják, elvesz 1 manát."
+      },
+      guardian: {
+        name: "Őrző",
+        symbol: "🛡️",
+        maxValue: 5,
+        effect: "Ha nem hívják blöffnek, megvéd 1 életpontot."
+      },
+      betrayer: {
+        name: "Áruló",
+        symbol: "🎭",
+        maxValue: 3,
+        effect: "Ha nem hívják blöffnek, sebez 1 életpontot."
       }
-    }
-    
-    function showDiceRoll(diceValues, player) {
-      const prefix = player ? 'player' : 'opponent';
+    };
+
+    // Pakli készítése
+    function createDeck() {
+      const deck = [];
       
-      for (let i = 0; i < 3; i++) {
-        const diceElement = document.getElementById(`${prefix}Dice${i}`);
-        diceElement.textContent = diceValues[i];
-        diceElement.classList.add('rolling');
+      // Harcosok (1-10)
+      for (let i = 1; i <= 10; i++) {
+        deck.push({ type: 'warrior', value: i });
+      }
+      
+      // Mágusok (1-5)
+      for (let i = 1; i <= 5; i++) {
+        deck.push({ type: 'mage', value: i });
+      }
+      
+      // Orgyilkosok (1-3)
+      for (let i = 1; i <= 3; i++) {
+        deck.push({ type: 'assassin', value: i });
+      }
+      
+      // Őrzők (1-5)
+      for (let i = 1; i <= 5; i++) {
+        deck.push({ type: 'guardian', value: i });
+      }
+      
+      // Árulók (1-3)
+      for (let i = 1; i <= 3; i++) {
+        deck.push({ type: 'betrayer', value: i });
+      }
+      
+      return shuffleDeck([...deck]);
+    }
+
+    // Pakli keverése
+    function shuffleDeck(deck) {
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      return deck;
+    }
+
+    // Egy kártya húzása a pakliból
+    function drawCard(deck) {
+      if (deck.length === 0) return null;
+      return deck.pop();
+    }
+
+    // Játékos kezének renderelése
+    function renderPlayerHand() {
+      const handElement = document.getElementById('playerHand');
+      handElement.innerHTML = '';
+      
+      gameState.playerHand.forEach((card, index) => {
+        const cardElement = document.createElement('div');
+        cardElement.className = `card ${card.type}`;
+        cardElement.dataset.index = index;
         
-        setTimeout(() => {
-          diceElement.classList.remove('rolling');
-        }, 1000);
-      }
-      
-      if (!player) {
-        document.getElementById('opponentDiceContainer').style.display = 'block';
-      }
-    }
-    
-    function hideDice(player) {
-      const prefix = player ? 'player' : 'opponent';
-      
-      for (let i = 0; i < 3; i++) {
-        document.getElementById(`${prefix}Dice${i}`).textContent = '?';
-      }
-      
-      if (!player) {
-        document.getElementById('opponentDiceContainer').style.display = 'none';
-      }
-    }
-    
-    function toggleRules() {
-      const rulesContainer = document.getElementById('rulesContainer');
-      rulesContainer.style.display = rulesContainer.style.display === 'block' ? 'none' : 'block';
-    }
-    
-    function flashEffect() {
-      const lightEffect = document.getElementById('lightEffect');
-      lightEffect.style.animation = 'lightFade 0.5s';
-      
-      setTimeout(() => {
-        lightEffect.style.animation = '';
-      }, 500);
-    }
-    
-    function showNotification(title, message) {
-      document.getElementById('notificationTitle').textContent = title;
-      document.getElementById('notificationMessage').textContent = message;
-      document.getElementById('notification').style.display = 'block';
-    }
-    
-    function hideNotification() {
-      document.getElementById('notification').style.display = 'none';
-    }
-    
-    function updateBluffMeter(value) {
-      // Update the bluff meter marker position (0-100)
-      document.getElementById('bluffMarker').style.left = `${value}%`;
-      document.getElementById('bluffMeter').style.display = 'flex';
-    }
-    
-    // Game functions
-    function playerRoll() {
-      // Reset for new round
-      hideDice(false);
-      document.getElementById('bluffMeter').style.display = 'none';
-      
-      // Roll dice with animation
-      const dice0 = randomDice(8);
-      const dice1 = randomDice();
-      const dice2 = randomDice();
-      playerDice = [dice0, dice1, dice2];
-      
-      // Opponent also rolls
-      const oppDice0 = randomDice(8);
-      const oppDice1 = randomDice();
-      const oppDice2 = randomDice();
-      opponentDice = [oppDice0, oppDice1, oppDice2];
-      
-      showDiceRoll(playerDice, true);
-      
-      roundPhase = 1;
-      totalRounds++;
-      
-      const total = calculateTotal(playerDice);
-      addLogEntry(`Dobtál: Nagy kocka: ${playerDice[0]}, Normál kockák: ${playerDice[1]}, ${playerDice[2]}`);
-      addLogEntry(`A kockáid összértéke: ${total} (${playerDice[0]}×2 + ${playerDice[1]} + ${playerDice[2]})`);
-      
-      showClaimOptions();
-      updateStatus();
-    }
-    
-    function showClaimOptions() {
-      const total = calculateTotal(playerDice);
-      const minClaim = 4;
-      const maxPossible = 8*2 + 6 + 6; // Max possible with these dice
-      
-      // For UI purposes, set a reasonable upper limit
-      const maxClaim = Math.min(total + 8, maxPossible);
-      
-      let html = `<div class="claim-container">
-                    <p>Milyen értéket mondasz be? (Valós érték: ${total})</p>
-                    <div class="claim-options">`;
-      
-      for (let i = minClaim; i <= maxClaim; i++) {
-        const isTrue = i <= total;
-        html += `<button class="claim-btn ${isTrue ? '' : 'secondary'}" onclick="makeClaim(${i})">${i}</button>`;
-      }
-      
-      html += `</div>
-               <div class="claim-hint">
-                 <p><small>Tipp: A világoskék gombok igazmondást, a lila gombok blöfföt jelentenek</small></p>
-               </div>
-             </div>`;
-      
-      document.getElementById('actions').innerHTML = html;
-    }
-    
-    function makeClaim(value) {
-      claimValue = value;
-      const actualTotal = calculateTotal(playerDice);
-      
-      // Record if player is bluffing
-      const isBluffing = value > actualTotal;
-      playerBluffHistory.push(isBluffing);
-      
-      // Calculate bluff percentage for UI
-      let bluffPercentage = 0;
-      if (value <= actualTotal) {
-        // Truth: 0-50% range based on how close to the actual value
-        bluffPercentage = 50 * (value / actualTotal);
-      } else {
-        // Bluff: 50-100% range based on how far above the actual value
-        const maxPossible = 8*2 + 6 + 6; // Maximum possible total
-        const excessClaim = value - actualTotal;
-        const maxExcess = maxPossible - actualTotal;
-        bluffPercentage = 50 + (50 * (excessClaim / maxExcess));
-      }
-      
-      updateBluffMeter(bluffPercentage);
-      
-      roundPhase = 2;
-      updateStatus();
-      
-      addLogEntry(`Bemondtad: ${value}`, isBluffing ? 'important' : '');
-      
-      // Add delay before opponent's decision
-      document.getElementById('actions').innerHTML = '<div class="opponent-thinking">A Sötét Entitás mérlegeli az állításodat...</div>';
-      
-      setTimeout(() => {
-        opponentDecide();
-      }, 2000);
-    }
-    
-    function opponentDecide() {
-      // Get opponent's decision: call or doubt
-      const opponentTotal = calculateTotal(opponentDice);
-      const maxPossible = 8*2 + 6 + 6; // Maximum possible total
-      
-      // Base decision factors
-      let doubtProbability = 0.5; // Base 50% chance to doubt
-      
-      // Factor 1: How high is the claim compared to maximum?
-      const claimRatio = claimValue / maxPossible;
-      doubtProbability += (claimRatio - 0.5) * 0.6; // Adjust based on claim size
-      
-      // Factor 2: Player's bluffing history
-      if (playerBluffHistory.length >= 3) {
-        const recentBluffs = playerBluffHistory.slice(-3);
-        const bluffCount = recentBluffs.filter(b => b).length;
-        const bluffRate = bluffCount / 3;
+        const cardSymbol = CARD_TYPES[card.type].symbol;
+        cardElement.innerHTML = `
+          <div class="card-value">${card.value}</div>
+          <div>${cardSymbol}</div>
+          <div class="card-type">${CARD_TYPES[card.type].name}</div>
+        `;
         
-        // If player bluffs a lot, more likely to doubt
-        doubtProbability += (bluffRate - 0.3) * 0.4;
-      }
-      
-      // Factor 3: Game state - if opponent is behind, more aggressive
-      if (opponentEssence < playerEssence) {
-        doubtProbability += 0.1;
-      }
-      
-      // Factor 4: Opponent's own hand strength
-      const opponentHandStrength = opponentTotal / maxPossible;
-      if (opponentHandStrength > 0.7) {
-        // With a strong hand, more likely to call (reduce doubt)
-        doubtProbability -= 0.2;
-      }
-      
-      // Clamp probability between 0.1 and 0.9
-      doubtProbability = Math.max(0.1, Math.min(0.9, doubtProbability));
-      
-      // Make the decision
-      const willDoubt = Math.random() < doubtProbability;
-      
-      if (willDoubt) {
-        opponentDoubt();
-      } else {
-        opponentCall();
-      }
+        cardElement.addEventListener('click', () => selectCard(index));
+        handElement.appendChild(cardElement);
+      });
     }
-    
-    function opponentCall() {
-      const actual = calculateTotal(playerDice);
-      const isPlayerHonest = actual >= claimValue;
+
+    // Kártya kiválasztása
+    function selectCard(index) {
+      // Csak a játékos körében lehet kártyát választani
+      if (gameState.currentPlayer !== 'player') return;
       
-      addLogEntry("A Sötét Entitás elfogadja az állításodat.");
-      revealAllDice();
+      const handElement = document.getElementById('playerHand');
+      const cards = handElement.querySelectorAll('.card');
       
-      setTimeout(() => {
-        if (isPlayerHonest) {
-          playerEssence++;
-          addLogEntry(`✓ Igazat mondtál! Megszereztél egy lélekesszenciát.`, 'important');
-          addLogEntry(`Valódi érték: ${actual}, Bemondott érték: ${claimValue}`);
-          gameHistory.push({round: totalRounds, playerWon: true, reason: 'honest_accepted'});
-        } else {
-          opponentEssence++;
-          addLogEntry(`✗ Sikeresen átvertetted! Az ellenfél elvesztett egy lélekesszenciát.`, 'important');
-          addLogEntry(`Valódi érték: ${actual}, Bemondott érték: ${claimValue}`);
-          gameHistory.push({round: totalRounds, playerWon: false, reason: 'bluff_accepted'});
+      // Korábbi kiválasztás törlése
+      cards.forEach(card => card.classList.remove('selected-card'));
+      
+      // Új kártya kiválasztása
+      cards[index].classList.add('selected-card');
+      gameState.selectedCard = index;
+      
+      // A kártya típusa és értéke alapján beállítjuk az állítás alapértelmezett értékeit
+      const card = gameState.playerHand[index];
+      document.getElementById('claimType').value = card.type;
+      
+      // Csak azokat az értékeket jelenítjük meg, amelyek lehetségesek az adott kártyatípusnál
+      const claimValueSelect = document.getElementById('claimValue');
+      const maxValue = CARD_TYPES[card.type].maxValue;
+      claimValueSelect.innerHTML = '';
+      
+      for (let i = 1; i <= 10; i++) {
+        if (i <= maxValue) {
+          const option = document.createElement('option');
+          option.value = i;
+          option.textContent = i;
+          if (i === card.value) option.selected = true;
+          claimValueSelect.appendChild(option);
         }
-        
-        flashEffect();
-        endRound();
-      }, 1000);
+      }
     }
-    
-    function opponentDoubt() {
-      const actual = calculateTotal(playerDice);
-      const isPlayerHonest = actual >= claimValue;
+
+    // Kártya kijátszása és állítás
+    function submitClaim() {
+      if (gameState.selectedCard === null) {
+        showNotification("Először válassz ki egy kártyát!");
+        return;
+      }
       
-      addLogEntry("A Sötét Entitás blöfföt hív! Felfeded a lapjaidat...");
-      revealAllDice();
+      const claimType = document.getElementById('claimType').value;
+      const claimValue = parseInt(document.getElementById('claimValue').value);
       
+      // Az állított kártyatípus és érték ellenőrzése
+      if (claimValue > CARD_TYPES[claimType].maxValue) {
+        showNotification(`Egy ${CARD_TYPES[claimType].name} maximum ${CARD_TYPES[claimType].maxValue} értékű lehet!`);
+        return;
+      }
+      
+      // Kártya kijátszása
+      const card = gameState.playerHand.splice(gameState.selectedCard, 1)[0];
+      gameState.playerBattlefield = card;
+      
+      // Állítás rögzítése
+      gameState.currentClaim = { type: claimType, value: claimValue };
+      
+      // Blöff rögzítése a történelemben
+      const isBluffing = card.type !== claimType || card.value !== claimValue;
+      gameState.playerBluffHistory.push({
+        turnCount: gameState.turnCount,
+        actualCard: { ...card },
+        claim: { ...gameState.currentClaim },
+        isBluffing
+      });
+      
+      // Log üzenet
+      logMsg(`<span style="color:#bb86fc">Te:</span> Kijátszottam egy ${CARD_TYPES[claimType].name} (${claimValue}) kártyát.`);
+      
+      // UI frissítése
+      renderBattlefield();
+      renderPlayerHand();
+      
+      // Kiválasztás törlése
+      gameState.selectedCard = null;
+      
+      // Claim panel elrejtése, válasz panel megjelenítése
+      document.getElementById('claimPanel').style.display = 'none';
+      document.getElementById('responsePanel').style.display = 'flex';
+      
+      // Játékos oldala aktív, ellenfél oldala inaktív
+      document.getElementById('playerSide').classList.add('active-player');
+      document.getElementById('enemySide').classList.remove('active-player');
+      
+      // Ellenfél gondolkodik...
       setTimeout(() => {
-        if (isPlayerHonest) {
-          playerEssence++;
-          addLogEntry(`✓ Igazat mondtál! Az ellenfél elhibázta. Te kapsz egy lélekesszenciát.`, 'important');
-          addLogEntry(`Valódi érték: ${actual}, Bemondott érték: ${claimValue}`);
-          gameHistory.push({round: totalRounds, playerWon: true, reason: 'honest_doubted'});
-        } else {
-          opponentEssence++;
-          addLogEntry(`✗ Rajtakapott a blöffön! Az ellenfél kap egy lélekesszenciát.`, 'important');
-          addLogEntry(`Valódi érték: ${actual}, Bemondott érték: ${claimValue}`);
-          gameHistory.push({round: totalRounds, playerWon: false, reason: 'bluff_caught'});
-        }
+        if (gameState.gameOver) return;
         
-        flashEffect();
-        endRound();
-      }, 1000);
+        // Az ellenfél dönt, hogy blöffnek hívja-e az állítást
+        const callBluff = decideEnemyResponse();
+        
+        if (callBluff) {
+          logMsg(`<span style="color:#ff5555">Ellenfél:</span> Blöff! Nem hiszem el, hogy ilyen kártyád van.`);
+          // Késleltetés az olvashatóság érdekében
+          setTimeout(() => resolveChallenge(true), 1000);
+        } else {
+          logMsg(`<span style="color:#ff5555">Ellenfél:</span> Elhiszem az állításodat.`);
+          // Késleltetés az olvashatóság érdekében
+          setTimeout(() => resolveChallenge(false), 1000);
+        }
+      }, 1500);
     }
-    
-    function revealAllDice() {
-      // Show opponent's dice
-      document.getElementById('opponentDiceContainer').style.display = 'block';
-      showDiceRoll(opponentDice, false);
+
+    // Az ellenfél válasza az állításra
+    function decideEnemyResponse() {
+      // Alapértelmezett valószínűség a blöff hívására
+      let bluffCallProbability = 0.4;
       
-      // Add opponent's total to log
-      const opponentTotal = calculateTotal(opponentDice);
-      addLogEntry(`Az ellenfél dobása: Nagy kocka: ${opponentDice[0]}, Normál kockák: ${opponentDice[1]}, ${opponentDice[2]}`);
-      addLogEntry(`Az ellenfél kockáinak összértéke: ${opponentTotal}`);
+      const claim = gameState.currentClaim;
+      
+      // Az állítás hihetőségének elemzése
+      // 1. Magas érték állítása növeli a blöffölés gyanúját
+      if (claim.value > 8) bluffCallProbability += 0.2;
+      if (claim.type === 'warrior' && claim.value > 7) bluffCallProbability += 0.1;
+      
+      // 2. Különösen erős kártyák állítása növeli a gyanút
+      if (claim.type === 'betrayer' && claim.value === 3) bluffCallProbability += 0.25;
+      if (claim.type === 'assassin' && claim.value === 3) bluffCallProbability += 0.2;
+      
+      // 3. Játékos múltbeli blöffölési szokásainak elemzése
+      if (gameState.playerBluffHistory.length >= 3) {
+        // Az utolsó 3 kör vizsgálata
+        const recentHistory = gameState.playerBluffHistory.slice(-3);
+        
+        // Ha a játékos gyakran blöfföl
+        const recentBluffs = recentHistory.filter(h => h.isBluffing).length;
+        if (recentBluffs >= 2) bluffCallProbability += 0.2;
+        
+        // Ha a játékos sosem blöfföl
+        if (recentBluffs === 0) bluffCallProbability -= 0.15;
+        
+        // Ha a játékos egy adott mintát követ (pl. minden 2. körben blöfföl)
+        // Ez egy példa, de sokkal komplexebb mintákat is elemezhetnénk
+        if (gameState.playerBluffHistory.length >= 5) {
+          const pattern = gameState.playerBluffHistory.slice(-5).map(h => h.isBluffing ? 1 : 0);
+          if (pattern.join('') === '10101' || pattern.join('') === '01010') {
+            bluffCallProbability += 0.3; // Felismerte a mintát
+          }
+        }
+      }
+      
+      // 4. A játék állásának figyelembevétele
+      // Ha az ellenfél vesztésre áll, nagyobb kockázatot vállal
+      if (gameState.enemyLife === 1 && gameState.playerLife > 1) {
+        bluffCallProbability += 0.2;
+      }
+      
+      // Ha az ellenfél nyerésre áll, óvatosabb
+      if (gameState.enemyLife > gameState.playerLife) {
+        bluffCallProbability -= 0.1;
+      }
+      
+      // Kissé random elem hozzáadása, hogy ne legyen teljesen megjósolható
+      bluffCallProbability += (Math.random() * 0.2) - 0.1;
+      
+      // 0-1 tartományba szorítás
+      bluffCallProbability = Math.max(0, Math.min(1, bluffCallProbability));
+      
+      // Döntés a blöff hívásáról a kiszámított valószínűség alapján
+      return Math.random() < bluffCallProbability;
     }
-    
-    function endRound() {
-      updateStatus();
+
+    // A játékos válasza az ellenfél állítására
+    function respondToClaim(accept) {
+      document.getElementById('responsePanel').style.display = 'none';
       
-      if (playerEssence >= 5 || opponentEssence >= 5) {
-        endGame();
+      if (accept) {
+        logMsg(`<span style="color:#bb86fc">Te:</span> Elhiszem az állítást.`);
+        resolveChallenge(false);
       } else {
-        // Show continue button
-        setTimeout(() => {
-          document.getElementById('actions').innerHTML = `
-            <button class="primary" onclick="prepareNextRound()">Következő Kör</button>
+        logMsg(`<span style="color:#bb86fc">Te:</span> Blöff! Nem hiszem el az állítást.`);
+        resolveChallenge(true);
+      }
+    }
+
+    // A kihívás eredményének kiértékelése
+    function resolveChallenge(challenged) {
+      // Kártyák felfedése
+      revealCards();
+      
+      const battlefield = gameState.currentPlayer === 'player' 
+        ? gameState.playerBattlefield 
+        : gameState.enemyBattlefield;
+      
+      const claim = gameState.currentClaim;
+      const isBluff = battlefield.type !== claim.type || battlefield.value !== claim.value;
+      
+      if (challenged) {
+        // Blöffölés esetén
+        if (isBluff) {
+          // A blöffölőt elkapták
+          if (gameState.currentPlayer === 'player') {
+            logMsg(`Lebuktattak! A kártyád valójában egy ${CARD_TYPES[battlefield.type].name} (${battlefield.value}).`);
+            damage('player');
+            
+            // Orgyilkos speciális képesség: ha blöffnek hívják, elvesz 1 manát
+            if (battlefield.type === 'assassin') {
+              logMsg(`Az Orgyilkos képessége: Az ellenfél veszít 1 manát.`);
+              useMana('enemy');
+            }
+          } else {
+            logMsg(`Elfogtad a blöfföt! Az ellenfél kártyája valójában egy ${CARD_TYPES[battlefield.type].name} (${battlefield.value}).`);
+            damage('enemy');
+            
+            // Orgyilkos speciális képesség: ha blöffnek hívják, elvesz 1 manát
+            if (battlefield.type === 'assassin') {
+              logMsg(`Az Orgyilkos képessége: Elveszítesz 1 manát.`);
+              useMana('player');
+            }
+          }
+        } else {
+          // A kártya valódi volt, a kihívó veszít
+          if (gameState.currentPlayer === 'player') {
+            logMsg(`Az állításod igaz volt! Az ellenfél veszít 1 életpontot.`);
+            damage('enemy');
+          } else {
+            logMsg(`Az ellenfél igazat mondott! Veszítesz 1 életpontot.`);
+            damage('player');
+          }
+        }
+      } else {
+        // Elfogadás esetén speciális képességek
+        const cardEffects = processCardEffects(battlefield.type, gameState.currentPlayer);
+        
+        // Játék következő állása
+        nextTurn();
+      }
+    }
+
+    // Kártyák speciális képességeinek feldolgozása
+    function processCardEffects(cardType, player) {
+      const opponent = player === 'player' ? 'enemy' : 'player';
+      
+      switch (cardType) {
+        case 'mage':
+          // Mágus: +1 mana
+          logMsg(`${player === 'player' ? 'A' : 'Az ellenfél'} Mágus képessége: +1 mana`);
+          addMana(player);
+          break;
+        
+        case 'guardian':
+          // Őrző: Véd 1 életpontot
+          logMsg(`${player === 'player' ? 'A' : 'Az ellenfél'} Őrző képessége: Véd 1 életpontot következő sebzésnél`);
+          // Ezt később lehet implementálni, ha szeretnénk
+          break;
+        
+        case 'betrayer':
+          // Áruló: Sebez 1 életpontot
+          logMsg(`${player === 'player' ? 'A' : 'Az ellenfél'} Áruló képessége: 1 életpontot sebez`);
+          damage(opponent);
+          break;
+      }
+    }
+
+    // A csata mezőjének renderelése
+    function renderBattlefield() {
+      const playerBattlefieldElement = document.getElementById('playerBattlefield');
+      const enemyBattlefieldElement = document.getElementById('enemyBattlefield');
+      
+      playerBattlefieldElement.innerHTML = '';
+      enemyBattlefieldElement.innerHTML = '';
+      
+      if (gameState.playerBattlefield) {
+        const cardElement = document.createElement('div');
+        cardElement.className = `card ${gameState.playerBattlefield.type} face-down`;
+        
+        if (gameState.currentPlayer !== 'player') {
+          // Ha az ellenfél köre van, a játékos kártyája látható
+          cardElement.classList.remove('face-down');
+          const cardSymbol = CARD_TYPES[gameState.playerBattlefield.type].symbol;
+          cardElement.innerHTML = `
+            <div class="card-value">${gameState.playerBattlefield.value}</div>
+            <div>${cardSymbol}</div>
+            <div class="card-type">${CARD_TYPES[gameState.playerBattlefield.type].name}</div>
           `;
-        }, 1000);
+        }
+        
+        playerBattlefieldElement.appendChild(cardElement);
+      }
+      
+      if (gameState.enemyBattlefield) {
+        const cardElement = document.createElement('div');
+        cardElement.className = `card ${gameState.enemyBattlefield.type} face-down`;
+        
+        if (gameState.currentPlayer === 'enemy' && gameState.enemyBattlefield.revealed) {
+          // Ha az ellenfél köre van és a kártyát már felfedték
+          cardElement.classList.remove('face-down');
+          const cardSymbol = CARD_TYPES[gameState.enemyBattlefield.type].symbol;
+          cardElement.innerHTML = `
+            <div class="card-value">${gameState.enemyBattlefield.value}</div>
+            <div>${cardSymbol}</div>
+            <div class="card-type">${CARD_TYPES[gameState.enemyBattlefield.type].name}</div>
+          `;
+        }
+        
+        enemyBattlefieldElement.appendChild(cardElement);
       }
     }
-    
-    function prepareNextRound() {
-      roundPhase = 0;
-      hideDice(true);
-      hideDice(false);
-      document.getElementById('bluffMeter').style.display = 'none';
-      
-      // Adjust opponent strategy based on game history
-      if (gameHistory.length > 3) {
-        const recentHistory = gameHistory.slice(-3);
-        const playerWins = recentHistory.filter(h => h.playerWon).length;
-        
-        // If player is winning too much, adapt strategy
-        if (playerWins >= 2) {
-          // Adjust bluff detection rate
-          opponentBluffRate += 0.1;
-          addLogEntry('Az ellenfél gyanakodni kezd, és figyeli a mintáidat...', 'system');
-        } else {
-          // Reset or reduce bluff detection
-          opponentBluffRate = Math.max(0.3, opponentBluffRate - 0.05);
+
+    // Kártyák felfedése a csatatéren
+    function revealCards() {
+      if (gameState.playerBattlefield) {
+        const playerBattlefieldCard = document.querySelector('#playerBattlefield .card');
+        if (playerBattlefieldCard) {
+          playerBattlefieldCard.classList.remove('face-down');
+          playerBattlefieldCard.classList.add('reveal-animation');
+          
+          const cardSymbol = CARD_TYPES[gameState.playerBattlefield.type].symbol;
+          playerBattlefieldCard.innerHTML = `
+            <div class="card-value">${gameState.playerBattlefield.value}</div>
+            <div>${cardSymbol}</div>
+            <div class="card-type">${CARD_TYPES[gameState.playerBattlefield.type].name}</div>
+          `;
         }
       }
       
-      updateStatus();
-      document.getElementById('actions').innerHTML = `
-        <button class="primary" onclick="playerRoll()">🎲 Kockák Dobása</button>
-      `;
+      if (gameState.enemyBattlefield) {
+        const enemyBattlefieldCard = document.querySelector('#enemyBattlefield .card');
+        if (enemyBattlefieldCard) {
+          enemyBattlefieldCard.classList.remove('face-down');
+          enemyBattlefieldCard.classList.add('reveal-animation');
+          
+          const cardSymbol = CARD_TYPES[gameState.enemyBattlefield.type].symbol;
+          enemyBattlefieldCard.innerHTML = `
+            <div class="card-value">${gameState.enemyBattlefield.value}</div>
+            <div>${cardSymbol}</div>
+            <div class="card-type">${CARD_TYPES[gameState.enemyBattlefield.type].name}</div>
+          `;
+        }
+      }
     }
-    
-    function endGame() {
-      if (playerEssence >= 5) {
-        showNotification('Győzelem!', 'Összegyűjtötted az 5 lélekesszenciát! A megidézett Sötét Entitás teljesíti egy kívánságodat.');
-        addLogEntry(`🏆 GYŐZELEM! Sikeresen összegyűjtöttél 5 lélekesszenciát!`, 'important');
+
+    // Életpont sebzése
+    function damage(player) {
+      if (player === 'player') {
+        gameState.playerLife--;
       } else {
-        showNotification('Vereség!', 'Az ellenfél gyűjtötte össze hamarabb az 5 lélekesszenciát. A túlvilág magával ragad...');
-        addLogEntry(`☠️ VERESÉG! Az ellenfél összegyűjtötte az 5 lélekesszenciát.`, 'important');
+        gameState.enemyLife--;
       }
       
-      document.getElementById('actions').innerHTML = `
-        <button class="primary" onclick="resetGame()">Új Játék</button>
-      `;
+      updateStats();
+      
+      // Game over ellenőrzése
+      if (gameState.playerLife <= 0) {
+        gameOver('enemy');
+      } else if (gameState.enemyLife <= 0) {
+        gameOver('player');
+      }
     }
-    
+
+    // Mana hozzáadása
+    function addMana(player) {
+      if (player === 'player') {
+        gameState.playerMana = Math.min(gameState.playerMana + 1, 5);
+      } else {
+        gameState.enemyMana = Math.min(gameState.enemyMana + 1, 5);
+      }
+      
+      updateStats();
+    }
+
+    // Mana felhasználása
+    function useMana(player) {
+      if (player === 'player' && gameState.playerMana > 0) {
+        gameState.playerMana--;
+      } else if (player === 'enemy' && gameState.enemyMana > 0) {
+        gameState.enemyMana--;
+      }
+      
+      updateStats();
+    }
+
+    // Statisztikák frissítése
+    function updateStats() {
+      document.getElementById('playerLives').textContent = '❤️'.repeat(gameState.playerLife);
+      document.getElementById('enemyLives').textContent = '❤️'.repeat(gameState.enemyLife);
+      
+      document.getElementById('playerMana').textContent = '💎'.repeat(gameState.playerMana);
+      document.getElementById('enemyMana').textContent = '💎'.repeat(gameState.enemyMana);
+      
+      document.getElementById('playerDeckCount').textContent = gameState.playerDeck.length;
+      document.getElementById('enemyDeckCount').textContent = gameState.enemyDeck.length;
+    }
+
+    // Játék vége
+    function gameOver(winner) {
+      gameState.gameOver = true;
+      
+      const message = winner === 'player' 
+        ? "Győztél! A Sötét Nagyúr elbukott!"
+        : "Vesztettél! A Sötét Nagyúr győzedelmeskedett!";
+      
+      document.getElementById('gameOverMessage').textContent = message;
+      document.getElementById('gameOverScreen').style.display = 'flex';
+    }
+
+    // Következő kör
+    function nextTurn() {
+      gameState.turnCount++;
+      
+      // Csatatér tisztítása
+      gameState.playerBattlefield = null;
+      gameState.enemyBattlefield = null;
+      
+      // Játékos váltása
+      gameState.currentPlayer = gameState.currentPlayer === 'player' ? 'enemy' : 'player';
+      
+      // UI frissítése
+      renderBattlefield();
+      
+      // Aktív oldal frissítése
+      document.getElementById('playerSide').classList.toggle('active-player', gameState.currentPlayer === 'player');
+      document.getElementById('enemySide').classList.toggle('active-player', gameState.currentPlayer === 'enemy');
+      
+      // Kártya húzása
+      if (gameState.currentPlayer === 'player') {
+        // Játékos húz
+        const card = drawCard(gameState.playerDeck);
+        if (card) gameState.playerHand.push(card);
+        
+        // UI frissítése
+        renderPlayerHand();
+        document.getElementById('claimPanel').style.display = 'flex';
+        document.getElementById('responsePanel').style.display = 'none';
+        
+        logMsg("A te köröd következik. Válassz egy kártyát és tegyél egy állítást.");
+      } else {
+        // Ellenfél húz
+        const card = drawCard(gameState.enemyDeck);
+        if (card) gameState.enemyHand.push(card);
+        
+        // Ellenfél lép
+        document.getElementById('claimPanel').style.display = 'none';
+        document.getElementById('responsePanel').style.display = 'none';
+        
+        logMsg("Az ellenfél köre következik...");
+        
+        // Kis késleltetés, hogy az ellenfél "gondolkodjon"
+        setTimeout(() => {
+          if (gameState.gameOver) return;
+          enemyPlayCard();
+        }, 1500);
+      }
+      
+      updateStats();
+    }
+
+    // Az ellenfél kártyájának kijátszása
+    function enemyPlayCard() {
+      if (gameState.enemyHand.length === 0) {
+        logMsg("Az ellenfélnek nincs több kártyája!");
+        return;
+      }
+      
+      // Az ellenfél stratégiája a játék állása alapján
+      const cardIndex = determineEnemyCardIndex();
+      const card = gameState.enemyHand.splice(cardIndex, 1)[0];
+      gameState.enemyBattlefield = card;
+      
+      // Az ellenfél állítása
+      const claim = determineEnemyClaim(card);
+      gameState.currentClaim = claim;
+      
+      // Blöff rögzítése a történelemben
+      const isBluffing = card.type !== claim.type || card.value !== claim.value;
+      gameState.enemyBluffHistory.push({
+        turnCount: gameState.turnCount,
+        actualCard: { ...card },
+        claim: { ...claim },
+        isBluffing
+      });
+      
+      logMsg(`<span style="color:#ff5555">Ellenfél:</span> Kijátszottam egy ${CARD_TYPES[claim.type].name} (${claim.value}) kártyát.`);
+      
+      // UI frissítése
+      renderBattlefield();
+      
+      // Válasz panel megjelenítése a játékosnak
+      document.getElementById('responsePanel').style.display = 'flex';
+    }
+
+    // Az ellenfél kártyaválasztása
+    function determineEnemyCardIndex() {
+      // Alapértelmezetten véletlenszerű választás
+      const randomIndex = Math.floor(Math.random() * gameState.enemyHand.length);
+      
+      // Ha a játékos életpontja nagyon alacsony, próbáljunk olyan kártyát választani, ami direkt sebez
+      if (gameState.playerLife === 1) {
+        const betrayerIndex = gameState.enemyHand.findIndex(card => card.type === 'betrayer');
+        if (betrayerIndex >= 0) return betrayerIndex;
+      }
+      
+      // Ha az ellenfél mana nélkül van, próbáljunk Mágust játszani
+      if (gameState.enemyMana === 0) {
+        const mageIndex = gameState.enemyHand.findIndex(card => card.type === 'mage');
+        if (mageIndex >= 0) return mageIndex;
+      }
+      
+      // Egyébként maradunk a véletlenszerű választásnál, ami kiszámíthatatlanabbá teszi az ellenfelet
+      return randomIndex;
+    }
+
+    // Az ellenfél állításának meghatározása
+    function determineEnemyClaim(card) {
+      // Blöffölési hajlandóság - kezdetben 30% esély
+      let bluffProbability = 0.3;
+      
+      // Ha az ellenfél vesztésre áll, növeljük a blöffölés esélyét
+      if (gameState.enemyLife < gameState.playerLife) {
+        bluffProbability += 0.2;
+      }
+      
+      // Ha a játékos sosem hív blöfföt, akkor növeljük a blöffölés esélyét
+      if (gameState.playerBluffHistory.length >= 3) {
+        const recentHistory = gameState.playerBluffHistory.slice(-3);
+        const neverChallenges = !recentHistory.some(h => h.isBluffing);
+        if (neverChallenges) bluffProbability += 0.2;
+      }
+      
+      // Ha a kártya gyenge, nagyobb esély a blöffölésre
+      if (card.value < 3 && card.type === 'warrior') {
+        bluffProbability += 0.2;
+      }
+      
+      // Kiszámíthatatlanság hozzáadása
+      bluffProbability += (Math.random() * 0.2) - 0.1;
+      bluffProbability = Math.max(0, Math.min(1, bluffProbability));
+      
+      // Döntés a blöffölésről
+      const willBluff = Math.random() < bluffProbability;
+      
+      if (!willBluff) {
+        // Igazmondás - a tényleges kártyát mondjuk be
+        return { type: card.type, value: card.value };
+      } else {
+        // Blöffölés - valami mást mondunk
+        
+        // Stratégiák a blöfföléshez
+        
+        // 1. Erős kártyát mondani
+        if (Math.random() < 0.6) {
+          // Magas értékű Harcos vagy Őrző
+          const strongType = Math.random() < 0.5 ? 'warrior' : 'guardian';
+          const highValue = Math.min(CARD_TYPES[strongType].maxValue, 7 + Math.floor(Math.random() * 4));
+          return { type: strongType, value: highValue };
+        }
+        
+        // 2. Speciális képességű kártyát mondani
+        else {
+          const specialTypes = ['mage', 'assassin', 'betrayer'];
+          const chosenType = specialTypes[Math.floor(Math.random() * specialTypes.length)];
+          const value = 1 + Math.floor(Math.random() * CARD_TYPES[chosenType].maxValue);
+          return { type: chosenType, value };
+        }
+      }
+    }
+
+    // Log üzenet
+    function logMsg(message) {
+      const log = document.getElementById('log');
+      const messageElement = document.createElement('div');
+      messageElement.innerHTML = message;
+      log.appendChild(messageElement);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    // Értesítés megjelenítése
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.style.display = 'block';
+      
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000);
+    }
+
+    // Játék indítása
+    function startGame() {
+      document.getElementById('startScreen').style.display = 'none';
+      document.getElementById('gameScreen').style.display = 'block';
+      
+      resetGame();
+    }
+
+    // Játék újraindítása
     function resetGame() {
-      playerEssence = 0;
-      opponentEssence = 0;
-      playerDice = [];
-      opponentDice = [];
-      roundPhase = 0;
-      totalRounds = 0;
-      gameHistory = [];
-      playerBluffHistory = [];
-      opponentBluffRate = 0.4;
+      // Játék állapot visszaállítása
+      gameState = {
+        playerLife: 3,
+        enemyLife: 3,
+        playerMana: 3,
+        enemyMana: 3,
+        currentPlayer: 'player',
+        playerDeck: createDeck(),
+        enemyDeck: createDeck(),
+        playerHand: [],
+        enemyHand: [],
+        selectedCard: null,
+        playerBattlefield: null,
+        enemyBattlefield: null,
+        currentClaim: null,
+        gameOver: false,
+        turnCount: 0,
+        playerBluffHistory: [],
+        enemyBluffHistory: []
+      };
       
-      hideDice(true);
-      hideDice(false);
-      document.getElementById('bluffMeter').style.display = 'none';
-      document.getElementById('opponentDiceContainer').style.display = 'none';
+      // Kezdő kártyák húzása
+      for (let i = 0; i < 5; i++) {
+        gameState.playerHand.push(drawCard(gameState.playerDeck));
+        gameState.enemyHand.push(drawCard(gameState.enemyDeck));
+      }
       
-      document.getElementById('logContainer').innerHTML = '';
-      addLogEntry('Új játék kezdődik. Dobj a kockákkal...', 'system');
+      // UI frissítése
+      renderPlayerHand();
+      renderBattlefield();
+      updateStats();
       
-      updateStatus();
-      document.getElementById('actions').innerHTML = `
-        <button class="primary" onclick="playerRoll()">🎲 Kockák Dobása</button>
-      `;
+      // Log tisztítása
+      document.getElementById('log').innerHTML = '';
+      logMsg("A játék elkezdődött! Válassz egy kártyát és tegyél egy állítást.");
+      
+      // Kezdőpanelek beállítása
+      document.getElementById('claimPanel').style.display = 'flex';
+      document.getElementById('responsePanel').style.display = 'none';
+      
+      // Game over képernyő elrejtése
+      document.getElementById('gameOverScreen').style.display = 'none';
+      
+      // Aktív játékos jelölése
+      document.getElementById('playerSide').classList.add('active-player');
+      document.getElementById('enemySide').classList.remove('active-player');
     }
-    
-    // Initialize the game
-    resetGame();
   </script>
+
 </body>
 </html>
