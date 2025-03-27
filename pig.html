@@ -386,7 +386,7 @@ function rollDice() {
     document.getElementById(`${activePlayer === 0 ? 'player' : 'bot'}CurrentScore`).textContent = '0';
     
     // Játékos váltás
-    setTimeout(switchPlayer, 2000);
+    setTimeout(switchPlayer, 3000);
   }
 }
 
@@ -415,7 +415,7 @@ function hold() {
   displayMessage('Bölcsen döntöttél, megőrizted a szerzett hatalmadat. A Sötét Nagyúr következik.');
   
   // Játékos váltás
-  setTimeout(switchPlayer, 1500);
+  setTimeout(switchPlayer, 3000);
 }
 
 // Játékos váltás
@@ -435,9 +435,9 @@ function switchPlayer() {
   // Ha a számítógép következik
   if (activePlayer === 1) {
     displayMessage('A Sötét Nagyúr megidézi a káosz erőit...');
-    setTimeout(botTurn, 1500);
+    setTimeout(botTurn, 3000);
   } else {
-    displayMessage('Te következel! Merj kockáztatni a hatalomért?');
+    displayMessage('Te következel! Mersz kockáztatni a hatalomért?');
   }
 }
 
@@ -478,13 +478,13 @@ function botStrategy() {
       
       // 1. Ha a bot dobása elég a győzelemhez, akkor tartja
       if (scores[1] + currentScore >= 100) {
-        setTimeout(() => holdBot("Győzelemre készül..."), 1500);
+        setTimeout(() => holdBot("Győzelemre készül..."), 3000);
         return;
       }
       
       // 2. Ha nagy az előnye és alacsony a kockázat, konzervatívabb
       if (scoreDifference < -30 && currentScore >= 15) {
-        setTimeout(() => holdBot("Kíméletlenül gyűjti az erőt."), 1500);
+        setTimeout(() => holdBot("Kíméletlenül gyűjti az erőt."), 3000);
         return;
       }
       
@@ -493,7 +493,7 @@ function botStrategy() {
         // Ha jelentős a hátránya, nagyobb kockázatot vállal
         const riskThreshold = Math.min(25, Math.floor(scoreDifference / 2));
         if (currentScore < riskThreshold) {
-          setTimeout(botThinking, 2000);
+          setTimeout(botThinking, 3000);
           return;
         }
       }
@@ -502,7 +502,7 @@ function botStrategy() {
       if (playerCloseToWin && !botCloseToWin) {
         const riskThreshold = Math.min(30, 70 + (scores[0] - scores[1]) / 2);
         if (currentScore < riskThreshold && diceValue >= 4) {
-          setTimeout(botThinking, 2000);
+          setTimeout(botThinking, 3000);
           return;
         }
       }
@@ -513,13 +513,13 @@ function botStrategy() {
         
         // Ha a játékos kockázatvállaló, a bot konzervatívabb lesz
         if (playerRiskiness > 0.7 && currentScore >= 15) {
-          setTimeout(() => holdBot("Figyeli stratégiádat..."), 1500);
+          setTimeout(() => holdBot("Figyeli stratégiádat..."), 3000);
           return;
         }
         
         // Ha a játékos konzervatív, a bot nagyobb kockázatot vállal
         if (playerRiskiness < 0.3 && currentScore < 20) {
-          setTimeout(botThinking, 2000);
+          setTimeout(botThinking, 3000);
           return;
         }
       }
@@ -533,17 +533,17 @@ function botStrategy() {
       
       if (currentScore < adjustedThreshold) {
         // Folytatja a dobást
-        setTimeout(botThinking, 2000);
+        setTimeout(botThinking, 3000);
       } else {
         // Tartja a pontokat
-        setTimeout(() => holdBot("Elégedett a gyűjtött erővel."), 1500);
+        setTimeout(() => holdBot("Elégedett a gyűjtött erővel."), 3000);
       }
     } else {
       // Végzet dobás - elveszti a kör pontjait
       displayMessage('A Sötét Nagyúr is aláveti magát a végzetnek! Az erejét elnyelte a halál.');
       currentScore = 0;
       document.getElementById('botCurrentScore').textContent = '0';
-      setTimeout(switchPlayer, 2000);
+      setTimeout(switchPlayer, 3000);
     }
   }, 3000);
 }
@@ -584,7 +584,7 @@ function holdBot(reason) {
     return;
   }
   
-  setTimeout(switchPlayer, 1500);
+  setTimeout(switchPlayer, 3000);
 }
 
 // Játék megnyerése
