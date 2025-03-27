@@ -11,7 +11,7 @@
       background-image: url('images/background.jpg.jpg');
       background-size: cover;
       background-position: center;
-      color: white;
+      color: #d1c3af;
       margin: 0;
       padding: 20px;
       text-align: center;
@@ -35,20 +35,22 @@
       margin: 20px 0;
     }
     .player-section {
-      background-color: rgba(0, 0, 0, 0.7);
+      background-color: rgba(20, 14, 10, 0.85);
       padding: 20px;
       border-radius: 5px;
       min-width: 260px;
-      border: 1px solid #4b4b4b;
+      border: 1px solid #482c17;
+      transition: all 0.3s ease;
     }
     .active-player {
       border: 3px solid #7f00ff;
       box-shadow: 0 0 25px rgba(127, 0, 255, 0.6);
+      transform: scale(1.03);
     }
     h2 {
       margin-top: 0;
       font-size: 1.8rem;
-      color: white;
+      color: #d1c3af;
     }
     .score {
       font-size: 2.8rem;
@@ -56,7 +58,7 @@
       text-shadow: 0 0 10px rgba(127, 0, 255, 0.5);
     }
     .current-box {
-      background-color: rgba(127, 0, 255, 0.3);
+      background-color: rgba(72, 44, 23, 0.6);
       padding: 10px;
       border-radius: 5px;
       margin-top: 15px;
@@ -98,7 +100,7 @@
       width: 100px;
       height: 100px;
       line-height: 100px;
-      background-color: #1a1a1a;
+      background-color: #291d14;
       border-radius: 10px;
       box-shadow: 0 0 15px rgba(127, 0, 255, 0.3);
     }
@@ -114,7 +116,7 @@
       border: none;
       cursor: pointer;
       background-color: #7f00ff;
-      color: white;
+      color: #d1c3af;
       box-shadow: 0 0 10px #7f00ff;
       transition: all 0.3s;
       letter-spacing: 1px;
@@ -126,7 +128,7 @@
     }
     #result {
       font-size: 1.3rem;
-      background-color: rgba(0, 0, 0, 0.7);
+      background-color: rgba(20, 14, 10, 0.7);
       padding: 15px;
       border-radius: 5px;
       display: inline-block;
@@ -150,7 +152,7 @@
       flex-wrap: wrap;
       gap: 15px;
       margin: 20px 0;
-      background-color: rgba(0, 0, 0, 0.7);
+      background-color: rgba(20, 14, 10, 0.7);
       padding: 10px;
       border-radius: 5px;
       max-width: 600px;
@@ -171,6 +173,17 @@
     .symbol-text {
       font-size: 1rem;
       text-align: left;
+    }
+    
+    /* Aktív játékos kiemelése */
+    @keyframes pulse {
+      0% { box-shadow: 0 0 15px rgba(127, 0, 255, 0.6); }
+      50% { box-shadow: 0 0 25px rgba(127, 0, 255, 0.8); }
+      100% { box-shadow: 0 0 15px rgba(127, 0, 255, 0.6); }
+    }
+    
+    .active-player {
+      animation: pulse 2s infinite;
     }
   </style>
 </head>
@@ -280,7 +293,7 @@ function startGame() {
   document.getElementById('botTotalScore').textContent = '0';
   document.getElementById('playerCurrentScore').textContent = '0';
   document.getElementById('botCurrentScore').textContent = '0';
-  resetDice();
+  diceEl.innerHTML = '<div class="dice-symbol"><i class="fas fa-dice-d20"></i></div>';
   resultEl.textContent = 'Eljött a döntés ideje. Merj kockáztatni a hatalomért?';
   document.getElementById('resetContainer').style.display = 'none';
   
@@ -291,12 +304,6 @@ function startGame() {
   // Aktív játékos kijelölése
   playerSection.classList.add('active-player');
   botSection.classList.remove('active-player');
-}
-
-// Kocka visszaállítása alaphelyzetbe
-function resetDice() {
-  diceEl.innerHTML = '<div class="dice-symbol"><i class="fas fa-dice-d20"></i></div>';
-  diceEl.classList.remove('dice-roll');
 }
 
 // Kockadobás funkció
@@ -360,11 +367,10 @@ function hold() {
 function switchPlayer() {
   currentScore = 0;
   document.getElementById(`${activePlayer === 0 ? 'player' : 'bot'}CurrentScore`).textContent = '0';
-  
-  // Kocka visszaállítása alaphelyzetbe
-  resetDice();
-  
   activePlayer = activePlayer === 0 ? 1 : 0;
+  
+  // Kocka visszaállítása alapállapotba
+  diceEl.innerHTML = '<div class="dice-symbol"><i class="fas fa-dice-d20"></i></div>';
   
   // Aktív játékos vizuális jelölése
   playerSection.classList.toggle('active-player');
@@ -453,6 +459,21 @@ function gameWon() {
 function displayMessage(message) {
   resultEl.textContent = message;
 }
+
+// Ha a Font Awesome nem támogatja a 'fa-sword' ikont, használjunk fallback ikont
+document.addEventListener('DOMContentLoaded', function() {
+  // Ellenőrizzük, hogy a kard ikon renderelődik-e
+  const swordIcon = document.querySelector('.fas.fa-sword');
+  
+  // Ha nem létezik, használjunk egy másik ikont helyette
+  if (swordIcon && window.getComputedStyle(swordIcon, ':before').content === '') {
+    // Frissítsük a tömböt
+    symbols[3].icon = 'fas fa-gavel'; // Kalapács ikon helyette
+    
+    // Frissítsük a legendát
+    document.querySelectorAll('.symbol-item')[3].querySelector('.small-symbol i').className = 'fas fa-gavel';
+  }
+});
 
 // Játék indítása
 startGame();
