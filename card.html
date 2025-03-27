@@ -173,7 +173,7 @@
   </button>
   <button class="choice-btn" onclick="makeChoice('agility')">
     <i class="fas fa-running choice-icon"></i>
-    <span>Ügyesség</span>
+    <span>Gyorsaság</span>
   </button>
   <button class="choice-btn" onclick="makeChoice('wisdom')">
     <i class="fas fa-brain choice-icon"></i>
@@ -206,8 +206,8 @@ let playerChoices = {
 
 // Szabályrendszer: mi ver mit
 const rules = {
-  power: "agility",    // Erő veri az Ügyességet
-  agility: "wisdom",   // Ügyesség veri a Bölcsességet
+  power: "agility",    // Erő veri a Gyorsaságot 
+  agility: "wisdom",   // Gyorsaság veri a Bölcsességet
   wisdom: "power"      // Bölcsesség veri az Erőt
 };
 
@@ -220,7 +220,7 @@ const icons = {
 
 // Tulajdonságok magyar neve
 function nameHu(choice) {
-  return choice === "power" ? "Erő" : choice === "agility" ? "Ügyesség" : "Bölcsesség";
+  return choice === "power" ? "Erő" : choice === "agility" ? "Gyorsaság" : "Bölcsesség";
 }
 
 function startGame() {
