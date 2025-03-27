@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Árnykocka – A Lélekpróba</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Cinzel', serif;
@@ -10,39 +11,103 @@
       color: #f2f2f2;
       text-align: center;
       padding: 20px;
+      background-image: radial-gradient(circle at center, #1a0029 0%, #0e0e0e 100%);
+      min-height: 100vh;
+      margin: 0;
     }
     h1 {
       color: #bb00ff;
       text-shadow: 0 0 10px #bb00ff;
+      font-size: 2.4rem;
+      margin-top: 30px;
     }
     .kockak {
       font-size: 2rem;
-      margin: 10px 0;
+      margin: 15px 0;
+      padding: 15px;
+      background: rgba(20, 0, 30, 0.6);
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(187, 0, 255, 0.2);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .log {
-      margin-top: 20px;
+      margin-top: 25px;
       white-space: pre-line;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.5);
       border: 1px solid #444;
-      padding: 10px;
+      padding: 15px;
       border-radius: 8px;
       max-width: 600px;
       margin-left: auto;
       margin-right: auto;
+      min-height: 150px;
+      text-align: left;
+      color: #d1c3af;
+      line-height: 1.5;
+    }
+    #status {
+      background: rgba(20, 0, 30, 0.4);
+      border-radius: 8px;
+      padding: 10px;
+      margin: 15px auto;
+      max-width: 500px;
+      font-size: 1.2rem;
     }
     button {
       background: #7f00ff;
       color: white;
       border: none;
-      padding: 10px 20px;
-      margin: 5px;
+      padding: 12px 25px;
+      margin: 8px;
       font-size: 1.1rem;
       border-radius: 5px;
       cursor: pointer;
       box-shadow: 0 0 10px #7f00ff;
+      transition: all 0.3s;
+      font-family: 'Cinzel', serif;
     }
     button:hover {
       background: #a94bff;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px #bb00ff;
+    }
+    #actions {
+      margin: 20px 0;
+    }
+    .claim-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 5px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .claim-buttons button {
+      padding: 8px 15px;
+      min-width: 50px;
+    }
+    .essence-count {
+      color: #bb00ff;
+      font-weight: bold;
+      text-shadow: 0 0 5px #bb00ff;
+    }
+    .thinking {
+      font-style: italic;
+      color: #a1a1a1;
+      margin: 10px 0;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+    .history-item {
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(127, 0, 255, 0.2);
     }
   </style>
 </head>
@@ -61,103 +126,222 @@
 <div id="log" class="log"></div>
 
 <script>
+// Játékállapot
 let playerEssence = 0;
 let opponentEssence = 0;
-
 let playerDice = [];
 let opponentDice = [];
 let roundPhase = 0; // 0 = dobás, 1 = bemondás, 2 = döntés, 3 = eredmény
 let claimValue = 0;
+let gameHistory = []; // játékos korábbi lépéseinek követése
+let currentRound = 0;
 
+// Segédfüggvények
 function randomDice(max = 6) {
   return Math.floor(Math.random() * max) + 1;
-}
-
-function playerRoll() {
-  playerDice = [randomDice(8), randomDice(), randomDice()];
-  opponentDice = [randomDice(8), randomDice(), randomDice()];
-  roundPhase = 1;
-  document.getElementById("playerRolls").textContent = `🎲 Saját dobásaid: [${playerDice.join(', ')}] (Nagy: ${playerDice[0]})`;
-  document.getElementById("opponentRolls").textContent = "";
-  document.getElementById("log").textContent = "";
-  showClaimOptions();
-  updateStatus();
-}
-
-function showClaimOptions() {
-  const max = playerDice[0]*2 + playerDice[1] + playerDice[2];
-  const min = 4; // legkisebb reális minimum
-  let html = "<p>Milyen értéket mondasz be?</p>";
-  for (let i = min; i <= max + 4; i++) {
-    html += `<button onclick="makeClaim(${i})">${i}</button>`;
-  }
-  document.getElementById("actions").innerHTML = html;
-}
-
-function makeClaim(value) {
-  claimValue = value;
-  roundPhase = 2;
-  document.getElementById("log").textContent = `☠️ Bemondtad: ${value}`;
-  showOpponentDecision();
-}
-
-function showOpponentDecision() {
-  const html = `
-    <p>A másik játékos dönt:</p>
-    <button onclick="opponentCall()">⚖️ Elfogadja</button>
-    <button onclick="opponentDoubt()">🧠 Blöfföt hív</button>
-  `;
-  document.getElementById("actions").innerHTML = html;
 }
 
 function calculateTotal(dice) {
   return dice[0]*2 + dice[1] + dice[2];
 }
 
+function calculateMaximumPossible(dice) {
+  return 8*2 + 6 + 6; // a teoretikus maximum
+}
+
+// Játékos lépések
+function playerRoll() {
+  currentRound++;
+  playerDice = [randomDice(8), randomDice(), randomDice()];
+  opponentDice = [randomDice(8), randomDice(), randomDice()]; // Az ellenfél is dob
+  
+  // Az AI-nak ismert a saját dobása, nekünk nem
+  const opponentTotal = calculateTotal(opponentDice);
+  
+  roundPhase = 1;
+  document.getElementById("playerRolls").textContent = `🎲 Saját dobásaid: [${playerDice.join(', ')}] (Nagy: ${playerDice[0]} ✦)`;
+  document.getElementById("opponentRolls").textContent = "";
+  document.getElementById("log").textContent = `${currentRound}. kör kezdődik... a sötétség leple mögött valami mozog.`;
+  
+  showClaimOptions();
+  updateStatus();
+}
+
+function showClaimOptions() {
+  const playerTotal = calculateTotal(playerDice);
+  const max = calculateMaximumPossible(playerDice);
+  const min = 4; // legkisebb reális minimum
+  
+  let html = "<p>Milyen értéket mondasz be?</p><div class='claim-buttons'>";
+  
+  // Több választási lehetőség, az irányítás jobban a játékosnál
+  for (let i = min; i <= Math.min(max + 8, 40); i++) {
+    const buttonClass = i <= playerTotal ? "" : "bluff";
+    html += `<button onclick="makeClaim(${i})">${i}</button>`;
+  }
+  
+  html += "</div>";
+  document.getElementById("actions").innerHTML = html;
+}
+
+function makeClaim(value) {
+  claimValue = value;
+  roundPhase = 2;
+  
+  // Rögzítjük a játékos lépését az előzményekbe
+  const actualValue = calculateTotal(playerDice);
+  const isBluff = value > actualValue;
+  
+  gameHistory.push({
+    round: currentRound,
+    claimed: value,
+    actual: actualValue,
+    bluffed: isBluff
+  });
+  
+  document.getElementById("log").textContent = `☠️ Bemondtad: ${value}`;
+  
+  // Mostantól az AI dönt
+  document.getElementById("actions").innerHTML = `<div class="thinking">Ellenfeled mérlegeli a helyzetet...</div>`;
+  
+  // Késleltetés az AI gondolkodásának szimulálásához
+  setTimeout(() => {
+    makeOpponentDecision();
+  }, 1500);
+}
+
+// AI gondolkodása
+function makeOpponentDecision() {
+  const maxPossible = calculateMaximumPossible();
+  
+  // AI saját kockáinak értéke
+  const aiTotal = calculateTotal(opponentDice);
+  
+  // Statisztikai elemzéshez
+  let bluffProbability = 0.5; // Alap valószínűség
+  
+  // 1. Tényező: Mennyire valószínűtlen a bemondott érték
+  const unlikeliness = (claimValue / maxPossible); // Minél magasabb, annál gyanúsabb
+  bluffProbability += (unlikeliness - 0.5) * 0.5;
+  
+  // 2. Tényező: Játékos előzményei
+  if (gameHistory.length > 2) {
+    const lastFew = gameHistory.slice(-Math.min(5, gameHistory.length));
+    const bluffRatio = lastFew.filter(h => h.bluffed).length / lastFew.length;
+    
+    // Ha a játékos sokat blöfföl, növeljük a kétkedés esélyét
+    bluffProbability += (bluffRatio - 0.5) * 0.3;
+    
+    // Ha a játékos mintázatot követ, próbáljuk elkapni
+    if (gameHistory.length >= 3) {
+      const lastTwo = [
+        gameHistory[gameHistory.length - 2].bluffed,
+        gameHistory[gameHistory.length - 1].bluffed
+      ];
+      
+      // Ha az utolsó két kör ugyanolyan volt (mindkettő igaz vagy mindkettő blöff),
+      // feltételezzük, hogy a játékos váltani fog
+      if (lastTwo[0] === lastTwo[1]) {
+        // Ha mindkettő igaz, akkor most blöfföt várunk
+        if (!lastTwo[0]) bluffProbability += 0.1;
+        // Ha mindkettő blöff, akkor most igaz állítást várunk
+        else bluffProbability -= 0.1;
+      }
+    }
+  }
+  
+  // 3. Tényező: Játékállás befolyása
+  const scoreDiff = playerEssence - opponentEssence;
+  
+  // Ha az AI vesztésre áll, nagyobb kockázatot vállal
+  if (scoreDiff > 0) {
+    bluffProbability -= 0.1 * scoreDiff; // Kevésbé valószínű, hogy kétkedik
+  }
+  // Ha az AI vezet, konzervatívabb
+  else if (scoreDiff < 0) {
+    bluffProbability += 0.05 * Math.abs(scoreDiff); // Valószínűbb, hogy kétkedik
+  }
+  
+  // 4. Tényező: Ellenfél saját kockáinak ismerete
+  // Ha az AI tudja, hogy a saját dobása magas, akkor a játékos valószínűleg nem merne túl nagyot blöffölni
+  if (aiTotal > 20) {
+    bluffProbability -= 0.2;
+  }
+  
+  // 5. Tényező: Ha a bemondott érték közel van a maximumhoz
+  if (claimValue > maxPossible * 0.75) {
+    bluffProbability += 0.2;
+  }
+  
+  // 6. Tényező: Véletlen elem az AI kiszámíthatatlanságáért
+  bluffProbability += (Math.random() * 0.2) - 0.1;
+  
+  // Normalizáljuk a valószínűséget
+  bluffProbability = Math.max(0.1, Math.min(0.9, bluffProbability));
+  
+  // Döntés meghozatala
+  if (Math.random() < bluffProbability) {
+    opponentDoubt();
+  } else {
+    opponentCall();
+  }
+}
+
 function opponentCall() {
   const actual = calculateTotal(playerDice);
-  document.getElementById("opponentRolls").textContent = `🕯️ Valós értéked: ${actual}`;
+  document.getElementById("opponentRolls").textContent = `🕯️ Valós értéked: ${actual} (Dobásaid: ${playerDice.join(', ')})`;
+  
   if (actual >= claimValue) {
     playerEssence++;
-    document.getElementById("log").textContent += `\n✅ Igazat mondtál! +1 esszencia.`;
+    document.getElementById("log").textContent += `\n\n✅ Az ellenfeled elfogadja az állításodat.\n\nIgazat mondtál! +1 lélek esszencia neked.\n\nAz ellenfél így gondolkodott: "Ez az érték valószínűnek tűnik a kockáim alapján. Nem kockáztatok."`;
   } else {
     opponentEssence++;
-    document.getElementById("log").textContent += `\n❌ Hazudtál! Ellenfél kap 1 esszenciát.`;
+    document.getElementById("log").textContent += `\n\n❌ Az ellenfeled elhiszi az állításodat.\n\nSikeresen blöfföltél! De a Démon észrevette a hazugságot és 1 lélek esszenciát adott az ellenfelednek.\n\nAz ellenfél így gondolkodott: "Ezt az értéket reálisnak találom. Elfogadom."`;
   }
+  
   endRound();
 }
 
 function opponentDoubt() {
   const actual = calculateTotal(playerDice);
-  document.getElementById("opponentRolls").textContent = `🕯️ Valós értéked: ${actual}`;
+  document.getElementById("opponentRolls").textContent = `🕯️ Valós értéked: ${actual} (Dobásaid: ${playerDice.join(', ')})`;
+  
   if (actual >= claimValue) {
     playerEssence++;
-    document.getElementById("log").textContent += `\n🧠 Hiba! Igazat mondott. Te veszítesz 1 esszenciát.`;
+    document.getElementById("log").textContent += `\n\n🧠 Ellenfeled kétségbe vonja az állításodat!\n\nDe igazad volt! +1 lélek esszencia neked.\n\nAz ellenfél így gondolkodott: "Ez túl magas értéknek tűnik... kockáztatok és blöfföt hívok!"`;
   } else {
     opponentEssence++;
-    document.getElementById("log").textContent += `\n🔮 Jól tippeltél! +1 esszencia neked.`;
+    document.getElementById("log").textContent += `\n\n🔮 Ellenfeled átlát a blöffödön!\n\n+1 lélek esszencia neki.\n\nAz ellenfél így gondolkodott: "Ez az érték túl magas ahhoz képest, amit a kockáim mutatnak. Biztos blöfföl!"`;
   }
+  
   endRound();
 }
 
 function updateStatus() {
   document.getElementById("status").innerHTML = `
-    🌑 Lélekesszenciák: <br>
-    👤 Játékos: ${playerEssence} / 5 &nbsp;&nbsp;&nbsp;
-    🤖 Ellenfél: ${opponentEssence} / 5
+    🌑 Lélek esszenciák: <br>
+    👤 Játékos: <span class="essence-count">${playerEssence} / 5</span> &nbsp;&nbsp;&nbsp;
+    🌒 Sötét Ellenfél: <span class="essence-count">${opponentEssence} / 5</span>
   `;
 }
 
 function endRound() {
+  // Megmutatjuk az ellenfél kockáit
+  const opponentTotal = calculateTotal(opponentDice);
+  document.getElementById("opponentRolls").textContent += `\n✨ Ellenfeled kockái: [${opponentDice.join(', ')}] (Érték: ${opponentTotal})`;
+  
   updateStatus();
+  
   if (playerEssence >= 5) {
-    document.getElementById("log").textContent += `\n🕯️🕯️ Megidézted a Végzet Démonát! Győzelem!`;
+    document.getElementById("log").textContent += `\n\n🕯️🕯️ Megidézted a Végzet Démonát! Az öt esszencia egyesült, és a világok közötti fátyol felhasadt. Győzelem!`;
     document.getElementById("actions").innerHTML = `<button onclick="resetGame()">🔁 Új játék</button>`;
   } else if (opponentEssence >= 5) {
-    document.getElementById("log").textContent += `\n💀 Az ellenfeled idézett meg valamit... és vesztettél.`;
+    document.getElementById("log").textContent += `\n\n💀 Az ellenfeled gyűjtött össze öt esszenciát... A Démon átkának súlya alatt összeroskadsz. Vesztettél.`;
     document.getElementById("actions").innerHTML = `<button onclick="resetGame()">🔁 Új játék</button>`;
   } else {
-    document.getElementById("actions").innerHTML = `<button onclick="playerRoll()">🎲 Következő kör</button>`;
+    setTimeout(() => {
+      document.getElementById("actions").innerHTML = `<button onclick="playerRoll()">🎲 Következő kör</button>`;
+    }, 1000);
   }
 }
 
@@ -166,9 +350,12 @@ function resetGame() {
   opponentEssence = 0;
   playerDice = [];
   opponentDice = [];
+  gameHistory = [];
+  currentRound = 0;
+  
   document.getElementById("playerRolls").textContent = "";
   document.getElementById("opponentRolls").textContent = "";
-  document.getElementById("log").textContent = "";
+  document.getElementById("log").textContent = "Az árnyak között új kihívás vár. Dobjál a kockákkal, hogy kezdetét vegye az új próba.";
   updateStatus();
   document.getElementById("actions").innerHTML = `<button onclick="playerRoll()">🎲 Dobás</button>`;
 }
