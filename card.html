@@ -37,12 +37,75 @@
       margin: 10px auto;
       box-shadow: 0 0 10px rgba(127, 0, 255, 0.4);
       text-align: center;
-      width: 100%;
-      max-width: 500px;
     }
     #attributeButtons {
       display: flex;
-      justify-content:
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 10px auto;
+    }
+    button {
+      background-color: #7f00ff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px #7f00ff;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px #a94bff;
+    }
+    .hand {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .card {
+      background-color: rgba(0, 0, 0, 0.8);
+      border: 2px solid #7f00ff;
+      padding: 12px;
+      width: 140px;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s;
+      box-shadow: 0 0 10px rgba(127, 0, 255, 0.3);
+      border-radius: 8px;
+      text-align: left;
+    }
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(127, 0, 255, 0.6);
+    }
+    .disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .winner {
+      color: #7fff7f;
+      font-weight: bold;
+      text-shadow: 1px 1px 4px black;
+    }
+    #battlefield {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    #resetContainer {
+      margin-top: 20px;
+      display: none;
+    }
+    #chosenAttr:empty, #result:empty {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -333,7 +396,7 @@ function playRound(player1Index) {
     refillHands();
     roundInProgress = false;
     updateUI();
-  }, 3000); // Megnövelt késleltetés 3 másodpercre, hogy több idő legyen összehasonlítani a kártyákat
+  }, 5000); // Megnövelt késleltetés 5 másodpercre, hogy több idő legyen összehasonlítani a kártyákat
 }
 
 function disableAll() {
