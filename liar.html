@@ -2,7 +2,7 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Fantasy Bash</title>
+  <title>Sötét Mágia Blöff</title>
   <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400..800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
@@ -38,7 +38,7 @@
       background-color: rgba(20, 14, 10, 0.85);
       padding: 20px;
       border-radius: 5px;
-      min-width: 300px;
+      min-width: 260px;
       border: 1px solid #482c17;
       transition: all 0.3s ease;
       position: relative;
@@ -81,108 +81,75 @@
       font-size: 1.8rem;
       color: #d1c3af;
     }
-    .stats {
+    .dice-area {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
       margin: 15px 0;
-      gap: 10px;
     }
-    .stat-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      flex: 1;
-    }
-    .stat-label {
-      font-size: 1rem;
-      margin-bottom: 5px;
-    }
-    .stat-value {
-      font-size: 1.8rem;
-      text-shadow: 0 0 10px rgba(255, 100, 0, 0.5);
-    }
-    .health-bar, .mana-bar {
-      width: 100%;
-      height: 20px;
+    .dice {
+      width: 50px;
+      height: 50px;
       background-color: #291d14;
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 5px 0;
-      position: relative;
-    }
-    .health-fill {
-      height: 100%;
-      background-color: #a12312;
-      width: 100%;
-      transition: width 0.5s ease;
-    }
-    .mana-fill {
-      height: 100%;
-      background-color: #1f5a9e;
-      width: 100%;
-      transition: width 0.5s ease;
-    }
-    .status-effects {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin: 10px 0;
-    }
-    .effect {
-      background-color: rgba(72, 44, 23, 0.6);
-      padding: 5px 10px;
-      border-radius: 20px;
-      font-size: 0.9rem;
+      border-radius: 8px;
       display: flex;
       align-items: center;
-      gap: 5px;
-    }
-    .effect i {
-      color: #ff6400;
-    }
-    .battle-log {
-      background-color: rgba(20, 14, 10, 0.7);
-      padding: 15px;
-      border-radius: 5px;
-      max-height: 200px;
-      overflow-y: auto;
-      margin: 20px auto;
-      max-width: 80%;
-      text-align: left;
-      font-size: 1.1rem;
-    }
-    .battle-log p {
-      margin: 5px 0;
-      border-bottom: 1px solid rgba(209, 195, 175, 0.2);
-      padding-bottom: 5px;
-    }
-    .battle-log .player-action {
+      justify-content: center;
+      font-size: 1.8rem;
       color: #d1c3af;
+      box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
+      transition: all 0.3s ease;
     }
-    .battle-log .enemy-action {
-      color: #ff6400;
+    .hidden-dice {
+      background-color: #23170f;
+      color: #23170f;
+      box-shadow: 0 0 10px rgba(139, 0, 0, 0.3) inset;
     }
-    .battle-log .critical {
-      color: #ff0000;
-      font-weight: bold;
+    .hidden-dice::after {
+      content: "?";
+      position: absolute;
+      color: #6d4e37;
+      font-size: 1.5rem;
+      opacity: 0.5;
     }
-    .battle-log .heal {
-      color: #00ff00;
+    .dice-roll {
+      animation: rollDice 0.8s ease-out;
     }
-    .combat-area {
+    @keyframes rollDice {
+      0% { transform: rotateY(0deg) rotateX(0deg); }
+      50% { transform: rotateY(720deg) rotateX(360deg); }
+      100% { transform: rotateY(1440deg) rotateX(720deg); }
+    }
+    .controls {
+      margin-top: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin: 20px 0;
-      min-width: 400px;
+      gap: 15px;
     }
-    .action-buttons {
+    .bet-area {
       display: flex;
-      flex-wrap: wrap;
+      align-items: center;
       justify-content: center;
+      flex-wrap: wrap;
       gap: 10px;
-      margin: 20px 0;
+      margin-bottom: 10px;
+    }
+    .current-bet {
+      background-color: rgba(72, 44, 23, 0.6);
+      padding: 10px;
+      border-radius: 5px;
+      margin: 15px 0;
+      min-width: 280px;
+      font-size: 1.2rem;
+    }
+    .dice-count {
+      font-size: 1.1rem;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 5px 10px;
+      border-radius: 4px;
+      margin-top: 5px;
     }
     button {
       font-family: "Eczar", serif;
@@ -196,12 +163,9 @@
       color: #d1c3af;
       box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
       transition: all 0.3s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 120px;
+      letter-spacing: 1px;
     }
-    button:hover {
+    button:hover:not(:disabled) {
       background-color: #5a381f;
       transform: scale(1.05);
       box-shadow: 0 0 15px rgba(255, 100, 0, 0.5);
@@ -209,39 +173,24 @@
     button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
     }
-    button i {
-      font-size: 1.5rem;
-      margin-bottom: 5px;
+    select, input {
+      font-family: "Eczar", serif;
+      font-size: 1.1rem;
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: 1px solid #482c17;
+      background-color: #291d14;
+      color: #d1c3af;
+      margin: 0 5px;
     }
-    .button-tooltip {
-      font-size: 0.8rem;
-      color: #a7a7a7;
+    select:focus, input:focus {
+      outline: none;
+      box-shadow: 0 0 10px rgba(255, 100, 0, 0.5);
     }
-    .cooldown {
-      position: absolute;
-      bottom: 5px;
-      right: 5px;
-      background-color: rgba(0, 0, 0, 0.7);
-      color: #ff6400;
-      border-radius: 50%;
-      width: 25px;
-      height: 25px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-    }
-    .ability-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-    }
-    .ability-button {
-      position: relative;
+    input[type="number"] {
+      width: 60px;
+      text-align: center;
     }
     #message {
       font-size: 1.3rem;
@@ -254,1253 +203,686 @@
       letter-spacing: 1px;
       line-height: 1.4;
     }
+    #resetContainer {
+      display: none;
+      margin-top: 30px;
+    }
     .winner {
       color: #ff6400;
       font-weight: bold;
       text-shadow: 0 0 10px rgba(255, 100, 0, 0.7);
     }
-    #resetContainer {
-      display: none;
-      margin-top: 30px;
+    .symbol-legend {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 20px 0;
+      background-color: rgba(20, 14, 10, 0.7);
+      padding: 10px;
+      border-radius: 5px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
     }
-    .combat-icon {
-      font-size: 2.5rem;
-      margin: 15px 0;
-      animation: float 3s ease-in-out infinite;
+    .symbol-item {
+      display: flex;
+      align-items: center;
+      margin: 5px 10px;
     }
-    @keyframes float {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-      100% { transform: translateY(0px); }
-    }
-    .damage {
-      position: absolute;
-      color: #ff0000;
+    .small-symbol {
       font-size: 1.5rem;
-      font-weight: bold;
-      animation: damageAnim 1s forwards;
-      text-shadow: 0 0 10px #000;
-    }
-    @keyframes damageAnim {
-      0% { transform: translateY(0); opacity: 1; }
-      100% { transform: translateY(-40px); opacity: 0; }
-    }
-    .heal-anim {
-      position: absolute;
-      color: #00ff00;
-      font-size: 1.5rem;
-      font-weight: bold;
-      animation: healAnim 1s forwards;
-      text-shadow: 0 0 10px #000;
-    }
-    @keyframes healAnim {
-      0% { transform: translateY(0); opacity: 1; }
-      100% { transform: translateY(-40px); opacity: 0; }
-    }
-    .character-portrait {
-      width: 100px;
-      height: 100px;
-      border-radius: 10px;
-      background-color: #291d14;
+      margin-right: 10px;
+      width: 40px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 10px;
-      box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
-      overflow: hidden;
+      background-color: #291d14;
+      border-radius: 5px;
+      box-shadow: 0 0 8px rgba(255, 100, 0, 0.2);
     }
-    .character-icon {
-      font-size: 4rem;
-      color: #d1c3af;
+    .symbol-text {
+      font-size: 1rem;
+      text-align: left;
     }
-    .tooltip {
-      position: relative;
-      display: inline-block;
+    .reveal-animation {
+      animation: reveal 1s forwards;
     }
-    .tooltip .tooltiptext {
-      visibility: hidden;
-      width: 200px;
-      background-color: #000;
-      color: #d1c3af;
-      text-align: center;
-      border-radius: 6px;
+    @keyframes reveal {
+      0% { transform: rotateY(0deg); background-color: #23170f; }
+      100% { transform: rotateY(180deg); background-color: #291d14; }
+    }
+    .reveal-container {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: rgba(20, 14, 10, 0.8);
+      border-radius: 5px;
+      display: none;
+    }
+    .history-log {
+      margin-top: 20px;
+      max-height: 150px;
+      overflow-y: auto;
+      background-color: rgba(0, 0, 0, 0.5);
       padding: 10px;
-      position: absolute;
-      z-index: 1;
-      bottom: 125%;
-      left: 50%;
-      transform: translateX(-50%);
-      opacity: 0;
-      transition: opacity 0.3s;
+      border-radius: 5px;
+      text-align: left;
       font-size: 0.9rem;
     }
-    .tooltip:hover .tooltiptext {
-      visibility: visible;
-      opacity: 1;
+    .history-log p {
+      margin: 5px 0;
+      padding: 3px 0;
+      border-bottom: 1px solid rgba(255, 100, 0, 0.2);
+    }
+    .history-log .player-action {
+      color: #d1c3af;
+    }
+    .history-log .bot-action {
+      color: #ff6400;
+    }
+    .history-log .result {
+      color: #7fff7f;
     }
   </style>
 </head>
 <body>
 
-<h1>Fantasy Bash</h1>
+<h1>Sötét Mágia Blöff</h1>
+
+<div class="symbol-legend">
+  <div class="symbol-item">
+    <div class="small-symbol">&#x2620;</div>
+    <div class="symbol-text">Halál</div>
+  </div>
+  <div class="symbol-item">
+    <div class="small-symbol">&#x1F577;</div>
+    <div class="symbol-text">Pók</div>
+  </div>
+  <div class="symbol-item">
+    <div class="small-symbol">&#x1F426;</div>
+    <div class="symbol-text">Holló</div>
+  </div>
+  <div class="symbol-item">
+    <div class="small-symbol">&#x1F5E1;</div>
+    <div class="symbol-text">Kard</div>
+  </div>
+  <div class="symbol-item">
+    <div class="small-symbol">&#x1F525;</div>
+    <div class="symbol-text">Tűz</div>
+  </div>
+  <div class="symbol-item">
+    <div class="small-symbol">&#x1F479;</div>
+    <div class="symbol-text">Démon</div>
+  </div>
+</div>
 
 <div id="gameArea">
   <div id="playerSection" class="player-section active-player">
-    <div class="character-portrait">
-      <i class="fas fa-user-shield character-icon"></i>
-    </div>
     <h2>Kalandor</h2>
-    <div class="stats">
-      <div class="stat-item">
-        <div class="stat-label">Életerő</div>
-        <div class="health-bar">
-          <div id="playerHealthFill" class="health-fill"></div>
-        </div>
-        <div class="stat-value"><span id="playerHealth">100</span>/<span id="playerMaxHealth">100</span></div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-label">Mana</div>
-        <div class="mana-bar">
-          <div id="playerManaFill" class="mana-fill"></div>
-        </div>
-        <div class="stat-value"><span id="playerMana">50</span>/<span id="playerMaxMana">50</span></div>
-      </div>
-    </div>
-    <div id="playerStatusEffects" class="status-effects"></div>
+    <div class="dice-count">Mágikus kövek: <span id="playerDiceCount">5</span></div>
+    <div id="playerDice" class="dice-area"></div>
   </div>
   
-  <div class="combat-area">
-    <div id="combatIcon" class="combat-icon">
-      <i class="fas fa-swords"></i>
-    </div>
-    
-    <div class="action-buttons">
-      <button id="attackBtn" class="tooltip" onclick="useAction('attack')">
-        <i class="fas fa-sword"></i>
-        Támadás
-        <span class="tooltiptext">Alap támadás (8-12 sebzés)</span>
-      </button>
-      <button id="defendBtn" class="tooltip" onclick="useAction('defend')">
-        <i class="fas fa-shield"></i>
-        Védekezés
-        <span class="tooltiptext">50% sebzéscsökkentés a következő körben</span>
-      </button>
-      <button id="focusBtn" class="tooltip" onclick="useAction('focus')">
-        <i class="fas fa-atom"></i>
-        Koncentráció
-        <span class="tooltiptext">+15 mana és +25% kritikus esély a következő körben</span>
-      </button>
-    </div>
-    
-    <div class="ability-buttons">
-      <div class="ability-button tooltip">
-        <button id="slashBtn" onclick="useAbility('slash')">
-          <i class="fas fa-wind"></i>
-          Pusztító Vágás
-          <div class="button-tooltip">15 mana | 15-20 sebzés</div>
-        </button>
-        <span class="tooltiptext">Erős támadás, 15-20 sebzést okoz, de 15 manába kerül</span>
-      </div>
-      
-      <div class="ability-button tooltip">
-        <button id="healBtn" onclick="useAbility('heal')">
-          <i class="fas fa-heart"></i>
-          Gyógyítás
-          <div class="button-tooltip">20 mana | +20-25 HP</div>
-        </button>
-        <span class="tooltiptext">Gyógyít 20-25 életerőt, 20 manába kerül</span>
-      </div>
-      
-      <div class="ability-button tooltip">
-        <button id="fireballBtn" onclick="useAbility('fireball')">
-          <i class="fas fa-fire-alt"></i>
-          Tűzgolyó
-          <div class="button-tooltip">25 mana | 20-30 sebzés</div>
-        </button>
-        <span class="tooltiptext">Tűzgolyót idéz, 20-30 sebzést okoz és 25% eséllyel égést okoz, 25 manába kerül</span>
-      </div>
-      
-      <div class="ability-button tooltip">
-        <button id="stunBtn" onclick="useAbility('stun')">
-          <i class="fas fa-bolt"></i>
-          Kábítás
-          <div class="button-tooltip">30 mana | Ellenség kihagy 1 kört</div>
-          <div id="stunCooldown" class="cooldown" style="display: none;">3</div>
-        </button>
-        <span class="tooltiptext">Kábítás az ellenségre, aki kihagy egy kört. 30 manába kerül és 3 kör újratöltési ideje van</span>
-      </div>
-    </div>
-    
-    <div id="message">A csata kezdetét vette! Válassz egy akciót!</div>
-    
-    <div class="battle-log" id="battleLog">
-      <p>A csata kezdetét vette. Válassz egy támadási módot!</p>
-    </div>
-  </div>
-  
-  <div id="enemySection" class="player-section">
-    <div class="character-portrait">
-      <i class="fas fa-dragon character-icon"></i>
-    </div>
+  <div id="botSection" class="player-section">
     <h2>Sötét Nagyúr</h2>
-    <div class="stats">
-      <div class="stat-item">
-        <div class="stat-label">Életerő</div>
-        <div class="health-bar">
-          <div id="enemyHealthFill" class="health-fill"></div>
-        </div>
-        <div class="stat-value"><span id="enemyHealth">120</span>/<span id="enemyMaxHealth">120</span></div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-label">Mana</div>
-        <div class="mana-bar">
-          <div id="enemyManaFill" class="mana-fill"></div>
-        </div>
-        <div class="stat-value"><span id="enemyMana">60</span>/<span id="enemyMaxMana">60</span></div>
-      </div>
-    </div>
-    <div id="enemyStatusEffects" class="status-effects"></div>
+    <div class="dice-count">Mágikus kövek: <span id="botDiceCount">5</span></div>
+    <div id="botDice" class="dice-area"></div>
   </div>
 </div>
 
+<div class="current-bet" id="currentBet">
+  A jelenlegi tét: Még nincs
+</div>
+
+<div id="revealContainer" class="reveal-container">
+  <h3>A kockák felfedése</h3>
+  <div id="revealDice" class="dice-area"></div>
+  <div id="revealResult"></div>
+</div>
+
+<div class="controls" id="controls">
+  <div class="bet-area">
+    <label>Mágikus szimbólum: 
+      <select id="betValue">
+        <option value="1">&#x2620; Halál</option>
+        <option value="2">&#x1F577; Pók</option>
+        <option value="3">&#x1F426; Holló</option>
+        <option value="4">&#x1F5E1; Kard</option>
+        <option value="5">&#x1F525; Tűz</option>
+        <option value="6">&#x1F479; Démon</option>
+      </select>
+    </label>
+    <label>Mennyiség: 
+      <input type="number" id="betCount" min="1" value="1">
+    </label>
+  </div>
+  <div>
+    <button id="betButton" onclick="placeBet()">Tét Megtétele</button>
+    <button id="callButton" onclick="callBluff()">Leleplezés!</button>
+  </div>
+</div>
+
+<div id="message">Lépj a mágikus kövek ősi játékterébe! A Sötét Nagyúr árgus szemekkel figyel...</div>
+
 <div id="resetContainer">
-  <button onclick="startGame()">Új Kihívás</button>
+  <button onclick="startGame()">Új Játék</button>
+</div>
+
+<div class="history-log" id="historyLog">
+  <p>A mágikus játszma kezdetét veszi...</p>
 </div>
 
 <script>
-// Játék változók és állapot
+// Játék állapot változók
+let playerDice = []; // A játékos kockái
+let botDice = [];    // A bot kockái
+let playerDiceCount = 5;
+let botDiceCount = 5;
+let currentBet = null; // {count: 3, value: 4} - pl. 3 db 4-es
 let gameActive = true;
-let roundCounter = 0;
-let playerTurn = true;
+let isPlayerTurn = true;
+let gameHistory = [];
 
-// Játékos és ellenség statisztikák
-const player = {
-  health: 100,
-  maxHealth: 100,
-  mana: 50,
-  maxMana: 50,
-  baseDamage: [8, 12],
-  statusEffects: [],
-  actionHistory: [],
-  critChance: 0.15,
-  critMultiplier: 1.5,
-  defense: 0,
-  abilities: {
-    stun: { cooldown: 0, maxCooldown: 3 }
-  }
-};
-
-const enemy = {
-  health: 120,
-  maxHealth: 120,
-  mana: 60,
-  maxMana: 60,
-  baseDamage: [10, 14],
-  statusEffects: [],
-  actionHistory: [],
-  critChance: 0.1,
-  critMultiplier: 1.5,
-  defense: 0,
-  abilities: {
-    // Ellenség képességei és az újratöltési idők
-    darkBolt: { cooldown: 0, maxCooldown: 2 },
-    shadowHeal: { cooldown: 0, maxCooldown: 4 },
-    demonForm: { cooldown: 0, maxCooldown: 5 }
-  },
-  // AI taktikai beállítások
-  tacticalThresholds: {
-    lowHealth: 0.3,    // Ha 30% alatt van az életerő
-    mediumHealth: 0.6, // Ha 60% alatt van az életerő
-    lowMana: 0.2,      // Ha 20% alatt van a mana
-    defensiveThreshold: 0.4 // Ha a játékos utolsó támadása az életerő 40%-át okozta
-  }
-};
+// Szimbólumok és értékek
+const symbols = [
+  { value: 1, symbol: '&#x2620;', name: 'Halál' },
+  { value: 2, symbol: '&#x1F577;', name: 'Pók' },
+  { value: 3, symbol: '&#x1F426;', name: 'Holló' },
+  { value: 4, symbol: '&#x1F5E1;', name: 'Kard' },
+  { value: 5, symbol: '&#x1F525;', name: 'Tűz' },
+  { value: 6, symbol: '&#x1F479;', name: 'Démon' }
+];
 
 // DOM elemek
-const battleLogElement = document.getElementById('battleLog');
-const messageElement = document.getElementById('message');
-const playerHealthElement = document.getElementById('playerHealth');
-const playerMaxHealthElement = document.getElementById('playerMaxHealth');
-const playerManaElement = document.getElementById('playerMana');
-const playerMaxManaElement = document.getElementById('playerMaxMana');
-const playerHealthFillElement = document.getElementById('playerHealthFill');
-const playerManaFillElement = document.getElementById('playerManaFill');
-const playerStatusEffectsElement = document.getElementById('playerStatusEffects');
-const enemyHealthElement = document.getElementById('enemyHealth');
-const enemyMaxHealthElement = document.getElementById('enemyMaxHealth');
-const enemyManaElement = document.getElementById('enemyMana');
-const enemyMaxManaElement = document.getElementById('enemyMaxMana');
-const enemyHealthFillElement = document.getElementById('enemyHealthFill');
-const enemyManaFillElement = document.getElementById('enemyManaFill');
-const enemyStatusEffectsElement = document.getElementById('enemyStatusEffects');
-const combatIconElement = document.getElementById('combatIcon');
-const playerSectionElement = document.getElementById('playerSection');
-const enemySectionElement = document.getElementById('enemySection');
-const resetContainerElement = document.getElementById('resetContainer');
+const playerDiceEl = document.getElementById('playerDice');
+const botDiceEl = document.getElementById('botDice');
+const playerDiceCountEl = document.getElementById('playerDiceCount');
+const botDiceCountEl = document.getElementById('botDiceCount');
+const currentBetEl = document.getElementById('currentBet');
+const messageEl = document.getElementById('message');
+const playerSectionEl = document.getElementById('playerSection');
+const botSectionEl = document.getElementById('botSection');
+const historyLogEl = document.getElementById('historyLog');
+const revealContainerEl = document.getElementById('revealContainer');
+const revealDiceEl = document.getElementById('revealDice');
+const revealResultEl = document.getElementById('revealResult');
 
 // Játék indítása
 function startGame() {
+  playerDiceCount = 5;
+  botDiceCount = 5;
+  currentBet = null;
   gameActive = true;
-  roundCounter = 0;
-  playerTurn = true;
+  isPlayerTurn = true;
+  gameHistory = [];
   
-  // Játékos alaphelyzetbe állítása
-  player.health = player.maxHealth;
-  player.mana = player.maxMana;
-  player.statusEffects = [];
-  player.actionHistory = [];
-  player.defense = 0;
-  player.abilities.stun.cooldown = 0;
+  // Kockák generálása
+  rollDice();
   
-  // Ellenség alaphelyzetbe állítása
-  enemy.health = enemy.maxHealth;
-  enemy.mana = enemy.maxMana;
-  enemy.statusEffects = [];
-  enemy.actionHistory = [];
-  enemy.defense = 0;
-  enemy.abilities.darkBolt.cooldown = 0;
-  enemy.abilities.shadowHeal.cooldown = 0;
-  enemy.abilities.demonForm.cooldown = 0;
+  // UI frissítése
+  playerDiceCountEl.textContent = playerDiceCount;
+  botDiceCountEl.textContent = botDiceCount;
+  currentBetEl.textContent = "A jelenlegi tét: Még nincs";
+  messageEl.textContent = "Lépj a mágikus kövek ősi játékterébe! A te lépésed következik.";
+  historyLogEl.innerHTML = "<p>A mágikus játszma kezdetét veszi...</p>";
   
-  // UI alaphelyzetbe állítása
-  updateUI();
+  // Gombok beállítása
+  document.getElementById('betButton').disabled = false;
+  document.getElementById('callButton').disabled = true;
+  document.getElementById('resetContainer').style.display = 'none';
+  revealContainerEl.style.display = 'none';
   
-  // Gombok engedélyezése
-  enableAllButtons();
+  // Játékos aktiválása
+  playerSectionEl.classList.add('active-player');
+  botSectionEl.classList.remove('active-player');
   
-  // Aktív játékos kijelölése
-  playerSectionElement.classList.add('active-player');
-  enemySectionElement.classList.remove('active-player');
+  // Input mezők alapértékei
+  document.getElementById('betValue').value = "1";
+  document.getElementById('betCount').value = "1";
   
-  // Reset gomb elrejtése
-  resetContainerElement.style.display = 'none';
-  
-  // Harci napló tisztítása
-  battleLogElement.innerHTML = '<p>A csata kezdetét vette. Válassz egy támadási módot!</p>';
-  messageElement.textContent = 'A csata kezdetét vette! Válassz egy akciót!';
+  // Minimum tét beállítása
+  document.getElementById('betCount').min = "1";
 }
 
-// UI frissítése
-function updateUI() {
-  // Játékos statisztikák frissítése
-  playerHealthElement.textContent = Math.max(0, Math.floor(player.health));
-  playerMaxHealthElement.textContent = player.maxHealth;
-  playerManaElement.textContent = Math.max(0, Math.floor(player.mana));
-  playerMaxManaElement.textContent = player.maxMana;
-  playerHealthFillElement.style.width = `${(player.health / player.maxHealth) * 100}%`;
-  playerManaFillElement.style.width = `${(player.mana / player.maxMana) * 100}%`;
+// Kockák újradobása
+function rollDice() {
+  playerDice = generateRandomDice(playerDiceCount);
+  botDice = generateRandomDice(botDiceCount);
   
-  // Ellenség statisztikák frissítése
-  enemyHealthElement.textContent = Math.max(0, Math.floor(enemy.health));
-  enemyMaxHealthElement.textContent = enemy.maxHealth;
-  enemyManaElement.textContent = Math.max(0, Math.floor(enemy.mana));
-  enemyMaxManaElement.textContent = enemy.maxMana;
-  enemyHealthFillElement.style.width = `${(enemy.health / enemy.maxHealth) * 100}%`;
-  enemyManaFillElement.style.width = `${(enemy.mana / enemy.maxMana) * 100}%`;
-  
-  // Játékos állapothatások frissítése
-  updateStatusEffects(player, playerStatusEffectsElement);
-  
-  // Ellenség állapothatások frissítése
-  updateStatusEffects(enemy, enemyStatusEffectsElement);
-  
-  // Képességgombok állapotának frissítése
-  updateAbilityButtons();
-  
-  // Képességek újratöltési idejének frissítése
-  updateCooldowns();
+  renderDice();
 }
 
-// Állapothatások frissítése
-function updateStatusEffects(character, element) {
-  element.innerHTML = '';
-  
-  character.statusEffects.forEach(effect => {
-    if (effect.duration > 0) {
-      const effectElement = document.createElement('div');
-      effectElement.className = 'effect';
-      effectElement.innerHTML = `<i class="${effect.icon}"></i> ${effect.name} (${effect.duration})`;
-      element.appendChild(effectElement);
-    }
-  });
-}
-
-// Képesség gombok frissítése
-function updateAbilityButtons() {
-  // Slash képesség
-  document.getElementById('slashBtn').disabled = player.mana < 15 || !gameActive || !playerTurn;
-  
-  // Heal képesség
-  document.getElementById('healBtn').disabled = player.mana < 20 || !gameActive || !playerTurn;
-  
-  // Fireball képesség
-  document.getElementById('fireballBtn').disabled = player.mana < 25 || !gameActive || !playerTurn;
-  
-  // Stun képesség
-  const stunButton = document.getElementById('stunBtn');
-  const stunCooldown = document.getElementById('stunCooldown');
-  
-  stunButton.disabled = player.mana < 30 || player.abilities.stun.cooldown > 0 || !gameActive || !playerTurn;
-  
-  if (player.abilities.stun.cooldown > 0) {
-    stunCooldown.textContent = player.abilities.stun.cooldown;
-    stunCooldown.style.display = 'flex';
-  } else {
-    stunCooldown.style.display = 'none';
+// Véletlen kockák generálása
+function generateRandomDice(count) {
+  const dice = [];
+  for (let i = 0; i < count; i++) {
+    dice.push(Math.floor(Math.random() * 6) + 1); // 1-6 közötti érték
   }
-  
-  // Alap akció gombok
-  document.getElementById('attackBtn').disabled = !gameActive || !playerTurn;
-  document.getElementById('defendBtn').disabled = !gameActive || !playerTurn;
-  document.getElementById('focusBtn').disabled = !gameActive || !playerTurn;
+  return dice;
 }
 
-// Újratöltési idők frissítése
-function updateCooldowns() {
-  // Játékos képességek újratöltési idejének csökkentése
-  for (const ability in player.abilities) {
-    if (player.abilities[ability].cooldown > 0) {
-      player.abilities[ability].cooldown--;
-    }
-  }
-  
-  // Ellenség képességek újratöltési idejének csökkentése
-  for (const ability in enemy.abilities) {
-    if (enemy.abilities[ability].cooldown > 0) {
-      enemy.abilities[ability].cooldown--;
-    }
-  }
-}
-
-// Alap akció végrehajtása
-function useAction(actionType) {
-  if (!gameActive || !playerTurn) return;
-  
-  player.actionHistory.push({
-    round: roundCounter,
-    action: actionType
-  });
-  
-  switch (actionType) {
-    case 'attack':
-      performAttack(player, enemy);
-      break;
-    case 'defend':
-      performDefend(player);
-      break;
-    case 'focus':
-      performFocus(player);
-      break;
-  }
-  
-  endPlayerTurn();
-}
-
-// Képesség használata
-function useAbility(abilityType) {
-  if (!gameActive || !playerTurn) return;
-  
-  player.actionHistory.push({
-    round: roundCounter,
-    action: `ability_${abilityType}`
-  });
-  
-  switch (abilityType) {
-    case 'slash':
-      if (player.mana >= 15) {
-        player.mana -= 15;
-        performSlash(player, enemy);
-      } else {
-        logMessage("Nincs elég mana a Pusztító Vágáshoz!");
-        return;
-      }
-      break;
-    case 'heal':
-      if (player.mana >= 20) {
-        player.mana -= 20;
-        performHeal(player);
-      } else {
-        logMessage("Nincs elég mana a Gyógyításhoz!");
-        return;
-      }
-      break;
-    case 'fireball':
-      if (player.mana >= 25) {
-        player.mana -= 25;
-        performFireball(player, enemy);
-      } else {
-        logMessage("Nincs elég mana a Tűzgolyóhoz!");
-        return;
-      }
-      break;
-    case 'stun':
-      if (player.mana >= 30 && player.abilities.stun.cooldown === 0) {
-        player.mana -= 30;
-        player.abilities.stun.cooldown = player.abilities.stun.maxCooldown;
-        performStun(player, enemy);
-      } else if (player.abilities.stun.cooldown > 0) {
-        logMessage(`A Kábítás még ${player.abilities.stun.cooldown} kör múlva lesz újra használható!`);
-        return;
-      } else {
-        logMessage("Nincs elég mana a Kábításhoz!");
-        return;
-      }
-      break;
-  }
-  
-  endPlayerTurn();
-}
-
-// Játékos körének vége
-function endPlayerTurn() {
-  playerTurn = false;
-  updateUI();
-  
-  // Aktív játékos jelzése
-  playerSectionElement.classList.remove('active-player');
-  enemySectionElement.classList.add('active-player');
-  
-  // Ellenség akciója kis késleltetéssel
-  setTimeout(() => {
-    // Ellenőrzés, hogy a játék még aktív-e
-    if (!gameActive) return;
+// Kockák megjelenítése
+function renderDice() {
+  // Játékos kockái
+  playerDiceEl.innerHTML = '';
+  playerDice.forEach(die => {
+    const symbol = symbols.find(s => s.value === die);
+    const diceElement = document.createElement('div');
+    diceElement.className = 'dice dice-roll';
+    diceElement.innerHTML = symbol.symbol;
     
-    // Körök frissítése és státuszhatások feldolgozása
-    processStatusEffects(enemy);
-    
-    // Ha az ellenség kábult, kihagyja a körét
-    if (hasStatusEffect(enemy, 'stunned')) {
-      logMessage("A Sötét Nagyúr kábult, kihagyja a körét!", 'enemy-action');
-    } else {
-      executeEnemyTurn();
-    }
-    
-    // Ellenőrzés, hogy a játék még mindig aktív-e
-    if (!gameActive) return;
-    
-    // Újra a játékos köre
+    // Kis késleltetés az animációhoz
     setTimeout(() => {
-      roundCounter++;
-      playerTurn = true;
-      
-      // Státuszhatások feldolgozása a játékosnál a köre elején
-      processStatusEffects(player);
-      
-      // UI frissítése
-      updateUI();
-      
-      // Aktív játékos jelzése
-      playerSectionElement.classList.add('active-player');
-      enemySectionElement.classList.remove('active-player');
-      
-      // Üzenet kijelzése
-      messageElement.textContent = 'A te köröd! Válassz egy akciót!';
-    }, 1000);
-  }, 1500);
-}
-
-// Ellenség körének végrehajtása
-function executeEnemyTurn() {
-  // Az AI döntést hoz a következő lépésről
-  const enemyAction = determineEnemyAction();
-  
-  // Az ellenfél döntéseinek nyilvántartása
-  enemy.actionHistory.push({
-    round: roundCounter,
-    action: enemyAction.type
+      diceElement.classList.remove('dice-roll');
+    }, 800);
+    
+    playerDiceEl.appendChild(diceElement);
   });
   
-  // A kiválasztott akció végrehajtása
-  executeEnemyAction(enemyAction);
-}
-
-// A játékos támadásának végrehajtása
-function performAttack(attacker, target) {
-  const damageRange = attacker.baseDamage;
-  const baseDamage = Math.floor(Math.random() * (damageRange[1] - damageRange[0] + 1)) + damageRange[0];
-  
-  // Kritikus találat esélye
-  const isCritical = Math.random() < attacker.critChance;
-  
-  // Végső sebzés kiszámítása
-  let finalDamage = baseDamage;
-  if (isCritical) {
-    finalDamage = Math.floor(finalDamage * attacker.critMultiplier);
-  }
-  
-  // Védelem figyelembevétele
-  if (target.defense > 0) {
-    finalDamage = Math.max(1, Math.floor(finalDamage * (1 - target.defense)));
-  }
-  
-  // Sebzés alkalmazása
-  target.health = Math.max(0, target.health - finalDamage);
-  
-  // Effekt megjelenítése
-  displayDamageEffect(target === enemy ? 'enemy' : 'player', finalDamage);
-  
-  // Üzenet naplózása
-  if (attacker === player) {
-    if (isCritical) {
-      logMessage(`Kritikus találat! A Kalandor ${finalDamage} sebzést okozott!`, 'player-action critical');
-    } else {
-      logMessage(`A Kalandor ${finalDamage} sebzést okozott az alap támadással.`, 'player-action');
-    }
-  } else {
-    if (isCritical) {
-      logMessage(`Kritikus találat! A Sötét Nagyúr ${finalDamage} sebzést okozott!`, 'enemy-action critical');
-    } else {
-      logMessage(`A Sötét Nagyúr ${finalDamage} sebzést okozott az alap támadással.`, 'enemy-action');
-    }
-  }
-  
-  // Animáció a harc ikonon
-  animateCombatIcon('clash');
-  
-  // Ellenőrizze, hogy vége van-e a harcnak
-  checkBattleEnd();
-}
-
-// Védekező akció végrehajtása
-function performDefend(character) {
-  character.defense = 0.5; // 50% sebzéscsökkentés
-  
-  // Állapothatás hozzáadása
-  addStatusEffect(character, {
-    name: 'Védelem',
-    icon: 'fas fa-shield-alt',
-    duration: 1,
-    effect: 'defense',
-    value: 0.5
+  // Bot kockái (rejtve)
+  botDiceEl.innerHTML = '';
+  botDice.forEach(() => {
+    const diceElement = document.createElement('div');
+    diceElement.className = 'dice hidden-dice';
+    botDiceEl.appendChild(diceElement);
   });
-  
-  // Üzenet naplózása
-  if (character === player) {
-    logMessage('A Kalandor védekező állást vesz fel, 50% sebzéscsökkentés a következő támadásra.', 'player-action');
-  } else {
-    logMessage('A Sötét Nagyúr védekező állást vesz fel, 50% sebzéscsökkentés a következő támadásra.', 'enemy-action');
-  }
-  
-  // Animáció a harc ikonon
-  animateCombatIcon('shield');
 }
 
-// Koncentráció akció végrehajtása
-function performFocus(character) {
-  // Mana visszaállítása
-  const manaGain = 15;
-  character.mana = Math.min(character.maxMana, character.mana + manaGain);
+// Tét megtétele
+function placeBet() {
+  if (!gameActive || !isPlayerTurn) return;
   
-  // Kritikus találat esélyének növelése
-  const oldCritChance = character.critChance;
-  character.critChance += 0.25;
+  const betValue = parseInt(document.getElementById('betValue').value);
+  const betCount = parseInt(document.getElementById('betCount').value);
   
-  // Állapothatás hozzáadása a kritikus esély növeléséhez
-  addStatusEffect(character, {
-    name: 'Koncentráció',
-    icon: 'fas fa-atom',
-    duration: 1,
-    effect: 'critBoost',
-    value: 0.25,
-    onRemove: () => {
-      character.critChance = oldCritChance;
-    }
-  });
-  
-  // Gyógyulás effekt megjelenítése a mana miatt
-  displayHealEffect(character === player ? 'player' : 'enemy', manaGain, true);
-  
-  // Üzenet naplózása
-  if (character === player) {
-    logMessage(`A Kalandor koncentrál, visszanyer ${manaGain} manát és növeli a kritikus találat esélyét.`, 'player-action');
-  } else {
-    logMessage(`A Sötét Nagyúr koncentrál, visszanyer ${manaGain} manát és növeli a kritikus találat esélyét.`, 'enemy-action');
-  }
-  
-  // Animáció a harc ikonon
-  animateCombatIcon('focus');
-}
-
-// Slash képesség végrehajtása
-function performSlash(attacker, target) {
-  const damageRange = [15, 20];
-  const baseDamage = Math.floor(Math.random() * (damageRange[1] - damageRange[0] + 1)) + damageRange[0];
-  
-  // Kritikus találat esélye
-  const isCritical = Math.random() < attacker.critChance;
-  
-  // Végső sebzés kiszámítása
-  let finalDamage = baseDamage;
-  if (isCritical) {
-    finalDamage = Math.floor(finalDamage * attacker.critMultiplier);
-  }
-  
-  // Védelem figyelembevétele
-  if (target.defense > 0) {
-    finalDamage = Math.max(1, Math.floor(finalDamage * (1 - target.defense)));
-  }
-  
-  // Sebzés alkalmazása
-  target.health = Math.max(0, target.health - finalDamage);
-  
-  // Effekt megjelenítése
-  displayDamageEffect(target === enemy ? 'enemy' : 'player', finalDamage);
-  
-  // Üzenet naplózása
-  if (attacker === player) {
-    if (isCritical) {
-      logMessage(`Kritikus Pusztító Vágás! A Kalandor ${finalDamage} sebzést okozott!`, 'player-action critical');
-    } else {
-      logMessage(`A Kalandor Pusztító Vágást használ, ${finalDamage} sebzést okozva.`, 'player-action');
-    }
-  } else {
-    if (isCritical) {
-      logMessage(`Kritikus csapás! A Sötét Nagyúr sötét penge technikája ${finalDamage} sebzést okozott!`, 'enemy-action critical');
-    } else {
-      logMessage(`A Sötét Nagyúr sötét penge technikát használ, ${finalDamage} sebzést okozva.`, 'enemy-action');
+  // Ellenőrizzük a tét érvényességét
+  if (currentBet !== null) {
+    if (betCount < currentBet.count || (betCount === currentBet.count && betValue <= currentBet.value)) {
+      showMessage("A tétnek magasabbnak kell lennie! Vagy több mágikus szimbólumot kell mondanod, vagy ugyanannyi magasabb szimbólumot.");
+      return;
     }
   }
   
-  // Animáció a harc ikonon
-  animateCombatIcon('slash');
+  // Tét beállítása
+  currentBet = { count: betCount, value: betValue };
   
-  // Ellenőrizze, hogy vége van-e a harcnak
-  checkBattleEnd();
+  // UI frissítése
+  const symbolObj = symbols.find(s => s.value === betValue);
+  currentBetEl.textContent = `A jelenlegi tét: ${betCount} db ${symbolObj.symbol} (${symbolObj.name})`;
+  
+  // Játékos körének befejezése
+  endPlayerTurn();
+  
+  // Esemény rögzítése
+  logEvent(`Kalandor: "${betCount} ${symbolObj.name} szimbólum van a játékban."`, 'player-action');
+  
+  // Bot köre
+  setTimeout(botTurn, 1500);
 }
 
-// Heal képesség végrehajtása
-function performHeal(character) {
-  const healRange = [20, 25];
-  const healAmount = Math.floor(Math.random() * (healRange[1] - healRange[0] + 1)) + healRange[0];
+// Bot köre
+function botTurn() {
+  if (!gameActive) return;
   
-  // Gyógyítás alkalmazása
-  character.health = Math.min(character.maxHealth, character.health + healAmount);
+  playerSectionEl.classList.remove('active-player');
+  botSectionEl.classList.add('active-player');
   
-  // Effekt megjelenítése
-  displayHealEffect(character === player ? 'player' : 'enemy', healAmount);
+  showMessage("A Sötét Nagyúr fontolgatja a lépését...");
   
-  // Üzenet naplózása
-  if (character === player) {
-    logMessage(`A Kalandor gyógyító varázslatot használ, és visszanyer ${healAmount} életerőt.`, 'player-action heal');
-  } else {
-    logMessage(`A Sötét Nagyúr sötét regenerációt használ, és visszanyer ${healAmount} életerőt.`, 'enemy-action heal');
-  }
-  
-  // Animáció a harc ikonon
-  animateCombatIcon('heal');
-}
-
-// Fireball képesség végrehajtása
-function performFireball(attacker, target) {
-  const damageRange = [20, 30];
-  const baseDamage = Math.floor(Math.random() * (damageRange[1] - damageRange[0] + 1)) + damageRange[0];
-  
-  // Kritikus találat esélye
-  const isCritical = Math.random() < attacker.critChance;
-  
-  // Végső sebzés kiszámítása
-  let finalDamage = baseDamage;
-  if (isCritical) {
-    finalDamage = Math.floor(finalDamage * attacker.critMultiplier);
-  }
-  
-  // Védelem figyelembevétele
-  if (target.defense > 0) {
-    finalDamage = Math.max(1, Math.floor(finalDamage * (1 - target.defense)));
-  }
-  
-  // Sebzés alkalmazása
-  target.health = Math.max(0, target.health - finalDamage);
-  
-  // Effekt megjelenítése
-  displayDamageEffect(target === enemy ? 'enemy' : 'player', finalDamage);
-  
-  // Égés állapothatás hozzáadása
-  const burnChance = 0.25;
-  if (Math.random() < burnChance) {
-    addStatusEffect(target, {
-      name: 'Égés',
-      icon: 'fas fa-fire',
-      duration: 2,
-      effect: 'dot',
-      damage: Math.floor(finalDamage * 0.2),
-      tickMessage: target === player ? 
-        'A Kalandor szenved az égési sérülésektől.' :
-        'A Sötét Nagyúr szenved az égési sérülésektől.'
-    });
-  }
-  
-  // Üzenet naplózása
-  if (attacker === player) {
-    if (isCritical) {
-      logMessage(`Kritikus Tűzgolyó! A Kalandor ${finalDamage} sebzést okozott!`, 'player-action critical');
-    } else {
-      logMessage(`A Kalandor Tűzgolyót idéz, ${finalDamage} sebzést okozva.`, 'player-action');
-    }
-  } else {
-    if (isCritical) {
-      logMessage(`Kritikus Sötét Nova! A Sötét Nagyúr ${finalDamage} sebzést okozott!`, 'enemy-action critical');
-    } else {
-      logMessage(`A Sötét Nagyúr Sötét Novát idéz, ${finalDamage} sebzést okozva.`, 'enemy-action');
-    }
-  }
-  
-  // Animáció a harc ikonon
-  animateCombatIcon('fireball');
-  
-  // Ellenőrizze, hogy vége van-e a harcnak
-  checkBattleEnd();
-}
-
-// Stun képesség végrehajtása
-function performStun(attacker, target) {
-  // Kábítás állapothatás hozzáadása
-  addStatusEffect(target, {
-    name: 'Kábult',
-    icon: 'fas fa-bolt',
-    duration: 1,
-    effect: 'stunned'
-  });
-  
-  // Üzenet naplózása
-  if (attacker === player) {
-    logMessage('A Kalandor kábító varázslatot használ, az ellenség kihagy egy kört!', 'player-action');
-  } else {
-    logMessage('A Sötét Nagyúr sötét bénítást használ, a Kalandor kihagy egy kört!', 'enemy-action');
-  }
-  
-  // Animáció a harc ikonon
-  animateCombatIcon('stun');
-}
-
-// Démon forma képesség végrehajtása (csak ellenfél)
-function performDemonForm(character) {
-  // Démoni erő állapothatás hozzáadása
-  addStatusEffect(character, {
-    name: 'Démoni Erő',
-    icon: 'fas fa-dragon',
-    duration: 3,
-    effect: 'damageBoost',
-    value: 0.5
-  });
-  
-  // Üzenet naplózása
-  logMessage('A Sötét Nagyúr démoni formát ölt! Sebzése 50%-kal nő a következő 3 körre!', 'enemy-action');
-  
-  // Animáció a harc ikonon
-  animateCombatIcon('transform');
-  
-  // Újratöltési idő beállítása
-  enemy.abilities.demonForm.cooldown = enemy.abilities.demonForm.maxCooldown;
-}
-
-// Sötét nyíl képesség végrehajtása (csak ellenfél)
-function performDarkBolt(attacker, target) {
-  const damageRange = [15, 22];
-  const baseDamage = Math.floor(Math.random() * (damageRange[1] - damageRange[0] + 1)) + damageRange[0];
-  
-  // Kritikus találat esélye
-  const isCritical = Math.random() < attacker.critChance;
-  
-  // Végső sebzés kiszámítása
-  let finalDamage = baseDamage;
-  if (isCritical) {
-    finalDamage = Math.floor(finalDamage * attacker.critMultiplier);
-  }
-  
-  // Sebzésnövelő hatások figyelembe vétele
-  const damageBoostEffect = attacker.statusEffects.find(effect => effect.effect === 'damageBoost');
-  if (damageBoostEffect) {
-    finalDamage = Math.floor(finalDamage * (1 + damageBoostEffect.value));
-  }
-  
-  // Védelem figyelembevétele
-  if (target.defense > 0) {
-    finalDamage = Math.max(1, Math.floor(finalDamage * (1 - target.defense)));
-  }
-  
-  // Mana elszívás
-  const manaDrain = Math.min(10, target.mana);
-  target.mana -= manaDrain;
-  attacker.mana = Math.min(attacker.maxMana, attacker.mana + manaDrain);
-  
-  // Sebzés alkalmazása
-  target.health = Math.max(0, target.health - finalDamage);
-  
-  // Effekt megjelenítése
-  displayDamageEffect('player', finalDamage);
-  
-  // Üzenet naplózása
-  if (isCritical) {
-    logMessage(`Kritikus Sötét Nyíl! A Sötét Nagyúr ${finalDamage} sebzést okozott és elszívott ${manaDrain} manát!`, 'enemy-action critical');
-  } else {
-    logMessage(`A Sötét Nagyúr Sötét Nyilat lő, ${finalDamage} sebzést okoz és elszív ${manaDrain} manát!`, 'enemy-action');
-  }
-  
-  // Animáció a harc ikonon
-  animateCombatIcon('darkbolt');
-  
-  // Újratöltési idő beállítása
-  enemy.abilities.darkBolt.cooldown = enemy.abilities.darkBolt.maxCooldown;
-  
-  // Ellenőrizze, hogy vége van-e a harcnak
-  checkBattleEnd();
-}
-
-// Árnyék gyógyítás képesség végrehajtása (csak ellenfél)
-function performShadowHeal(character) {
-  const healRange = [25, 35];
-  const healAmount = Math.floor(Math.random() * (healRange[1] - healRange[0] + 1)) + healRange[0];
-  
-  // Gyógyítás alkalmazása
-  character.health = Math.min(character.maxHealth, character.health + healAmount);
-  
-  // Démon áldás állapothatás - védekezés növelése
-  addStatusEffect(character, {
-    name: 'Démon Áldás',
-    icon: 'fas fa-heart',
-    duration: 2,
-    effect: 'temporaryDefense',
-    value: 0.25
-  });
-  
-  // Effekt megjelenítése
-  displayHealEffect('enemy', healAmount);
-  
-  // Üzenet naplózása
-  logMessage(`A Sötét Nagyúr Árnyék Gyógyítást használ, visszanyer ${healAmount} életerőt és 25% védekező bónuszt kap.`, 'enemy-action heal');
-  
-  // Animáció a harc ikonon
-  animateCombatIcon('shadowheal');
-  
-  // Újratöltési idő beállítása
-  enemy.abilities.shadowHeal.cooldown = enemy.abilities.shadowHeal.maxCooldown;
-}
-
-// Ellenséges akciók végrehajtása
-function executeEnemyAction(action) {
-  switch (action.type) {
-    case 'attack':
-      performAttack(enemy, player);
-      break;
-    case 'defend':
-      performDefend(enemy);
-      break;
-    case 'focus':
-      performFocus(enemy);
-      break;
-    case 'darkBolt':
-      performDarkBolt(enemy, player);
-      break;
-    case 'shadowHeal':
-      performShadowHeal(enemy);
-      break;
-    case 'demonForm':
-      performDemonForm(enemy);
-      break;
-  }
-}
-
-// Az ellenséges AI döntéshozási logikája
-function determineEnemyAction() {
-  // Taktikai helyzet értékelése
-  const enemyHealthPercent = enemy.health / enemy.maxHealth;
-  const playerHealthPercent = player.health / player.maxHealth;
-  const enemyManaPercent = enemy.mana / enemy.maxMana;
-  
-  // Hasznos képességek ellenőrzése
-  const canUseDarkBolt = enemy.mana >= 20 && enemy.abilities.darkBolt.cooldown === 0;
-  const canUseShadowHeal = enemy.mana >= 25 && enemy.abilities.shadowHeal.cooldown === 0;
-  const canUseDemonForm = enemy.mana >= 30 && enemy.abilities.demonForm.cooldown === 0;
-  
-  // A játékos utolsó körének elemzése
-  const lastPlayerAction = player.actionHistory.length > 0 ? 
-    player.actionHistory[player.actionHistory.length - 1] : null;
-  
-  // Az utolsó kapott sebzés ellenőrzése
-  let lastDamageTaken = 0;
-  if (enemy.actionHistory.length > 0 && enemy.actionHistory[enemy.actionHistory.length - 1].damageTaken) {
-    lastDamageTaken = enemy.actionHistory[enemy.actionHistory.length - 1].damageTaken;
-  }
-  
-  // Védekezési threshold a kapott sebzés alapján
-  const shouldDefend = lastDamageTaken > (enemy.maxHealth * enemy.tacticalThresholds.defensiveThreshold);
-  
-  // Döntési logika
-  
-  // 1. Halálos helyzetben próbáljon gyógyulni
-  if (enemyHealthPercent < enemy.tacticalThresholds.lowHealth && canUseShadowHeal) {
-    return { type: 'shadowHeal' };
-  }
-  
-  // 2. A játékos egy erős képességet használt, védekezzen
-  if (shouldDefend && Math.random() < 0.7) {
-    return { type: 'defend' };
-  }
-  
-  // 3. Ha kevés a mana és nem tudunk képességet használni, koncentráljunk
-  if (enemyManaPercent < enemy.tacticalThresholds.lowMana && Math.random() < 0.8) {
-    return { type: 'focus' };
-  }
-  
-  // 4. Támadási lehetőségek, a helyzettől függően
-  
-  // Ha a bot jól áll, és a játékos kevés életerővel rendelkezik, támadjon keményen
-  if (playerHealthPercent < enemy.tacticalThresholds.lowHealth && canUseDarkBolt) {
-    return { type: 'darkBolt' };
-  }
-  
-  // Démoni formát használjon, ha a bot élete közepes, de kell az extra erő
-  if (enemyHealthPercent < enemy.tacticalThresholds.mediumHealth && enemyHealthPercent > enemy.tacticalThresholds.lowHealth && canUseDemonForm) {
-    return { type: 'demonForm' };
-  }
-  
-  // Ha a bot kevesebb életerővel rendelkezik mint a játékos és van képesség, használja azt
-  if (enemyHealthPercent < playerHealthPercent) {
-    if (canUseDarkBolt && Math.random() < 0.7) {
-      return { type: 'darkBolt' };
-    } else if (canUseDemonForm && Math.random() < 0.6) {
-      return { type: 'demonForm' };
-    }
-  }
-  
-  // Alapvető harci taktikák
-  
-  // 70% esély, hogy alap támadást használ
-  if (Math.random() < 0.7) {
-    return { type: 'attack' };
-  }
-  
-  // 20% esély, hogy védekezik
-  if (Math.random() < 0.2) {
-    return { type: 'defend' };
-  }
-  
-  // 10% esély, hogy koncentrál
-  return { type: 'focus' };
-}
-
-// Állapothatás ellenőrzése
-function hasStatusEffect(character, effectType) {
-  return character.statusEffects.some(effect => effect.effect === effectType && effect.duration > 0);
-}
-
-// Állapothatás hozzáadása
-function addStatusEffect(character, effect) {
-  // Azonos típusú hatás ellenőrzése
-  const existingEffect = character.statusEffects.find(e => e.effect === effect.effect);
-  
-  if (existingEffect) {
-    // Ha ugyanaz a hatás már létezik, töröljük
-    const index = character.statusEffects.indexOf(existingEffect);
-    // Eltávolítás előtt az onRemove callback futtatása, ha van
-    if (existingEffect.onRemove) {
-      existingEffect.onRemove();
-    }
-    character.statusEffects.splice(index, 1);
-  }
-  
-  // Új hatás hozzáadása
-  character.statusEffects.push(effect);
-}
-
-// Állapothatások feldolgozása
-function processStatusEffects(character) {
-  const effectsToRemove = [];
-  
-  character.statusEffects.forEach((effect, index) => {
-    // Hatás időtartam csökkentése
-    effect.duration--;
-    
-    // Hatás aktiválása
-    if (effect.effect === 'dot' && effect.duration >= 0) {
-      // Sebzés idővel (Dot)
-      character.health = Math.max(0, character.health - effect.damage);
-      
-      // Dot effekt megjelenítése
-      displayDamageEffect(character === player ? 'player' : 'enemy', effect.damage);
-      
-      // Üzenet naplózása
-      if (effect.tickMessage) {
-        logMessage(effect.tickMessage);
-      }
-      
-      // Ellenőrizze, hogy vége van-e a harcnak
-      checkBattleEnd();
-    }
-    else if (effect.effect === 'temporaryDefense' && effect.duration >= 0) {
-      // Ideiglenes védelem beállítása, ha még nem történt meg
-      if (character.defense < effect.value) {
-        character.defense = effect.value;
-      }
-    }
-    
-    // Hatások eltávolítása, amikor lejártak
-    if (effect.duration < 0) {
-      effectsToRemove.push(index);
-      
-      // Specifikus hatások törlése
-      if (effect.effect === 'defense') {
-        character.defense = 0;
-      }
-      
-      // onRemove callback hívása, ha van
-      if (effect.onRemove) {
-        effect.onRemove();
-      }
-    }
-  });
-  
-  // Hatások törlése fordított sorrendben
-  for (let i = effectsToRemove.length - 1; i >= 0; i--) {
-    character.statusEffects.splice(effectsToRemove[i], 1);
-  }
-}
-
-// Harc végének ellenőrzése
-function checkBattleEnd() {
-  if (player.health <= 0) {
-    gameActive = false;
-    
-    // A játékos vesztett
-    messageElement.innerHTML = `<span class="winner">A Sötét Nagyúr legyőzött! Elbukott a küldetésed.</span>`;
-    logMessage("A Sötét Nagyúr győzedelmeskedett. A harc véget ért.", "enemy-action");
-    
-    // Gombok letiltása
-    disableAllButtons();
-    
-    // Reset gomb megjelenítése
-    resetContainerElement.style.display = 'block';
-  }
-  else if (enemy.health <= 0) {
-    gameActive = false;
-    
-    // A játékos nyert
-    messageElement.innerHTML = `<span class="winner">Győzelem! Legyőzted a Sötét Nagyurat!</span>`;
-    logMessage("A Kalandor győzedelmeskedett. A harc véget ért.", "player-action");
-    
-    // Gombok letiltása
-    disableAllButtons();
-    
-    // Reset gomb megjelenítése
-    resetContainerElement.style.display = 'block';
-  }
-}
-
-// Sebzés effekt megjelenítése
-function displayDamageEffect(target, amount) {
-  const element = document.getElementById(target === 'player' ? 'playerSection' : 'enemySection');
-  const damageElement = document.createElement('div');
-  damageElement.className = 'damage';
-  damageElement.textContent = `-${amount}`;
-  
-  // Pozicionálás véletlenszerűen az elemen belül
-  damageElement.style.top = `${Math.random() * 50 + 25}%`;
-  damageElement.style.left = `${Math.random() * 50 + 25}%`;
-  
-  element.appendChild(damageElement);
-  
-  // Törlés az animáció után
+  // Bot intelligens döntéshozatala
   setTimeout(() => {
-    element.removeChild(damageElement);
-  }, 1000);
+    // Bot gondolkodása
+    const botAction = decideBotAction();
+    
+    if (botAction.action === 'call') {
+      // Bot blöfföt kiált
+      showMessage("A Sötét Nagyúr megérezte varázslatodban a gyengeséget! Leleplezi blöffödet!");
+      logEvent(`Sötét Nagyúr: "Leleplezlek, halandó! Nem lehet ennyi ${symbols.find(s => s.value === currentBet.value).name} a játéktéren!"`, 'bot-action');
+      
+      setTimeout(revealDice, 1500);
+    } else {
+      // Bot emeli a tétet
+      currentBet = botAction.bet;
+      const symbolObj = symbols.find(s => s.value === currentBet.value);
+      
+      showMessage(`A Sötét Nagyúr emeli a tétet: ${currentBet.count} db ${symbolObj.name} szimbólum!`);
+      currentBetEl.textContent = `A jelenlegi tét: ${currentBet.count} db ${symbolObj.symbol} (${symbolObj.name})`;
+      
+      logEvent(`Sötét Nagyúr: "${currentBet.count} ${symbolObj.name} szimbólum van a játékban."`, 'bot-action');
+      
+      // Input mezők frissítése
+      document.getElementById('betValue').value = "1";
+      document.getElementById('betCount').value = (currentBet.count + 1).toString();
+      document.getElementById('betCount').min = (currentBet.count + 1).toString();
+      
+      // Vissza a játékoshoz
+      setTimeout(startPlayerTurn, 1500);
+    }
+  }, 2000);
 }
 
-// Gyógyítás effekt megjelenítése
-function displayHealEffect(target, amount, isMana = false) {
-  const element = document.getElementById(target === 'player' ? 'playerSection' : 'enemySection');
-  const healElement = document.createElement('div');
-  healElement.className = 'heal-anim';
-  healElement.textContent = `+${amount}`;
-  healElement.style.color = isMana ? '#1f5a9e' : '#00ff00';
+// Bot döntéshozatala
+function decideBotAction() {
+  // 1. Számoljuk meg a bot kockáin a jelenlegi tét értékét
+  const botDiceWithValue = botDice.filter(die => die === currentBet.value);
   
-  // Pozicionálás véletlenszerűen az elemen belül
-  healElement.style.top = `${Math.random() * 50 + 25}%`;
-  healElement.style.left = `${Math.random() * 50 + 25}%`;
+  // 2. Becsüljük meg a játékos kockáin lévő értékeket
+  // (valószínűség alapján, feltételezve egyenletes eloszlást)
+  const expectedPlayerDiceWithValue = playerDiceCount / 6;
   
-  element.appendChild(healElement);
+  // 3. Becsült teljes mennyiség
+  const estimatedTotal = botDiceWithValue.length + expectedPlayerDiceWithValue;
   
-  // Törlés az animáció után
-  setTimeout(() => {
-    element.removeChild(healElement);
-  }, 1000);
-}
-
-// Harc ikon animálása
-function animateCombatIcon(iconType) {
-  switch (iconType) {
-    case 'clash':
-      combatIconElement.innerHTML = '<i class="fas fa-swords"></i>';
-      break;
-    case 'shield':
-      combatIconElement.innerHTML = '<i class="fas fa-shield-alt"></i>';
-      break;
-    case 'focus':
-      combatIconElement.innerHTML = '<i class="fas fa-atom"></i>';
-      break;
-    case 'slash':
-      combatIconElement.innerHTML = '<i class="fas fa-wind"></i>';
-      break;
-    case 'heal':
-      combatIconElement.innerHTML = '<i class="fas fa-heart"></i>';
-      break;
-    case 'fireball':
-      combatIconElement.innerHTML = '<i class="fas fa-fire-alt"></i>';
-      break;
-    case 'stun':
-      combatIconElement.innerHTML = '<i class="fas fa-bolt"></i>';
-      break;
-    case 'transform':
-      combatIconElement.innerHTML = '<i class="fas fa-dragon"></i>';
-      break;
-    case 'darkbolt':
-      combatIconElement.innerHTML = '<i class="fas fa-moon"></i>';
-      break;
-    case 'shadowheal':
-      combatIconElement.innerHTML = '<i class="fas fa-skull"></i>';
-      break;
-    default:
-      combatIconElement.innerHTML = '<i class="fas fa-swords"></i>';
+  // 4. Bot blöffölési hajlam (alapértelmezetten 20%)
+  let bluffThreshold = 0.2;
+  
+  // Növeljük a blöffölési hajlamot ha:
+  // - A bot kevés kockával rendelkezik (vesztésre áll)
+  // - A játékban már magas a tét (kockázatosabb)
+  if (botDiceCount < 3) bluffThreshold += 0.2;
+  if (currentBet.count > 7) bluffThreshold += 0.1;
+  
+  // 5. Döntés: blöffölni vagy leleplezni
+  
+  // Ha úgy gondolja, hogy nincs annyi érték, amennyit a játékos mondott
+  if (estimatedTotal < currentBet.count * 0.7) {
+    // Valószínűleg a játékos blöfföl, a bot leleplezi
+    // De kis eséllyel mégis folytatja a blöffölést
+    if (Math.random() < 0.15) {
+      return createBotBet(); // Ritkán folytatja akkor is, ha gyanús
+    } else {
+      return { action: 'call' };
+    }
   }
   
-  // Animáció effekt
-  combatIconElement.classList.remove('combat-icon');
-  void combatIconElement.offsetWidth;
-  combatIconElement.classList.add('combat-icon');
+  // Ha a becsült érték közel van a téthez, akkor kockázatos a helyzet
+  if (estimatedTotal < currentBet.count * 0.9) {
+    // 50% eséllyel leleplezi, 50% eséllyel folytatja
+    if (Math.random() < 0.5) {
+      return { action: 'call' };
+    } else {
+      return createBotBet();
+    }
+  }
+  
+  // Különben folytatja a játékot
+  // De ritkán akkor is leleplezhet, ha jó esélye lenne folytatni
+  if (Math.random() < 0.1) {
+    return { action: 'call' };
+  } else {
+    return createBotBet();
+  }
 }
 
-// Üzenet naplózása
-function logMessage(message, className = '') {
+// Bot tét létrehozása
+function createBotBet() {
+  // Bot ismeri a saját kockáit, és ezek alapján dönt
+  
+  // Számoljunk minden értékből
+  const counts = {};
+  for (let i = 1; i <= 6; i++) {
+    counts[i] = botDice.filter(die => die === i).length;
+  }
+  
+  // Keressük meg a leggyakoribb értéket a bot kockáiban
+  let mostCommonValue = 1;
+  for (let i = 2; i <= 6; i++) {
+    if (counts[i] > counts[mostCommonValue]) {
+      mostCommonValue = i;
+    }
+  }
+  
+  let newBet;
+  
+  // 30% esély a blöffölésre (magasabb tét, mint ami várható)
+  if (Math.random() < 0.3) {
+    // Blöffölés: emelés 1-2 értékkel a becsült fölé
+    const bluffExtraCount = Math.floor(Math.random() * 2) + 1;
+    newBet = {
+      count: currentBet.count + bluffExtraCount,
+      value: mostCommonValue
+    };
+  } else {
+    // Normál emelés az aktuális tét fölé
+    // Ha sok egyforma értéke van, azt érdemes mondani
+    if (counts[mostCommonValue] >= 2) {
+      newBet = {
+        count: currentBet.count + 1,
+        value: mostCommonValue
+      };
+    } else {
+      // Ha nincs sok egyforma, akkor minimál emelés
+      if (currentBet.value === 6) {
+        // Ha már 6-os a tét, akkor emelni kell a darabszámot
+        newBet = {
+          count: currentBet.count + 1,
+          value: 1 // Újrakezdjük 1-essel
+        };
+      } else {
+        // Egyébként értéket emelünk
+        newBet = {
+          count: currentBet.count,
+          value: currentBet.value + 1
+        };
+      }
+    }
+  }
+  
+  return { action: 'bet', bet: newBet };
+}
+
+// Játékos körének kezdése
+function startPlayerTurn() {
+  isPlayerTurn = true;
+  playerSectionEl.classList.add('active-player');
+  botSectionEl.classList.remove('active-player');
+  
+  showMessage("A te lépésed! Folytasd a tétet vagy leplezd le a Sötét Nagyurat!");
+  
+  // Gombok aktiválása
+  document.getElementById('betButton').disabled = false;
+  document.getElementById('callButton').disabled = false;
+}
+
+// Játékos körének befejezése
+function endPlayerTurn() {
+  isPlayerTurn = false;
+  document.getElementById('betButton').disabled = true;
+  document.getElementById('callButton').disabled = true;
+}
+
+// Blöff leleplezése
+function callBluff() {
+  if (!gameActive || !isPlayerTurn || currentBet === null) return;
+  
+  endPlayerTurn();
+  
+  showMessage("Leleplezed a Sötét Nagyúr állítását! Felfedésre kerülnek a mágikus kövek...");
+  logEvent(`Kalandor: "Leleplezlek, Sötét Nagyúr! Nem lehet ennyi ${symbols.find(s => s.value === currentBet.value).name} a játéktéren!"`, 'player-action');
+  
+  setTimeout(revealDice, 1500);
+}
+
+// Kockák felfedése
+function revealDice() {
+  revealContainerEl.style.display = 'block';
+  revealDiceEl.innerHTML = '';
+  
+  // Minden kocka összegyűjtése
+  const allDice = [...playerDice, ...botDice];
+  
+  // Számoljuk meg a keresett értékeket
+  const targetSymbol = symbols.find(s => s.value === currentBet.value);
+  const targetCount = allDice.filter(die => die === currentBet.value).length;
+  
+  // A kockák megjelenítése egymás után, animációval
+  allDice.forEach((die, index) => {
+    const symbol = symbols.find(s => s.value === die);
+    const diceElement = document.createElement('div');
+    diceElement.className = 'dice hidden-dice';
+    
+    // Késleltetett felfedés
+    setTimeout(() => {
+      diceElement.classList.add('reveal-animation');
+      
+      // Felfedés animáció végén
+      setTimeout(() => {
+        diceElement.classList.remove('hidden-dice', 'reveal-animation');
+        diceElement.innerHTML = symbol.symbol;
+        
+        // Ha ez az utolsó kocka, megmutatjuk az eredményt
+        if (index === allDice.length - 1) {
+          setTimeout(() => {
+            showRevealResult(targetSymbol, targetCount);
+          }, 500);
+        }
+      }, 500);
+    }, index * 300);
+    
+    revealDiceEl.appendChild(diceElement);
+  });
+}
+
+// Leleplezés eredményének megjelenítése
+function showRevealResult(targetSymbol, actualCount) {
+  // Ellenőrizzük az állítás helyességét
+  const claim = currentBet.count;
+  const isBluff = actualCount < claim;
+  
+  let resultHtml = '';
+  let loser = '';
+  
+  if (isPlayerTurn) { // A játékos leplezte le a botot
+    if (isBluff) {
+      // A bot blöffölt, a játékos nyert
+      resultHtml = `<p class="winner">A leleplezés sikeres! A játéktéren csak ${actualCount} db ${targetSymbol.symbol} (${targetSymbol.name}) van, nem ${claim}.</p>`;
+      loser = 'bot';
+      logEvent(`Eredmény: A Sötét Nagyúr blöffölt! Csak ${actualCount} db ${targetSymbol.name} volt a játéktéren.`, 'result');
+    } else {
+      // A bot nem blöffölt, a játékos veszített
+      resultHtml = `<p class="winner">A leleplezés sikertelen! A játéktéren valóban ${actualCount} db ${targetSymbol.symbol} (${targetSymbol.name}) van!</p>`;
+      loser = 'player';
+      logEvent(`Eredmény: A Sötét Nagyúr igazat mondott! Valóban ${actualCount} db ${targetSymbol.name} volt a játéktéren.`, 'result');
+    }
+  } else { // A bot leplezte le a játékost
+    if (isBluff) {
+      // A játékos blöffölt, a bot nyert
+      resultHtml = `<p class="winner">A Sötét Nagyúr sikeresen leleplezte blöffödet! A játéktéren csak ${actualCount} db ${targetSymbol.symbol} (${targetSymbol.name}) van, nem ${claim}.</p>`;
+      loser = 'player';
+      logEvent(`Eredmény: A Kalandor blöffölt! Csak ${actualCount} db ${targetSymbol.name} volt a játéktéren.`, 'result');
+    } else {
+      // A játékos nem blöffölt, a bot veszített
+      resultHtml = `<p class="winner">A Sötét Nagyúr tévedett! A játéktéren valóban ${actualCount} db ${targetSymbol.symbol} (${targetSymbol.name}) van!</p>`;
+      loser = 'bot';
+      logEvent(`Eredmény: A Kalandor igazat mondott! Valóban ${actualCount} db ${targetSymbol.name} volt a játéktéren.`, 'result');
+    }
+  }
+  
+  revealResultEl.innerHTML = resultHtml;
+  
+  // Következő kör előkészítése
+  setTimeout(() => {
+    nextRound(loser);
+  }, 2500);
+}
+
+// Következő kör
+function nextRound(loser) {
+  // Kontéter elrejtése
+  revealContainerEl.style.display = 'none';
+  
+  // A vesztes veszít egy kockát
+  if (loser === 'player') {
+    playerDiceCount--;
+    playerDiceCountEl.textContent = playerDiceCount;
+    showMessage("Elvesztettél egy mágikus követ! A Sötét Nagyúr kegyetlenül nevet...");
+    isPlayerTurn = false;
+  } else { // 'bot'
+    botDiceCount--;
+    botDiceCountEl.textContent = botDiceCount;
+    showMessage("A Sötét Nagyúr elvesztett egy mágikus követ! Dühösen mordul fel...");
+    isPlayerTurn = true;
+  }
+  
+  // Ellenőrizzük, hogy véget ért-e a játék
+  if (playerDiceCount === 0) {
+    gameEnd('bot');
+    return;
+  } else if (botDiceCount === 0) {
+    gameEnd('player');
+    return;
+  }
+  
+  // Új kör indítása
+  currentBet = null;
+  currentBetEl.textContent = "A jelenlegi tét: Még nincs";
+  
+  // Új kockák dobása
+  rollDice();
+  
+  // Input mezők alapértékei
+  document.getElementById('betValue').value = "1";
+  document.getElementById('betCount').value = "1";
+  document.getElementById('betCount').min = "1";
+  
+  // A vesztes kezdi a következő kört
+  if (loser === 'player') {
+    playerSectionEl.classList.remove('active-player');
+    botSectionEl.classList.add('active-player');
+    
+    // Bot indít
+    setTimeout(botTurn, 2000);
+  } else {
+    // Játékos indít
+    playerSectionEl.classList.add('active-player');
+    botSectionEl.classList.remove('active-player');
+    
+    // Gombok aktiválása
+    document.getElementById('betButton').disabled = false;
+    document.getElementById('callButton').disabled = true; // Első körben nincs mit leleplezni
+    
+    showMessage("Új kör kezdődik! Te következel.");
+  }
+}
+
+// Játék vége
+function gameEnd(winner) {
+  gameActive = false;
+  
+  if (winner === 'player') {
+    showMessage("GYŐZELEM! Legyőzted a Sötét Nagyurat! A birodalom megszabadul átkától.");
+    logEvent("A Kalandor győzedelmeskedett a Sötét Nagyúr felett!", 'result');
+  } else {
+    showMessage("VERESÉG! A Sötét Nagyúr elpusztította az utolsó mágikus kövedet is. A birodalom elveszett.");
+    logEvent("A Sötét Nagyúr győzedelmeskedett a Kalandor felett!", 'result');
+  }
+  
+  // Új játék gomb megjelenítése
+  document.getElementById('resetContainer').style.display = 'block';
+  
+  // Gombok letiltása
+  document.getElementById('betButton').disabled = true;
+  document.getElementById('callButton').disabled = true;
+}
+
+// Üzenet megjelenítése
+function showMessage(message) {
+  messageEl.textContent = message;
+}
+
+// Esemény rögzítése
+function logEvent(message, className) {
   const logEntry = document.createElement('p');
-  logEntry.className = className;
   logEntry.textContent = message;
+  if (className) logEntry.className = className;
+  historyLogEl.appendChild(logEntry);
   
-  battleLogElement.appendChild(logEntry);
+  // Görgessünk az aljára
+  historyLogEl.scrollTop = historyLogEl.scrollHeight;
   
-  // Automatikus görgetés az új üzenethez
-  battleLogElement.scrollTop = battleLogElement.scrollHeight;
-}
-
-// Összes gomb letiltása
-function disableAllButtons() {
-  document.getElementById('attackBtn').disabled = true;
-  document.getElementById('defendBtn').disabled = true;
-  document.getElementById('focusBtn').disabled = true;
-  document.getElementById('slashBtn').disabled = true;
-  document.getElementById('healBtn').disabled = true;
-  document.getElementById('fireballBtn').disabled = true;
-  document.getElementById('stunBtn').disabled = true;
-}
-
-// Összes gomb engedélyezése
-function enableAllButtons() {
-  document.getElementById('attackBtn').disabled = false;
-  document.getElementById('defendBtn').disabled = false;
-  document.getElementById('focusBtn').disabled = false;
-  document.getElementById('slashBtn').disabled = false;
-  document.getElementById('healBtn').disabled = false;
-  document.getElementById('fireballBtn').disabled = false;
-  document.getElementById('stunBtn').disabled = false;
+  // Események rögzítése a játéktörténetben
+  gameHistory.push({ message, type: className });
 }
 
 // Játék indítása
