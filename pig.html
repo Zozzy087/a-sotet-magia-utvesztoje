@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Sötét Lelkek Kockajátéka</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Pirata One', cursive;
+      background-image: url('images/background.jpg.jpg');
+      background-size: cover;
+      background-position: center;
+      color: #d1c3af;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      background-color: #0c0c0c;
+    }
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      border-radius: 5px;
+      display: inline-block;
+      text-shadow: 0 0 10px #ff6400;
+      letter-spacing: 2px;
+    }
+    #gameArea {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin: 20px 0;
+    }
+    .player-section {
+      background-color: rgba(20, 14, 10, 0.85);
+      padding: 20px;
+      border-radius: 5px;
+      min-width: 260px;
+      border: 1px solid #482c17;
+    }
+    .active-player {
+      border: 1px solid #ff6400;
+      box-shadow: 0 0 20px rgba(255, 100, 0, 0.4);
+    }
+    h2 {
+      margin-top: 0;
+      font-size: 1.8rem;
+      color: #d1c3af;
+    }
+    .score {
+      font-size: 2.8rem;
+      margin: 15px 0;
+      text-shadow: 0 0 10px rgba(255, 100, 0, 0.5);
+    }
+    .current-box {
+      background-color: rgba(72, 44, 23, 0.6);
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 15px;
+    }
+    .dice-container {
+      position: relative;
+      margin: 40px 0;
+      height: 130px;
+    }
+    .dice {
+      font-size: 4rem;
+      position: relative;
+      z-index: 2;
+      transition: transform 0.3s ease-out;
+    }
+    .dice-shadow {
+      position: absolute;
+      width: 80px;
+      height: 10px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 50%;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+      transition: all 0.3s ease-out;
+    }
+    .dice-roll {
+      animation: rollDice 0.8s ease-out;
+    }
+    @keyframes rollDice {
+      0% { transform: rotateY(0deg) rotateX(0deg); }
+      50% { transform: rotateY(720deg) rotateX(360deg); }
+      100% { transform: rotateY(1440deg) rotateX(720deg); }
+    }
+    .dice-symbol {
+      display: inline-block;
+      font-size: 3.5rem;
+      width: 100px;
+      height: 100px;
+      line-height: 100px;
+      background-color: #291d14;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(255, 100, 0, 0.3);
+    }
+    #controls {
+      margin-top: 30px;
+    }
+    button {
+      font-family: 'Pirata One', cursive;
+      font-size: 1.3rem;
+      padding: 12px 25px;
+      margin: 10px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      background-color: #482c17;
+      color: #d1c3af;
+      box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
+      transition: all 0.3s;
+      letter-spacing: 1px;
+    }
+    button:hover {
+      background-color: #5a381f;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 100, 0, 0.5);
+    }
+    #result {
+      font-size: 1.3rem;
+      background-color: rgba(20, 14, 10, 0.7);
+      padding: 15px;
+      border-radius: 5px;
+      display: inline-block;
+      margin-top: 20px;
+      max-width: 80%;
+      letter-spacing: 1px;
+      line-height: 1.4;
+    }
+    #resetContainer {
+      display: none;
+      margin-top: 30px;
+    }
+    .winner {
+      color: #ff6400;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 100, 0, 0.7);
+    }
+    .symbol-legend {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 20px 0;
+      background-color: rgba(20, 14, 10, 0.7);
+      padding: 10px;
+      border-radius: 5px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .symbol-item {
+      display: flex;
+      align-items: center;
+      margin: 5px 10px;
+    }
+    .small-symbol {
+      font-size: 1.5rem;
+      margin-right: 10px;
+      width: 30px;
+      display: inline-block;
+    }
+    .symbol-text {
+      font-size: 1rem;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Sötét Lelkek Kockajátéka</h1>
+
+<div class="symbol-legend">
+  <div class="symbol-item">
+    <div class="small-symbol"><i class="fas fa-skull"></i></div>
+    <div class="symbol-text">Végzet: Elveszted a kör pontjait!</div>
+  </div>
+  <div class="symbol-item">
+    <div class="small-symbol"><i class="fas fa-spider"></i></div>
+    <div class="symbol-text">Pók: 2 pont</div>
+  </div>
+  <div class="symbol-item">
+    <div class="small-symbol"><i class="fas fa-crow"></i></div>
+    <div class="symbol-text">Holló: 3 pont</div>
+  </div>
+  <div class="symbol-item">
+    <div class="small-symbol"><i class="fas fa-khanda"></i></div>
+    <div class="symbol-text">Kard: 4 pont</div>
+  </div>
+  <div class="symbol-item">
+    <div class="small-symbol"><i class="fas fa-fire"></i></div>
+    <div class="symbol-text">Tűz: 5 pont</div>
+  </div>
+  <div class="symbol-item">
+    <div class="small-symbol"><i class="fas fa-dragon"></i></div>
+    <div class="symbol-text">Démon: 6 pont</div>
+  </div>
+</div>
+
+<div id="gameArea">
+  <div id="playerSection" class="player-section active-player">
+    <h2>Kalandor</h2>
+    <div class="score" id="playerTotalScore">0</div>
+    <div class="current-box">
+      <p>Aktuális erő</p>
+      <div id="playerCurrentScore">0</div>
+    </div>
+  </div>
+  
+  <div id="diceSection">
+    <div class="dice-container">
+      <div id="dice" class="dice">
+        <div class="dice-symbol"><i class="fas fa-dice-d20"></i></div>
+      </div>
+      <div class="dice-shadow"></div>
+    </div>
+  </div>
+  
+  <div id="botSection" class="player-section">
+    <h2>Sötét Nagyúr</h2>
+    <div class="score" id="botTotalScore">0</div>
+    <div class="current-box">
+      <p>Aktuális erő</p>
+      <div id="botCurrentScore">0</div>
+    </div>
+  </div>
+</div>
+
+<div id="controls">
+  <button id="rollBtn" onclick="rollDice()">Kockáztatás</button>
+  <button id="holdBtn" onclick="hold()">Erő Gyűjtése</button>
+</div>
+
+<div id="result">Eljött a döntés ideje. Merj kockáztatni a hatalomért?</div>
+
+<div id="resetContainer">
+  <button onclick="startGame()">Új Kihívás</button>
+</div>
+
+<script>
+// Játék változók
+let scores = [0, 0]; // [játékos, számítógép]
+let currentScore = 0;
+let activePlayer = 0; // 0 = játékos, 1 = számítógép
+let gameActive = true;
+
+// Szimbólumok és értékek
+const symbols = [
+  { icon: 'fas fa-skull', name: 'Végzet', value: 1, effect: 'Elveszted a kör pontjait!' },
+  { icon: 'fas fa-spider', name: 'Pók', value: 2, effect: '2 pont' },
+  { icon: 'fas fa-crow', name: 'Holló', value: 3, effect: '3 pont' },
+  { icon: 'fas fa-khanda', name: 'Kard', value: 4, effect: '4 pont' },
+  { icon: 'fas fa-fire', name: 'Tűz', value: 5, effect: '5 pont' },
+  { icon: 'fas fa-dragon', name: 'Démon', value: 6, effect: '6 pont' }
+];
+
+// DOM elemek
+const diceEl = document.getElementById('dice');
+const playerSection = document.getElementById('playerSection');
+const botSection = document.getElementById('botSection');
+const resultEl = document.getElementById('result');
+
+// Játék indítása
+function startGame() {
+  scores = [0, 0];
+  currentScore = 0;
+  activePlayer = 0;
+  gameActive = true;
+  
+  // UI visszaállítása
+  document.getElementById('playerTotalScore').textContent = '0';
+  document.getElementById('botTotalScore').textContent = '0';
+  document.getElementById('playerCurrentScore').textContent = '0';
+  document.getElementById('botCurrentScore').textContent = '0';
+  diceEl.innerHTML = '<div class="dice-symbol"><i class="fas fa-dice-d20"></i></div>';
+  resultEl.textContent = 'Eljött a döntés ideje. Merj kockáztatni a hatalomért?';
+  document.getElementById('resetContainer').style.display = 'none';
+  
+  // Gombok engedélyezése
+  document.getElementById('rollBtn').disabled = false;
+  document.getElementById('holdBtn').disabled = false;
+  
+  // Aktív játékos kijelölése
+  playerSection.classList.add('active-player');
+  botSection.classList.remove('active-player');
+}
+
+// Kockadobás funkció
+function rollDice() {
+  if (!gameActive) return;
+  
+  // Ha a számítógép köre van, ne engedjük a játékosnak dobni
+  if (activePlayer === 1) {
+    displayMessage('A Sötét Nagyúr gyűjti erejét. Várj a sorodra, halandó!');
+    return;
+  }
+  
+  // Kockadobás animáció
+  const diceValue = Math.floor(Math.random() * 6) + 1; // 1-6 közötti érték
+  const symbol = symbols[diceValue-1]; // A megfelelő szimbólum
+  
+  // Kocka animáció
+  diceEl.querySelector('.dice-symbol').innerHTML = `<i class="${symbol.icon}"></i>`;
+  diceEl.classList.remove('dice-roll');
+  void diceEl.offsetWidth; // Trükk az animáció újraindításához
+  diceEl.classList.add('dice-roll');
+  
+  // Dobás feldolgozása
+  if (diceValue !== 1) {
+    // Hozzáadjuk a pontokat az aktuális körhöz
+    currentScore += diceValue;
+    document.getElementById(`${activePlayer === 0 ? 'player' : 'bot'}CurrentScore`).textContent = currentScore;
+    displayMessage(`${symbol.name} szimbólumot dobtál! ${symbol.effect} Folytatod a sötét erők gyűjtését?`);
+  } else {
+    // Végzet (koponya) dobás - körpontok elvesztése
+    displayMessage(`${symbol.name} szimbólumot dobtál! ${symbol.effect} A sötétség elragadta az erődet.`);
+    currentScore = 0;
+    document.getElementById(`${activePlayer === 0 ? 'player' : 'bot'}CurrentScore`).textContent = '0';
+    
+    // Játékos váltás
+    setTimeout(switchPlayer, 2000);
+  }
+}
+
+// Tartás funkció
+function hold() {
+  if (!gameActive || activePlayer === 1) return;
+  
+  // Kör pontjainak hozzáadása az összpontszámhoz
+  scores[activePlayer] += currentScore;
+  document.getElementById(`${activePlayer === 0 ? 'player' : 'bot'}TotalScore`).textContent = scores[activePlayer];
+  
+  // Győzelem ellenőrzése
+  if (scores[activePlayer] >= 100) {
+    gameWon();
+    return;
+  }
+  
+  displayMessage('Bölcsen döntöttél, megőrizted a szerzett hatalmadat. A Sötét Nagyúr következik.');
+  
+  // Játékos váltás
+  setTimeout(switchPlayer, 1500);
+}
+
+// Játékos váltás
+function switchPlayer() {
+  currentScore = 0;
+  document.getElementById(`${activePlayer === 0 ? 'player' : 'bot'}CurrentScore`).textContent = '0';
+  activePlayer = activePlayer === 0 ? 1 : 0;
+  
+  // Aktív játékos vizuális jelölése
+  playerSection.classList.toggle('active-player');
+  botSection.classList.toggle('active-player');
+  
+  // Ha a számítógép következik
+  if (activePlayer === 1) {
+    displayMessage('A Sötét Nagyúr megidézi a káosz erőit...');
+    setTimeout(botTurn, 1500);
+  } else {
+    displayMessage('Te következel! Merj kockáztatni a hatalomért?');
+  }
+}
+
+// Számítógép köre
+function botTurn() {
+  if (!gameActive) return;
+  
+  // Számítógép stratégiája
+  const botThink = setTimeout(function botThinking() {
+    // Kockadobás
+    const diceValue = Math.floor(Math.random() * 6) + 1;
+    const symbol = symbols[diceValue-1]; // A megfelelő szimbólum
+    
+    // Kocka animáció
+    diceEl.querySelector('.dice-symbol').innerHTML = `<i class="${symbol.icon}"></i>`;
+    diceEl.classList.remove('dice-roll');
+    void diceEl.offsetWidth; // Trükk az animáció újraindításához
+    diceEl.classList.add('dice-roll');
+    
+    // Dobás eredményének feldolgozása
+    if (diceValue !== 1) {
+      currentScore += diceValue;
+      document.getElementById('botCurrentScore').textContent = currentScore;
+      displayMessage(`A Sötét Nagyúr ${symbol.name} szimbólumot idézett meg! ${symbol.effect}`);
+      
+      // Döntés: folytatja vagy tartja
+      const continueChance = 0.7; // Alap esély a folytatásra
+      const adjustedChance = Math.max(0.3, continueChance - (currentScore/30)); // Minél több pont, annál kisebb esély
+      
+      if (currentScore >= 20 || scores[1] + currentScore >= 100 || Math.random() > adjustedChance) {
+        // Tartja a pontokat
+        setTimeout(() => {
+          displayMessage('A Sötét Nagyúr magába zárja a megszerzett erőt.');
+          scores[1] += currentScore;
+          document.getElementById('botTotalScore').textContent = scores[1];
+          
+          // Győzelem ellenőrzése
+          if (scores[1] >= 100) {
+            gameWon();
+            return;
+          }
+          
+          setTimeout(switchPlayer, 1500);
+        }, 1500);
+      } else {
+        // Újra dob
+        setTimeout(botThinking, 2000);
+      }
+    } else {
+      // Végzet dobás - elveszti a kör pontjait
+      displayMessage('A Sötét Nagyúr is aláveti magát a végzetnek! Az erejét elnyelte a káosz.');
+      currentScore = 0;
+      document.getElementById('botCurrentScore').textContent = '0';
+      setTimeout(switchPlayer, 2000);
+    }
+  }, 1500);
+}
+
+// Játék megnyerése
+function gameWon() {
+  gameActive = false;
+  if (activePlayer === 0) {
+    resultEl.innerHTML = `<span class="winner">Győzelem! Legyőzted a Sötét Nagyurat ${scores[activePlayer]} pont erejével!</span>`;
+  } else {
+    resultEl.innerHTML = `<span class="winner">A Sötét Nagyúr elpusztította a világodat ${scores[activePlayer]} pont erejével! Elbukott a küldetésed.</span>`;
+  }
+  document.getElementById('resetContainer').style.display = 'block';
+  
+  // Gombok letiltása
+  document.getElementById('rollBtn').disabled = true;
+  document.getElementById('holdBtn').disabled = true;
+}
+
+// Üzenet megjelenítése
+function displayMessage(message) {
+  resultEl.textContent = message;
+}
+
+// Játék indítása
+startGame();
+</script>
+
+</body>
+</html>
