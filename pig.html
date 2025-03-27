@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Sötét Lelkek Kockajátéka</title>
   <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     body {
       font-family: 'Pirata One', cursive;
@@ -24,7 +23,7 @@
       padding: 15px;
       border-radius: 5px;
       display: inline-block;
-      text-shadow: 0 0 10px #7f00ff;
+      text-shadow: 0 0 10px #ff6400;
       letter-spacing: 2px;
     }
     #gameArea {
@@ -40,10 +39,41 @@
       border-radius: 5px;
       min-width: 260px;
       border: 1px solid #482c17;
+      transition: all 0.3s ease;
+      position: relative;
     }
     .active-player {
-      border: 2px solid #7f00ff;
-      box-shadow: 0 0 20px #7f00ff;
+      border: 3px solid #ff6400;
+      box-shadow: 0 0 25px rgba(255, 100, 0, 0.7);
+      transform: scale(1.05);
+      z-index: 2;
+    }
+    .active-player::before {
+      content: "》";
+      position: absolute;
+      left: -30px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2.5rem;
+      color: #ff6400;
+      text-shadow: 0 0 10px #ff6400;
+      animation: pulse 1.5s infinite;
+    }
+    .active-player::after {
+      content: "《";
+      position: absolute;
+      right: -30px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2.5rem;
+      color: #ff6400;
+      text-shadow: 0 0 10px #ff6400;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.7; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
     }
     h2 {
       margin-top: 0;
@@ -53,7 +83,7 @@
     .score {
       font-size: 2.8rem;
       margin: 15px 0;
-      text-shadow: 0 0 10px rgba(127, 0, 255, 0.5);
+      text-shadow: 0 0 10px rgba(255, 100, 0, 0.5);
     }
     .current-box {
       background-color: rgba(72, 44, 23, 0.6);
@@ -94,13 +124,25 @@
     }
     .dice-symbol {
       display: inline-block;
-      font-size: 3.5rem;
       width: 100px;
       height: 100px;
       line-height: 100px;
       background-color: #291d14;
       border-radius: 10px;
-      box-shadow: 0 0 15px rgba(127, 0, 255, 0.3);
+      box-shadow: 0 0 15px rgba(255, 100, 0, 0.3);
+      color: #d1c3af;
+      overflow: hidden;
+      position: relative;
+    }
+    .symbol-inner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     #controls {
       margin-top: 30px;
@@ -113,16 +155,16 @@
       border-radius: 5px;
       border: none;
       cursor: pointer;
-      background-color: #7f00ff;
-      color: white;
-      box-shadow: 0 0 10px #7f00ff;
+      background-color: #482c17;
+      color: #d1c3af;
+      box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
       transition: all 0.3s;
       letter-spacing: 1px;
     }
     button:hover {
-      background-color: #a94bff;
+      background-color: #5a381f;
       transform: scale(1.05);
-      box-shadow: 0 0 15px #a94bff;
+      box-shadow: 0 0 15px rgba(255, 100, 0, 0.5);
     }
     #result {
       font-size: 1.3rem;
@@ -140,9 +182,9 @@
       margin-top: 30px;
     }
     .winner {
-      color: #7fff7f;
+      color: #ff6400;
       font-weight: bold;
-      text-shadow: 0 0 10px rgba(127, 255, 127, 0.7);
+      text-shadow: 0 0 10px rgba(255, 100, 0, 0.7);
     }
     .symbol-legend {
       display: flex;
@@ -165,12 +207,45 @@
     .small-symbol {
       font-size: 1.5rem;
       margin-right: 10px;
-      width: 30px;
-      display: inline-block;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #291d14;
+      border-radius: 5px;
+      box-shadow: 0 0 8px rgba(255, 100, 0, 0.2);
     }
     .symbol-text {
       font-size: 1rem;
       text-align: left;
+    }
+    .symbol-skull {
+      font-size: 2rem;
+    }
+    .symbol-spider {
+      width: 32px;
+      height: 32px;
+    }
+    .symbol-raven {
+      width: 32px;
+      height: 32px;
+    }
+    .symbol-axe {
+      width: 32px;
+      height: 32px;
+    }
+    .symbol-fire {
+      width: 32px;
+      height: 32px;
+    }
+    .symbol-demon {
+      width: 32px;
+      height: 32px;
+    }
+    .symbol-d20 {
+      width: 32px;
+      height: 32px;
     }
   </style>
 </head>
@@ -180,28 +255,55 @@
 
 <div class="symbol-legend">
   <div class="symbol-item">
-    <div class="small-symbol"><i class="fas fa-skull-crossbones"></i></div>
+    <div class="small-symbol">
+      <svg class="symbol-skull" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#ff6400" d="M50,10 C30,10 20,25 20,45 C20,55 25,65 35,70 L35,80 L40,80 L40,85 L60,85 L60,80 L65,80 L65,70 C75,65 80,55 80,45 C80,25 70,10 50,10 Z M35,50 C30,50 25,45 25,40 C25,35 30,30 35,30 C40,30 45,35 45,40 C45,45 40,50 35,50 Z M65,50 C60,50 55,45 55,40 C55,35 60,30 65,30 C70,30 75,35 75,40 C75,45 70,50 65,50 Z M40,60 L60,60 L60,65 L40,65 Z" />
+      </svg>
+    </div>
     <div class="symbol-text">Végzet: Elveszted a kör pontjait!</div>
   </div>
   <div class="symbol-item">
-    <div class="small-symbol"><i class="fas fa-ghost"></i></div>
-    <div class="symbol-text">Szellem: 2 pont</div>
+    <div class="small-symbol">
+      <svg class="symbol-spider" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="15" fill="#d1c3af" />
+        <circle cx="50" cy="40" r="10" fill="#d1c3af" />
+        <path stroke="#d1c3af" stroke-width="4" fill="none" d="M25,25 L40,40 M75,25 L60,40 M25,75 L40,60 M75,75 L60,60 M15,45 L35,50 M85,45 L65,50 M15,55 L35,50 M85,55 L65,50" />
+      </svg>
+    </div>
+    <div class="symbol-text">Pók: 2 pont</div>
   </div>
   <div class="symbol-item">
-    <div class="small-symbol"><i class="fas fa-crow"></i></div>
+    <div class="small-symbol">
+      <svg class="symbol-raven" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#d1c3af" d="M65,35 C75,25 85,30 85,40 C85,45 75,45 65,50 L80,60 L65,65 L75,80 L60,70 L55,85 L50,60 C40,65 35,75 25,70 C15,65 20,55 35,50 C15,45 15,25 30,20 C45,15 55,45 50,60 L65,35 Z" />
+      </svg>
+    </div>
     <div class="symbol-text">Holló: 3 pont</div>
   </div>
   <div class="symbol-item">
-    <div class="small-symbol"><i class="fas fa-hammer"></i></div>
-    <div class="symbol-text">Pöröly: 4 pont</div>
+    <div class="small-symbol">
+      <svg class="symbol-axe" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#d1c3af" d="M30,80 L45,35 L35,30 C35,30 35,20 45,15 C55,10 65,15 70,20 L80,10 L90,20 L80,30 C85,35 90,45 85,55 C80,65 70,65 70,65 L65,55 L20,70 L30,80 Z" />
+      </svg>
+    </div>
+    <div class="symbol-text">Harci Szekerce: 4 pont</div>
   </div>
   <div class="symbol-item">
-    <div class="small-symbol"><i class="fas fa-fire-alt"></i></div>
+    <div class="small-symbol">
+      <svg class="symbol-fire" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#ff6400" d="M50,10 C55,25 65,30 70,40 C75,50 75,60 70,70 C65,80 55,85 50,85 C45,85 35,80 30,70 C25,60 25,50 30,40 C30,55 45,55 45,40 C45,55 60,50 55,70 C65,60 60,40 50,35 C55,30 45,15 50,10 Z" />
+      </svg>
+    </div>
     <div class="symbol-text">Tűz: 5 pont</div>
   </div>
   <div class="symbol-item">
-    <div class="small-symbol"><i class="fas fa-dragon"></i></div>
-    <div class="symbol-text">Sárkány: 6 pont</div>
+    <div class="small-symbol">
+      <svg class="symbol-demon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#d1c3af" d="M50,10 C40,10 25,20 25,35 C25,45 30,50 30,55 C20,60 20,80 30,85 C30,85 40,75 50,75 C60,75 70,85 70,85 C80,80 80,60 70,55 C70,50 75,45 75,35 C75,20 60,10 50,10 Z M35,35 C35,30 45,30 45,35 C45,40 35,40 35,35 Z M65,35 C65,30 55,30 55,35 C55,40 65,40 65,35 Z M40,60 L60,55 L60,65 L40,60 Z" />
+        <path fill="#d1c3af" d="M25,25 L15,15 M75,25 L85,15 M40,10 L35,5 M60,10 L65,5" />
+      </svg>
+    </div>
+    <div class="symbol-text">Démon: 6 pont</div>
   </div>
 </div>
 
@@ -218,7 +320,13 @@
   <div id="diceSection">
     <div class="dice-container">
       <div id="dice" class="dice">
-        <div class="dice-symbol"><i class="fas fa-dice-d20"></i></div>
+        <div class="dice-symbol">
+          <div class="symbol-inner">
+            <svg class="symbol-d20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#d1c3af" d="M50,5 L95,30 L95,70 L50,95 L5,70 L5,30 Z M50,20 L20,35 L20,65 L50,80 L80,65 L80,35 Z" />
+            </svg>
+          </div>
+        </div>
       </div>
       <div class="dice-shadow"></div>
     </div>
@@ -251,16 +359,68 @@ let scores = [0, 0]; // [játékos, számítógép]
 let currentScore = 0;
 let activePlayer = 0; // 0 = játékos, 1 = számítógép
 let gameActive = true;
+let playerHistory = []; // Játékos korábbi döntéseinek követése
+let gameRound = 0; // Játék körök száma
 
 // Szimbólumok és értékek
 const symbols = [
-  { icon: 'fas fa-skull-crossbones', name: 'Végzet', value: 1, effect: 'Elveszted a kör pontjait!' },
-  { icon: 'fas fa-ghost', name: 'Szellem', value: 2, effect: '2 pont' },
-  { icon: 'fas fa-crow', name: 'Holló', value: 3, effect: '3 pont' },
-  { icon: 'fas fa-hammer', name: 'Pöröly', value: 4, effect: '4 pont' },
-  { icon: 'fas fa-fire-alt', name: 'Tűz', value: 5, effect: '5 pont' },
-  { icon: 'fas fa-dragon', name: 'Sárkány', value: 6, effect: '6 pont' }
+  {
+    name: 'Végzet',
+    value: 1,
+    effect: 'Elveszted a kör pontjait!',
+    svg: `<svg class="symbol-skull" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#ff6400" d="M50,10 C30,10 20,25 20,45 C20,55 25,65 35,70 L35,80 L40,80 L40,85 L60,85 L60,80 L65,80 L65,70 C75,65 80,55 80,45 C80,25 70,10 50,10 Z M35,50 C30,50 25,45 25,40 C25,35 30,30 35,30 C40,30 45,35 45,40 C45,45 40,50 35,50 Z M65,50 C60,50 55,45 55,40 C55,35 60,30 65,30 C70,30 75,35 75,40 C75,45 70,50 65,50 Z M40,60 L60,60 L60,65 L40,65 Z" />
+    </svg>`
+  },
+  {
+    name: 'Pók',
+    value: 2,
+    effect: '2 pont',
+    svg: `<svg class="symbol-spider" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="15" fill="#d1c3af" />
+      <circle cx="50" cy="40" r="10" fill="#d1c3af" />
+      <path stroke="#d1c3af" stroke-width="4" fill="none" d="M25,25 L40,40 M75,25 L60,40 M25,75 L40,60 M75,75 L60,60 M15,45 L35,50 M85,45 L65,50 M15,55 L35,50 M85,55 L65,50" />
+    </svg>`
+  },
+  {
+    name: 'Holló',
+    value: 3,
+    effect: '3 pont',
+    svg: `<svg class="symbol-raven" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#d1c3af" d="M65,35 C75,25 85,30 85,40 C85,45 75,45 65,50 L80,60 L65,65 L75,80 L60,70 L55,85 L50,60 C40,65 35,75 25,70 C15,65 20,55 35,50 C15,45 15,25 30,20 C45,15 55,45 50,60 L65,35 Z" />
+    </svg>`
+  },
+  {
+    name: 'Harci Szekerce',
+    value: 4,
+    effect: '4 pont',
+    svg: `<svg class="symbol-axe" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#d1c3af" d="M30,80 L45,35 L35,30 C35,30 35,20 45,15 C55,10 65,15 70,20 L80,10 L90,20 L80,30 C85,35 90,45 85,55 C80,65 70,65 70,65 L65,55 L20,70 L30,80 Z" />
+    </svg>`
+  },
+  {
+    name: 'Tűz',
+    value: 5,
+    effect: '5 pont',
+    svg: `<svg class="symbol-fire" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#ff6400" d="M50,10 C55,25 65,30 70,40 C75,50 75,60 70,70 C65,80 55,85 50,85 C45,85 35,80 30,70 C25,60 25,50 30,40 C30,55 45,55 45,40 C45,55 60,50 55,70 C65,60 60,40 50,35 C55,30 45,15 50,10 Z" />
+    </svg>`
+  },
+  {
+    name: 'Démon',
+    value: 6,
+    effect: '6 pont',
+    svg: `<svg class="symbol-demon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#d1c3af" d="M50,10 C40,10 25,20 25,35 C25,45 30,50 30,55 C20,60 20,80 30,85 C30,85 40,75 50,75 C60,75 70,85 70,85 C80,80 80,60 70,55 C70,50 75,45 75,35 C75,20 60,10 50,10 Z M35,35 C35,30 45,30 45,35 C45,40 35,40 35,35 Z M65,35 C65,30 55,30 55,35 C55,40 65,40 65,35 Z M40,60 L60,55 L60,65 L40,60 Z" />
+      <path fill="#d1c3af" d="M25,25 L15,15 M75,25 L85,15 M40,10 L35,5 M60,10 L65,5" />
+    </svg>`
+  }
 ];
+
+// D20 szimbólum az alapállapothoz
+const d20Symbol = `<svg class="symbol-d20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <path fill="#d1c3af" d="M50,5 L95,30 L95,70 L50,95 L5,70 L5,30 Z M50,20 L20,35 L20,65 L50,80 L80,65 L80,35 Z" />
+</svg>`;
 
 // DOM elemek
 const diceEl = document.getElementById('dice');
@@ -274,13 +434,15 @@ function startGame() {
   currentScore = 0;
   activePlayer = 0;
   gameActive = true;
+  playerHistory = [];
+  gameRound = 0;
   
   // UI visszaállítása
   document.getElementById('playerTotalScore').textContent = '0';
   document.getElementById('botTotalScore').textContent = '0';
   document.getElementById('playerCurrentScore').textContent = '0';
   document.getElementById('botCurrentScore').textContent = '0';
-  diceEl.innerHTML = '<div class="dice-symbol"><i class="fas fa-dice-d20"></i></div>';
+  resetDice();
   resultEl.textContent = 'Eljött a döntés ideje. Merj kockáztatni a hatalomért?';
   document.getElementById('resetContainer').style.display = 'none';
   
@@ -291,6 +453,12 @@ function startGame() {
   // Aktív játékos kijelölése
   playerSection.classList.add('active-player');
   botSection.classList.remove('active-player');
+}
+
+// Kocka visszaállítása alapállapotba
+function resetDice() {
+  diceEl.querySelector('.dice-symbol .symbol-inner').innerHTML = d20Symbol;
+  diceEl.classList.remove('dice-roll');
 }
 
 // Kockadobás funkció
@@ -308,10 +476,20 @@ function rollDice() {
   const symbol = symbols[diceValue-1]; // A megfelelő szimbólum
   
   // Kocka animáció
-  diceEl.querySelector('.dice-symbol').innerHTML = `<i class="${symbol.icon}"></i>`;
+  diceEl.querySelector('.dice-symbol .symbol-inner').innerHTML = symbol.svg;
   diceEl.classList.remove('dice-roll');
   void diceEl.offsetWidth; // Trükk az animáció újraindításához
   diceEl.classList.add('dice-roll');
+  
+  // Játékos döntéseinek követése
+  if (activePlayer === 0) {
+    playerHistory.push({
+      round: gameRound,
+      action: 'roll',
+      result: diceValue,
+      currentScore: currentScore
+    });
+  }
   
   // Dobás feldolgozása
   if (diceValue !== 1) {
@@ -334,6 +512,14 @@ function rollDice() {
 function hold() {
   if (!gameActive || activePlayer === 1) return;
   
+  // Játékos döntéseinek követése
+  playerHistory.push({
+    round: gameRound,
+    action: 'hold',
+    score: currentScore,
+    totalScore: scores[activePlayer] + currentScore
+  });
+  
   // Kör pontjainak hozzáadása az összpontszámhoz
   scores[activePlayer] += currentScore;
   document.getElementById(`${activePlayer === 0 ? 'player' : 'bot'}TotalScore`).textContent = scores[activePlayer];
@@ -355,9 +541,10 @@ function switchPlayer() {
   currentScore = 0;
   document.getElementById(`${activePlayer === 0 ? 'player' : 'bot'}CurrentScore`).textContent = '0';
   activePlayer = activePlayer === 0 ? 1 : 0;
+  gameRound++;
   
   // Kocka visszaállítása alapállapotba
-  diceEl.innerHTML = '<div class="dice-symbol"><i class="fas fa-dice-d20"></i></div>';
+  resetDice();
   
   // Aktív játékos vizuális jelölése
   playerSection.classList.toggle('active-player');
@@ -376,14 +563,25 @@ function switchPlayer() {
 function botTurn() {
   if (!gameActive) return;
   
-  // Számítógép stratégiája
+  // Fejlettebb stratégia a bot számára
+  botStrategy();
+}
+
+// Bot intelligens stratégiája
+function botStrategy() {
+  // Különböző tényezők, amelyek befolyásolják a bot döntését
+  const scoreDifference = scores[0] - scores[1]; // Negatív, ha a bot vezet
+  const playerCloseToWin = scores[0] >= 70; // Játékos közel van a győzelemhez
+  const botCloseToWin = scores[1] >= 70; // Bot közel van a győzelemhez
+  
+  // Különböző bot stratégiák a körülményektől függően
   const botThink = setTimeout(function botThinking() {
     // Kockadobás
     const diceValue = Math.floor(Math.random() * 6) + 1;
     const symbol = symbols[diceValue-1]; // A megfelelő szimbólum
     
     // Kocka animáció
-    diceEl.querySelector('.dice-symbol').innerHTML = `<i class="${symbol.icon}"></i>`;
+    diceEl.querySelector('.dice-symbol .symbol-inner').innerHTML = symbol.svg;
     diceEl.classList.remove('dice-roll');
     void diceEl.offsetWidth; // Trükk az animáció újraindításához
     diceEl.classList.add('dice-roll');
@@ -394,28 +592,52 @@ function botTurn() {
       document.getElementById('botCurrentScore').textContent = currentScore;
       displayMessage(`A Sötét Nagyúr ${symbol.name} szimbólumot idézett meg! ${symbol.effect}`);
       
-      // Döntés: folytatja vagy tartja
-      const continueChance = 0.7; // Alap esély a folytatásra
-      const adjustedChance = Math.max(0.3, continueChance - (currentScore/30)); // Minél több pont, annál kisebb esély
+      // A bot döntési stratégiája a további dobásról
       
-      if (currentScore >= 20 || scores[1] + currentScore >= 100 || Math.random() > adjustedChance) {
-        // Tartja a pontokat
-        setTimeout(() => {
-          displayMessage('A Sötét Nagyúr magába zárja a megszerzett erőt.');
-          scores[1] += currentScore;
-          document.getElementById('botTotalScore').textContent = scores[1];
-          
-          // Győzelem ellenőrzése
-          if (scores[1] >= 100) {
-            gameWon();
-            return;
-          }
-          
-          setTimeout(switchPlayer, 1500);
-        }, 1500);
-      } else {
-        // Újra dob
+      // 1. Ha a bot dobása elég a győzelemhez, akkor tartja
+      if (scores[1] + currentScore >= 100) {
+        setTimeout(() => holdBot("Győzelemre készül..."), 1500);
+        return;
+      }
+      
+      // 2. Ha nagy az előnye és alacsony a kockázat, konzervatívabb
+      if (scoreDifference < -30 && currentScore >= 15) {
+        setTimeout(() => holdBot("Kíméletlenül gyűjti az erőt."), 1500);
+        return;
+      }
+      
+      // 3. Ha hátránya van, nagyobb kockázatot vállal
+      if (scoreDifference > 20) {
+        // Ha jelentős a hátránya, nagyobb kockázatot vállal
+        const riskThreshold = Math.min(25, Math.floor(scoreDifference / 2));
+        if (currentScore < riskThreshold) {
+          setTimeout(botThinking, 2000);
+          return;
+        }
+      }
+      
+      // 4. Ha a játékos közel van a győzelemhez, a bot nagyobb kockázatot vállal
+      if (playerCloseToWin && !botCloseToWin) {
+        const riskThreshold = Math.min(30, 70 + (scores[0] - scores[1]) / 2);
+        if (currentScore < riskThreshold && diceValue >= 4) {
+          setTimeout(botThinking, 2000);
+          return;
+        }
+      }
+      
+      // 5. Alapértelmezett stratégia: értékeli a dobás értékét és az eddigi pontokat
+      const baseThreshold = 18; // Alap küszöbérték
+      const valueBonus = diceValue >= 5 ? 5 : 0; // Bónusz a magasabb dobásért
+      const riskAdjustment = Math.floor(Math.random() * 5); // Véletlenszerű tényező
+      
+      const adjustedThreshold = baseThreshold + valueBonus + riskAdjustment;
+      
+      if (currentScore < adjustedThreshold) {
+        // Folytatja a dobást
         setTimeout(botThinking, 2000);
+      } else {
+        // Tartja a pontokat
+        setTimeout(() => holdBot("Elégedett a gyűjtött erővel."), 1500);
       }
     } else {
       // Végzet dobás - elveszti a kör pontjait
@@ -425,6 +647,21 @@ function botTurn() {
       setTimeout(switchPlayer, 2000);
     }
   }, 1500);
+}
+
+// Bot tartás funkció
+function holdBot(reason) {
+  displayMessage(`A Sötét Nagyúr magába zárja a megszerzett erőt. ${reason}`);
+  scores[1] += currentScore;
+  document.getElementById('botTotalScore').textContent = scores[1];
+  
+  // Győzelem ellenőrzése
+  if (scores[1] >= 100) {
+    gameWon();
+    return;
+  }
+  
+  setTimeout(switchPlayer, 1500);
 }
 
 // Játék megnyerése
