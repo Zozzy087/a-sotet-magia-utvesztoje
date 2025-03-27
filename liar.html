@@ -2,207 +2,859 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Hazudj vagy dobj!</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="remixicon.css"> <!-- Remix Icon -->
+  <title>Sötét Kétség - Blöff Kockajáték</title>
+  <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
-    * { box-sizing: border-box; }
     body {
-      font-family: 'Cinzel', serif;
+      font-family: "Eczar", serif;
       background-image: url('images/background.jpg.jpg');
       background-size: cover;
       background-position: center;
-      background-repeat: no-repeat;
-      color: #fff;
+      color: #d1c3af;
       margin: 0;
       padding: 20px;
-      min-height: 100vh;
+      text-align: center;
+      background-color: #0c0c0c;
+    }
+    h1 {
+      font-size: 2.6rem;
+      margin-bottom: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      border-radius: 5px;
+      display: inline-block;
+      text-shadow: 0 0 10px #ff6400;
+      letter-spacing: 2px;
+    }
+    #gameArea {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin: 20px 0;
+    }
+    .player-section {
+      background-color: rgba(20, 14, 10, 0.85);
+      padding: 20px;
+      border-radius: 5px;
+      min-width: 260px;
+      border: 1px solid #482c17;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .active-player {
+      border: 3px solid #ff6400;
+      box-shadow: 0 0 25px rgba(255, 100, 0, 0.7);
+      transform: scale(1.05);
+      z-index: 2;
+    }
+    .active-player::before {
+      content: "》";
+      position: absolute;
+      left: -30px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2.5rem;
+      color: #ff6400;
+      text-shadow: 0 0 10px #ff6400;
+      animation: pulse 1.5s infinite;
+    }
+    .active-player::after {
+      content: "《";
+      position: absolute;
+      right: -30px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2.5rem;
+      color: #ff6400;
+      text-shadow: 0 0 10px #ff6400;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.7; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+    h2 {
+      margin-top: 0;
+      font-size: 1.8rem;
+      color: #d1c3af;
+    }
+    .lives {
+      font-size: 2.5rem;
+      margin: 15px 0;
+      text-shadow: 0 0 10px rgba(255, 100, 0, 0.5);
+    }
+    .dice-container {
+      position: relative;
+      margin: 40px 0;
+      height: 130px;
+      perspective: 600px;
+    }
+    .dice-cup {
+      width: 130px;
+      height: 130px;
+      margin: 0 auto;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 1s ease-out;
+    }
+    .dice-cup.hidden .die {
+      opacity: 0.2;
+    }
+    .die {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background-color: #291d14;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(255, 100, 0, 0.3);
+      color: #d1c3af;
+      font-size: 2.5rem;
+      line-height: 60px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .die:first-child {
+      left: 0;
+      top: 35px;
+    }
+    .die:last-child {
+      right: 0;
+      top: 35px;
+    }
+    .dice-roll {
+      animation: rollDice 0.8s ease-out;
+    }
+    @keyframes rollDice {
+      0% { transform: rotateY(0deg) rotateX(0deg); }
+      50% { transform: rotateY(720deg) rotateX(360deg); }
+      100% { transform: rotateY(1440deg) rotateX(720deg); }
+    }
+    #controls {
+      margin-top: 30px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 20px;
     }
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-      background: rgba(0,0,0,0.7);
-      padding: 10px 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px #7f00ff;
-    }
-    #players, #status, #actions, #diceResult, #log, #eliminated {
-      background: rgba(0,0,0,0.6);
-      margin: 10px 0;
-      padding: 10px 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(127, 0, 255, 0.4);
-      max-width: 600px;
-      width: 100%;
+    .control-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
     }
     button {
-      background: #7f00ff;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      margin: 5px;
+      font-family: "Eczar", serif;
+      font-size: 1.2rem;
+      padding: 12px 25px;
+      margin: 0 5px;
       border-radius: 5px;
-      font-size: 1rem;
+      border: none;
       cursor: pointer;
-      transition: 0.2s ease-in-out;
+      background-color: #482c17;
+      color: #d1c3af;
+      box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
+      transition: all 0.3s;
+      letter-spacing: 1px;
     }
-    button:hover {
-      background: #a94bff;
+    button:hover:not(:disabled) {
+      background-color: #5a381f;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 100, 0, 0.5);
     }
-    input[type="text"], input[type="number"] {
-      padding: 5px;
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .declare-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .declare-btn {
+      width: 70px;
+      padding: 8px 5px;
+      font-size: 1rem;
+    }
+    #result {
+      font-size: 1.3rem;
+      background-color: rgba(20, 14, 10, 0.7);
+      padding: 15px;
       border-radius: 5px;
-      border: none;
-      margin: 5px;
+      display: inline-block;
+      margin-top: 20px;
+      max-width: 80%;
+      letter-spacing: 1px;
+      line-height: 1.4;
     }
-    .hidden {
+    #resetContainer {
       display: none;
+      margin-top: 30px;
+    }
+    .winner {
+      color: #ff6400;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 100, 0, 0.7);
+    }
+    .rules-container {
+      background-color: rgba(20, 14, 10, 0.7);
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px auto;
+      max-width: 800px;
+      text-align: left;
+    }
+    .rules-toggle {
+      cursor: pointer;
+      font-weight: bold;
+      display: block;
+      margin-bottom: 10px;
+    }
+    .rules-content {
+      display: none;
+      padding: 10px;
+      border-top: 1px solid #482c17;
+    }
+    .dice-value {
+      font-size: 2.5rem;
+      margin: 10px 0;
+      text-shadow: 0 0 10px rgba(255, 100, 0, 0.5);
+    }
+    .current-value {
+      font-size: 1.5rem;
+      margin: 10px 0;
+    }
+    #lastValue {
+      font-weight: bold;
+      color: #ff6400;
+    }
+    .fa-heart {
+      color: #ff6400;
     }
   </style>
 </head>
 <body>
-  <h1>Hazudj vagy dobj!</h1>
 
-  <div id="players">
-    <label>Játékosok neve (vesszővel elválasztva): </label><br>
-    <input type="text" id="playerNames" placeholder="Anna, Béla, Cili, Dani">
-    <label>Életek száma:</label>
-    <input type="number" id="lives" value="3" min="1">
-    <button onclick="startGame()">Játék indítása</button>
+<h1>Sötét Kétség - Blöff Kockajáték</h1>
+
+<div class="rules-container">
+  <span class="rules-toggle" onclick="toggleRules()">
+    <i class="fas fa-book"></i> Játékszabályok (Kattints a megjelenítéshez)
+  </span>
+  <div class="rules-content" id="rulesContent">
+    <p>A játék folyamán a játékosok két kockával fognak egyszerre dobni. A dobás értékének leolvasása mindig a következő szabály szerint folyik:</p>
+    <p>A két kockával dobott két számból a nagyobbikat tesszük előre, a kisebbiket pedig a végére, a tízes, illetve az egyes helyi értékre. Így a dobások értéke mindig egy kétjegyű szám lesz.</p>
+    <p>Ha két ugyanakkora számot dobunk, akkor az ezekből álló kétjegyű palindrom szám lesz a dobott érték (pl. két 2-es = 22, ezt "2-es bas"-nak is nevezhetjük).</p>
+    <p>A számok erősorrendje:<br>
+    31, 32, 41, 42, 43, 51, 52, 53, 54, 61, 62, 63, 64, 65, 11, 22, 33, 44, 55, 66, 21</p>
+    <p>A 21 a legmagasabb érték! Ha valaki 21-et dob (vagy csak mond), a következő játékos mondhat ugyanannyit. Minden más esetben nagyobbat kell mondani.</p>
+    <p>A játék menete: Mindig nagyobbat kell dobni vagy mondani, mint az előző játékos. Ha úgy gondolod, hogy az ellenfeled hazudik, akkor kihívhatod őt, és ellenőrizheted a dobását. Ha valóban hazudott, ő veszít egy életet, ha nem, akkor te veszítesz egyet.</p>
+    <p>Az nyer, akinek a végén marad élete.</p>
   </div>
+</div>
 
-  <div id="status" class="hidden"></div>
-
-  <div id="actions" class="hidden">
-    <button onclick="rollDice()">Dobás</button>
-    <button onclick="claimValue()">Szám bemondása</button>
-    <button onclick="challenge()">Kihívás (Nem hiszem el!)</button>
+<div id="gameArea">
+  <div id="playerSection" class="player-section active-player">
+    <h2>Kalandor</h2>
+    <div class="lives" id="playerLives"><i class="fas fa-heart"></i> <i class="fas fa-heart"></i> <i class="fas fa-heart"></i></div>
+    <div class="current-value">
+      Utolsó mondott értéked: <span id="playerDeclared">-</span>
+    </div>
   </div>
+  
+  <div class="dice-container">
+    <div class="dice-cup hidden" id="diceCup">
+      <div class="die" id="die1">1</div>
+      <div class="die" id="die2">1</div>
+    </div>
+    <div class="dice-value">
+      Aktuális érték: <span id="currentValue">-</span><br>
+      <span id="valueCompare" style="font-size: 1rem;"></span>
+    </div>
+  </div>
+  
+  <div id="botSection" class="player-section">
+    <h2>Sötét Nagyúr</h2>
+    <div class="lives" id="botLives"><i class="fas fa-heart"></i> <i class="fas fa-heart"></i> <i class="fas fa-heart"></i></div>
+    <div class="current-value">
+      Utolsó mondott értéke: <span id="botDeclared">-</span>
+    </div>
+  </div>
+</div>
 
-  <div id="diceResult" class="hidden"></div>
+<div class="current-value" style="margin-top: 20px;">
+  Előző érték: <span id="lastValue">-</span>
+</div>
 
-  <div id="log"></div>
-  <div id="eliminated"></div>
+<div id="controls">
+  <div class="control-row" id="gameControls">
+    <button id="rollBtn" onclick="rollDice()">Dobj!</button>
+    <button id="declareBtn" onclick="showDeclareOptions()">Mondj egy értéket</button>
+    <button id="challengeBtn" onclick="challenge()" disabled>Kétség! (Kihívás)</button>
+    <button id="acceptBtn" onclick="acceptDeclaration()" disabled>Elfogadom</button>
+  </div>
+  
+  <div class="declare-controls" id="declareControls" style="display: none;">
+    <div id="declareButtons"></div>
+    <button onclick="hideDeclareOptions()">Vissza</button>
+  </div>
+</div>
+
+<div id="result">Válassz egy dobást vagy mondj egy értéket a játék kezdéséhez.</div>
+
+<div id="resetContainer">
+  <button onclick="startGame()">Új Játék</button>
+</div>
 
 <script>
-let players = [], current = 0, prevClaim = null, actualRoll = null, gameOver = false;
-let eliminated = [];
+// Játék konstansok
+const DICE_VALUES = [1, 2, 3, 4, 5, 6];
+const VALUE_ORDER = [
+  '31', '32', '41', '42', '43', '51', '52', '53', '54', '61', '62', '63', '64', '65',
+  '11', '22', '33', '44', '55', '66', '21'
+];
 
+// Játék változók
+let playerLives = 3;
+let botLives = 3;
+let gameActive = true;
+let currentPlayer = 'player'; // 'player' vagy 'bot'
+let lastDeclaredValue = null;
+let realDiceValue = null;
+let declaredValue = null;
+let gameDirection = 1; // 1: normál, -1: fordított
+let playerHistory = []; // Játékos korábbi döntéseinek követése
+
+// DOM elemek
+const diceCupEl = document.getElementById('diceCup');
+const die1El = document.getElementById('die1');
+const die2El = document.getElementById('die2');
+const playerSectionEl = document.getElementById('playerSection');
+const botSectionEl = document.getElementById('botSection');
+const resultEl = document.getElementById('result');
+const playerLivesEl = document.getElementById('playerLives');
+const botLivesEl = document.getElementById('botLives');
+const playerDeclaredEl = document.getElementById('playerDeclared');
+const botDeclaredEl = document.getElementById('botDeclared');
+const currentValueEl = document.getElementById('currentValue');
+const lastValueEl = document.getElementById('lastValue');
+const valueCompareEl = document.getElementById('valueCompare');
+
+// Gombok
+const rollBtn = document.getElementById('rollBtn');
+const declareBtn = document.getElementById('declareBtn');
+const challengeBtn = document.getElementById('challengeBtn');
+const acceptBtn = document.getElementById('acceptBtn');
+const gameControlsEl = document.getElementById('gameControls');
+const declareControlsEl = document.getElementById('declareControls');
+const declareButtonsEl = document.getElementById('declareButtons');
+
+// Játék indítása
 function startGame() {
-  const names = document.getElementById("playerNames").value.split(",").map(n => n.trim()).filter(n => n);
-  const life = parseInt(document.getElementById("lives").value);
-  if (names.length < 3) {
-    alert("Legalább 3 játékos kell!");
-    return;
-  }
-  players = names.map(name => ({ name, life, eliminated: false }));
-  current = 0;
-  prevClaim = null;
-  actualRoll = null;
-  gameOver = false;
-  eliminated = [];
-  document.getElementById("players").classList.add("hidden");
-  document.getElementById("actions").classList.remove("hidden");
-  document.getElementById("status").classList.remove("hidden");
-  document.getElementById("log").innerHTML = "";
-  document.getElementById("eliminated").innerHTML = "";
-  updateStatus();
+  playerLives = 3;
+  botLives = 3;
+  gameActive = true;
+  currentPlayer = 'player';
+  lastDeclaredValue = null;
+  realDiceValue = null;
+  declaredValue = null;
+  gameDirection = 1;
+  playerHistory = [];
+  
+  // UI visszaállítása
+  updateLivesDisplay();
+  diceCupEl.classList.add('hidden');
+  playerDeclaredEl.textContent = '-';
+  botDeclaredEl.textContent = '-';
+  currentValueEl.textContent = '-';
+  lastValueEl.textContent = '-';
+  valueCompareEl.textContent = '';
+  resultEl.textContent = 'Válassz egy dobást vagy mondj egy értéket a játék kezdéséhez.';
+  document.getElementById('resetContainer').style.display = 'none';
+  
+  // Gombok engedélyezése
+  rollBtn.disabled = false;
+  declareBtn.disabled = false;
+  challengeBtn.disabled = true;
+  acceptBtn.disabled = true;
+  
+  // Aktív játékos kijelölése
+  updateActivePlayer();
 }
 
-function updateStatus() {
-  const active = players.filter(p => !p.eliminated);
-  if (active.length === 1) {
-    document.getElementById("status").innerHTML = `<b>${active[0].name}</b> nyert!`;
-    document.getElementById("actions").classList.add("hidden");
-    gameOver = true;
-    return;
-  }
-  document.getElementById("status").innerHTML = `Játékos: <b>${players[current].name}</b><br>Előző bemondott szám: ${prevClaim ? prevClaim.display : "-"}`;
-  document.getElementById("diceResult").classList.add("hidden");
-}
-
-function rollDice() {
-  if (gameOver) return;
-  const die1 = Math.floor(Math.random() * 6) + 1;
-  const die2 = Math.floor(Math.random() * 6) + 1;
-  const result = formatRoll(die1, die2);
-  actualRoll = result;
-  document.getElementById("diceResult").classList.remove("hidden");
-  document.getElementById("diceResult").innerHTML = `Dobott érték (titkos): ${result.display}`;
-}
-
-function formatRoll(a, b) {
-  let val = a === b ? a * 10 + b : Math.max(a, b) * 10 + Math.min(a, b);
-  return { value: val, display: val === 21 ? "21 (kivétel!)" : val.toString() };
-}
-
-function claimValue() {
-  if (!actualRoll) {
-    alert("Előbb dobj a kockákkal!");
-    return;
-  }
-  const claimed = actualRoll;
-  if (prevClaim && !isGreater(claimed.value, prevClaim.value)) {
-    alert("Nagyobbat kell mondanod, mint az előző!");
-    return;
-  }
-  prevClaim = claimed;
-  log(`${players[current].name} azt állítja, hogy ${claimed.display}-t dobott.`);
-  nextTurn();
-}
-
-function challenge() {
-  if (!prevClaim || !actualRoll) {
-    alert("Előbb dobj, majd hazudj vagy ne!");
-    return;
-  }
-  const prevIndex = (current - 1 + players.length) % players.length;
-  const prevPlayer = players[prevIndex];
-  if (actualRoll.value === prevClaim.value) {
-    log(`${players[current].name} nem hitt ${prevPlayer.name}-nek, de <b>az igazat mondta</b>!`);
-    damage(players[current]);
-    current = prevIndex; // visszafordul a kör
+// Játékszabályok megjelenítése/elrejtése
+function toggleRules() {
+  const rulesContent = document.getElementById('rulesContent');
+  if (rulesContent.style.display === 'block') {
+    rulesContent.style.display = 'none';
   } else {
-    log(`${players[current].name} nem hitt ${prevPlayer.name}-nek, és <b>igaza volt</b>!`);
-    damage(prevPlayer);
-  }
-  actualRoll = null;
-  prevClaim = null;
-  nextTurn();
-}
-
-function damage(player) {
-  player.life--;
-  if (player.life <= 0) {
-    player.eliminated = true;
-    eliminated.push(player.name);
-    document.getElementById("eliminated").innerHTML = `<b>Kiesett:</b> ${eliminated.join(", ")}`;
+    rulesContent.style.display = 'block';
   }
 }
 
-function nextTurn() {
-  do {
-    current = (current + 1) % players.length;
-  } while (players[current].eliminated);
-  actualRoll = null;
-  updateStatus();
+// Életek megjelenítésének frissítése
+function updateLivesDisplay() {
+  playerLivesEl.innerHTML = Array(playerLives).fill('<i class="fas fa-heart"></i>').join(' ');
+  botLivesEl.innerHTML = Array(botLives).fill('<i class="fas fa-heart"></i>').join(' ');
 }
 
-function isGreater(a, b) {
-  const order = [31,32,41,42,43,51,52,53,54,61,62,63,64,65,11,22,33,44,55,66,21];
-  const ai = order.indexOf(a);
-  const bi = order.indexOf(b);
-  return ai > bi;
+// Aktív játékos kijelölése
+function updateActivePlayer() {
+  if (currentPlayer === 'player') {
+    playerSectionEl.classList.add('active-player');
+    botSectionEl.classList.remove('active-player');
+  } else {
+    playerSectionEl.classList.remove('active-player');
+    botSectionEl.classList.add('active-player');
+  }
 }
 
-function log(msg) {
-  const div = document.createElement("div");
-  div.innerHTML = msg;
-  document.getElementById("log").prepend(div);
+// Kockadobás
+function rollDice() {
+  if (!gameActive || currentPlayer !== 'player') return;
+  
+  // Két kocka dobása
+  const die1Value = DICE_VALUES[Math.floor(Math.random() * DICE_VALUES.length)];
+  const die2Value = DICE_VALUES[Math.floor(Math.random() * DICE_VALUES.length)];
+  
+  // Kockák megjelenítése
+  die1El.textContent = die1Value;
+  die2El.textContent = die2Value;
+  
+  // Kocka animáció
+  diceCupEl.classList.remove('hidden');
+  diceCupEl.classList.remove('dice-roll');
+  void diceCupEl.offsetWidth; // Trükk az animáció újraindításához
+  diceCupEl.classList.add('dice-roll');
+  
+  // Valós érték kiszámítása
+  realDiceValue = calculateDiceValue(die1Value, die2Value);
+  currentValueEl.textContent = realDiceValue;
+  
+  // Gombok frissítése
+  rollBtn.disabled = true;
+  declareBtn.disabled = false;
+  challengeBtn.disabled = true;
+  acceptBtn.disabled = true;
+  
+  // Érték összehasonlítása
+  if (lastDeclaredValue) {
+    compareValues(realDiceValue, lastDeclaredValue);
+  }
+  
+  // Játékos történet követése
+  playerHistory.push({
+    action: 'roll',
+    roll: realDiceValue,
+    previous: lastDeclaredValue
+  });
+  
+  resultEl.textContent = `Dobtál egy ${realDiceValue} értéket. Most mondanod kell egy értéket, ami nagyobb vagy egyenlő ${lastDeclaredValue ? lastDeclaredValue : 'az előzőnél'}.`;
 }
+
+// Kockaérték kiszámítása
+function calculateDiceValue(die1, die2) {
+  if (die1 === die2) {
+    return `${die1}${die2}`; // Páros, pl. "33"
+  } else {
+    // A nagyobb szám előre
+    return die1 > die2 ? `${die1}${die2}` : `${die2}${die1}`;
+  }
+}
+
+// Értékek összehasonlítása
+function compareValues(current, previous) {
+  if (!previous) {
+    valueCompareEl.textContent = 'Nincs előző érték az összehasonlításhoz.';
+    return;
+  }
+  
+  const currentIndex = VALUE_ORDER.indexOf(current);
+  const previousIndex = VALUE_ORDER.indexOf(previous);
+  
+  if (currentIndex > previousIndex || (previous === '21' && current === '21')) {
+    valueCompareEl.textContent = 'Ez az érték nagyobb az előzőnél.';
+    valueCompareEl.style.color = '#7fff7f';
+  } else {
+    valueCompareEl.textContent = 'Ez az érték kisebb vagy egyenlő az előzőnél!';
+    valueCompareEl.style.color = '#ff6e6e';
+  }
+}
+
+// Értékbemondás opciók megjelenítése
+function showDeclareOptions() {
+  if (!gameActive || currentPlayer !== 'player') return;
+  
+  gameControlsEl.style.display = 'none';
+  declareControlsEl.style.display = 'block';
+  declareButtonsEl.innerHTML = '';
+  
+  // Gombsorok létrehozása
+  for (let i = 0; i < VALUE_ORDER.length; i++) {
+    const value = VALUE_ORDER[i];
+    const button = document.createElement('button');
+    button.className = 'declare-btn';
+    button.textContent = value;
+    
+    // Ha a bemondandó érték kisebb mint az előző, letiltjuk
+    if (lastDeclaredValue && i <= VALUE_ORDER.indexOf(lastDeclaredValue) && lastDeclaredValue !== '21') {
+      button.disabled = true;
+    }
+    
+    button.onclick = function() {
+      declareValue(value);
+    };
+    
+    declareButtonsEl.appendChild(button);
+  }
+}
+
+// Értékbemondás opciók elrejtése
+function hideDeclareOptions() {
+  gameControlsEl.style.display = 'flex';
+  declareControlsEl.style.display = 'none';
+}
+
+// Érték bemondása
+function declareValue(value) {
+  if (!gameActive) return;
+  
+  declaredValue = value;
+  playerDeclaredEl.textContent = value;
+  
+  // Játékos bemondása
+  playerHistory.push({
+    action: 'declare',
+    declared: value,
+    actual: realDiceValue,
+    lying: value !== realDiceValue
+  });
+  
+  // Kocka elrejtése
+  diceCupEl.classList.add('hidden');
+  lastDeclaredValue = value;
+  lastValueEl.textContent = value;
+  
+  // Gombok visszaállítása
+  hideDeclareOptions();
+  
+  resultEl.textContent = `Bemondtál egy ${value} értéket. A Sötét Nagyúr mérlegeli a lehetőségeit...`;
+  
+  // Bot köre
+  currentPlayer = 'bot';
+  updateActivePlayer();
+  setTimeout(botTurn, 2000);
+}
+
+// Bot köre
+function botTurn() {
+  if (!gameActive) return;
+  
+  // Valós dobás
+  const die1Value = DICE_VALUES[Math.floor(Math.random() * DICE_VALUES.length)];
+  const die2Value = DICE_VALUES[Math.floor(Math.random() * DICE_VALUES.length)];
+  realDiceValue = calculateDiceValue(die1Value, die2Value);
+  
+  // Bot döntése: kihív vagy elfogad
+  if (shouldBotChallenge()) {
+    setTimeout(botChallenge, 1000);
+    return;
+  }
+  
+  // Bot döntése: érték bemondása
+  const botDeclaredValue = getBotDeclaredValue();
+  botDeclaredEl.textContent = botDeclaredValue;
+  lastDeclaredValue = botDeclaredValue;
+  lastValueEl.textContent = botDeclaredValue;
+  
+  resultEl.textContent = `A Sötét Nagyúr ${botDeclaredValue} értéket mondott. Mit teszel?`;
+  
+  // Gombok frissítése
+  rollBtn.disabled = true;
+  declareBtn.disabled = true;
+  challengeBtn.disabled = false;
+  acceptBtn.disabled = false;
+  
+  // Visszatérés a játékoshoz
+  currentPlayer = 'player';
+  updateActivePlayer();
+}
+
+// Bot kihívás döntése
+function shouldBotChallenge() {
+  // Ha ez az első kör, ne hívjon ki
+  if (!lastDeclaredValue) return false;
+  
+  const declaredIndex = VALUE_ORDER.indexOf(lastDeclaredValue);
+  const probability = calculateChallengeChance(declaredValue);
+  
+  // Ha a játékos nagyon magasat mondott, nagyobb eséllyel kihívja
+  if (declaredIndex > VALUE_ORDER.length - 5) {
+    return Math.random() < probability;
+  }
+  
+  // Ha a játékos korábbi hazugságai alapján
+  if (playerHistory.length > 3) {
+    const recentHistory = playerHistory.slice(-3);
+    const lieCount = recentHistory.filter(h => h.action === 'declare' && h.lying).length;
+    
+    if (lieCount >= 2) {
+      return Math.random() < probability * 1.5;
+    }
+  }
+  
+  // Alap esély
+  return Math.random() < probability;
+}
+
+// Kihívási esély számítása
+function calculateChallengeChance(value) {
+  // Alap esély
+  let chance = 0.3;
+  
+  if (!value) return chance;
+  
+  // Értéktől függő módosítás
+  const valueIndex = VALUE_ORDER.indexOf(value);
+  const highValueThreshold = Math.floor(VALUE_ORDER.length * 0.7);
+  
+  // Ha magasabb értéket mondott, nagyobb eséllyel kihívják
+  if (valueIndex >= highValueThreshold) {
+    chance += (valueIndex - highValueThreshold) * 0.1;
+  }
+  
+  // Ha "21"-et mondott, extra esély
+  if (value === '21') {
+    chance += 0.2;
+  }
+  
+  // A játékos előző körökben hazudott-e
+  const recentLies = playerHistory
+    .filter(h => h.action === 'declare' && h.lying)
+    .length;
+  
+  chance += recentLies * 0.05;
+  
+  return Math.min(0.9, chance);
+}
+
+// Bot kihívás
+function botChallenge() {
+  if (!gameActive) return;
+  
+  resultEl.textContent = 'A Sötét Nagyúr kétségbe vonja az állításodat! Felfedi a kockáidat...';
+  
+  setTimeout(() => {
+    // Dobás megjelenítése
+    diceCupEl.classList.remove('hidden');
+    
+    // Ellenőrizzük a játékos hazudott-e
+    const declared = declaredValue;
+    const actual = realDiceValue || '11'; // Ha nincs, akkor 11 az alapértelmezett
+    
+    // Nézzük a bemondott és a valós érték indexét
+    const declaredIndex = VALUE_ORDER.indexOf(declared);
+    const actualIndex = VALUE_ORDER.indexOf(actual);
+    
+    // Speciális eset: 21-et mondott
+    const declare21Case = declared === '21' && lastDeclaredValue === '21';
+    
+    let botWonChallenge = false;
+    
+    // Ha a játékos hazudott (kisebb vagy nem megfelelő értéket mondott)
+    if (declaredIndex < actualIndex || (declared !== actual && !declare21Case)) {
+      playerLives--;
+      updateLivesDisplay();
+      resultEl.textContent = `Hazudsz! Valójában ${actual} értéket dobtál. Elvesztettél egy életet!`;
+      botWonChallenge = true;
+    } else {
+      botLives--;
+      updateLivesDisplay();
+      resultEl.textContent = `A Sötét Nagyúr tévedett! Valóban ${actual} értéket dobtál. A Sötét Nagyúr elvesztett egy életet!`;
+    }
+    
+    // Speciális szabály: ha 21-et dobtak és kihívták, megfordul a kör
+    if (actual === '21' && !botWonChallenge) {
+      gameDirection = -gameDirection;
+      resultEl.textContent += ' És mivel 21-et dobtál, megfordul a játék iránya!';
+    }
+    
+    // Ellenőrizzük vége van-e a játéknak
+    if (playerLives <= 0 || botLives <= 0) {
+      gameOver();
+      return;
+    }
+    
+    // Új kör
+    setTimeout(() => {
+      // Kihívás után a kihívó kezd
+      currentPlayer = 'bot';
+      lastDeclaredValue = null;
+      realDiceValue = null;
+      declaredValue = null;
+      
+      updateActivePlayer();
+      diceCupEl.classList.add('hidden');
+      
+      resultEl.textContent = 'Új kör kezdődik. A Sötét Nagyúr következik.';
+      botTurn();
+    }, 2000);
+  }, 1500);
+}
+
+// Bot által bemondott érték
+function getBotDeclaredValue() {
+  // Alap értékek egy új dobáshoz
+  let selectedValue;
+  const lastDeclaredIndex = lastDeclaredValue ? VALUE_ORDER.indexOf(lastDeclaredValue) : -1;
+  const realIndex = VALUE_ORDER.indexOf(realDiceValue);
+  
+  // Ha a valós dobás jobb mint az előző bemondott érték, mondjuk azt
+  if (realIndex > lastDeclaredIndex || (lastDeclaredValue === '21' && realDiceValue === '21')) {
+    // 90% eséllyel az igazat mondja
+    if (Math.random() < 0.9) {
+      return realDiceValue;
+    }
+  }
+  
+  // A bot csalás stratégiája
+  // 1. Ha már nagyon magas értéknél járunk, csak egy kicsit hazudik
+  if (lastDeclaredIndex >= VALUE_ORDER.length - 5) {
+    // A következő 1-2 értéket választja
+    const nextIndex = Math.min(lastDeclaredIndex + 1 + Math.floor(Math.random() * 2), VALUE_ORDER.length - 1);
+    return VALUE_ORDER[nextIndex];
+  }
+  
+  // 2. Különben intelligensen hazudik
+  // Alap esetben 1-3 értékkel többet mond
+  const incrementValue = 1 + Math.floor(Math.random() * 3);
+  const targetIndex = Math.min(lastDeclaredIndex + incrementValue, VALUE_ORDER.length - 1);
+  
+  // Bot személyiség: kockázatvállalóbb, nagyobbat hazudik nehéz helyzetben
+  if (botLives < playerLives && Math.random() < 0.3) {
+    // Nagyobb ugrás, ha hátrányban van
+    const bigJump = Math.floor((VALUE_ORDER.length - lastDeclaredIndex) / 3);
+    return VALUE_ORDER[Math.min(lastDeclaredIndex + bigJump, VALUE_ORDER.length - 1)];
+  }
+  
+  // Játékos szokásai alapján is dönt
+  if (playerHistory.length > 5) {
+    const challengeRate = playerHistory.filter(h => h.action === 'challenge').length / playerHistory.length;
+    
+    // Ha a játékos gyakran kihív, óvatosabban hazudik
+    if (challengeRate > 0.4) {
+      return VALUE_ORDER[Math.min(lastDeclaredIndex + 1, VALUE_ORDER.length - 1)];
+    }
+  }
+  
+  return VALUE_ORDER[targetIndex];
+}
+
+// Játékos kihívása
+function challenge() {
+  if (!gameActive || currentPlayer !== 'player') return;
+  
+  resultEl.textContent = 'Kihívtad a Sötét Nagyurat! Lássuk mit dobott valójában...';
+  
+  // Játékos döntéseinek követése
+  playerHistory.push({
+    action: 'challenge',
+    botDeclared: lastDeclaredValue
+  });
+  
+  setTimeout(() => {
+    // Ellenőrizzük a bot hazudott-e
+    const botLied = lastDeclaredValue !== realDiceValue;
+    
+    if (botLied) {
+      botLives--;
+      updateLivesDisplay();
+      resultEl.textContent = `Igazad volt! A Sötét Nagyúr valójában ${realDiceValue} értéket dobott, nem ${lastDeclaredValue}-et! Elvesztett egy életet!`;
+    } else {
+      playerLives--;
+      updateLivesDisplay();
+      resultEl.textContent = `Tévedtél! A Sötét Nagyúr valóban ${realDiceValue} értéket dobott. Elvesztettél egy életet!`;
+    }
+    
+    // Ellenőrizzük vége van-e a játéknak
+    if (playerLives <= 0 || botLives <= 0) {
+      gameOver();
+      return;
+    }
+    
+    // Új kör
+    setTimeout(() => {
+      // Kihívás után a kihívó kezd
+      currentPlayer = 'player';
+      lastDeclaredValue = null;
+      realDiceValue = null;
+      declaredValue = null;
+      currentValueEl.textContent = '-';
+      lastValueEl.textContent = '-';
+      valueCompareEl.textContent = '';
+      
+      updateActivePlayer();
+      
+      // Gombok frissítése
+      rollBtn.disabled = false;
+      declareBtn.disabled = false;
+      challengeBtn.disabled = true;
+      acceptBtn.disabled = true;
+      
+      resultEl.textContent = 'Új kör kezdődik. Te következel.';
+    }, 2000);
+  }, 1500);
+}
+
+// Bemondás elfogadása
+function acceptDeclaration() {
+  if (!gameActive || currentPlayer !== 'player') return;
+  
+  // Játékos döntéseinek követése
+  playerHistory.push({
+    action: 'accept',
+    botDeclared: lastDeclaredValue
+  });
+  
+  resultEl.textContent = 'Elfogadtad a Sötét Nagyúr állítását. Te következel.';
+  
+  setTimeout(() => {
+    // Gombok frissítése
+    rollBtn.disabled = false;
+    declareBtn.disabled = false;
+    challengeBtn.disabled = true;
+    acceptBtn.disabled = true;
+    
+    resultEl.textContent = 'Dobj a kockákkal, vagy jelents be egy értéket.';
+  }, 1500);
+}
+
+// Játék vége
+function gameOver() {
+  gameActive = false;
+  
+  if (playerLives <= 0) {
+    resultEl.innerHTML = '<span class="winner">A Sötét Nagyúr legyőzött! Elfogytak az életeid.</span>';
+  } else {
+    resultEl.innerHTML = '<span class="winner">Győztél! A Sötét Nagyúr minden életét elvesztette.</span>';
+  }
+  
+  document.getElementById('resetContainer').style.display = 'block';
+  
+  // Gombok letiltása
+  rollBtn.disabled = true;
+  declareBtn.disabled = true;
+  challengeBtn.disabled = true;
+  acceptBtn.disabled = true;
+}
+
+// Játék indítása
+startGame();
 </script>
+
 </body>
 </html>
