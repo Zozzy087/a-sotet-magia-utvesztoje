@@ -2,7 +2,7 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Kártyapárbaj - Kő-Papír-Olló stílusban</title>
+  <title>Kártyapárbaj</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
@@ -20,7 +20,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      position: relative; /* Hozzáadva */
     }
     h1 {
       font-weight: 700;
@@ -32,7 +31,7 @@
       box-shadow: 0 0 15px rgba(127, 0, 255, 0.7);
       text-align: center;
     }
-    .info-box {
+    #turnInfo, #result, #score {
       background-color: rgba(0, 0, 0, 0.7);
       padding: 8px 15px;
       border-radius: 5px;
@@ -40,46 +39,46 @@
       box-shadow: 0 0 10px rgba(127, 0, 255, 0.4);
       text-align: center;
     }
-    #rulesBox {
-      max-width: 600px;
-      margin-bottom: 20px;
-      padding: 15px;
-    }
-    #elementButtons {
+    #player1Choices {
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 20px;
+      gap: 15px;
       margin: 20px auto;
     }
-    .element-btn {
-      background-color: rgba(0, 0, 0, 0.7);
-      color: white;
+    .choice-btn {
+      background-color: rgba(0, 0, 0, 0.8);
       border: 2px solid #7f00ff;
-      border-radius: 10px;
+      border-radius: 8px;
       padding: 15px;
       width: 120px;
       height: 120px;
-      font-size: 1.1rem;
+      color: #fff;
+      font-family: 'Cinzel', serif;
       cursor: pointer;
-      box-shadow: 0 0 10px #7f00ff;
       transition: transform 0.2s, box-shadow 0.3s;
+      box-shadow: 0 0 10px rgba(127, 0, 255, 0.3);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
     }
-    .element-btn i {
+    .choice-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(127, 0, 255, 0.6);
+    }
+    .choice-btn.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .choice-btn i {
       font-size: 3rem;
       margin-bottom: 10px;
     }
-    .element-btn:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 15px #a94bff;
-    }
-    .element-btn.disabled {
-      opacity: 0.5;
-      pointer-events: none;
+    .winner {
+      color: #7fff7f;
+      font-weight: bold;
+      text-shadow: 1px 1px 4px black;
     }
     #battlefield {
       margin-top: 20px;
@@ -87,44 +86,35 @@
       justify-content: center;
       gap: 40px;
       flex-wrap: wrap;
-      min-height: 200px;
-      width: 100%;
-      position: relative; /* Hozzáadva */
     }
     .battle-card {
       background-color: rgba(0, 0, 0, 0.8);
       border: 2px solid #7f00ff;
-      padding: 20px;
-      width: 160px;
+      border-radius: 8px;
+      padding: 15px;
+      width: 150px;
       height: 180px;
       color: #fff;
       box-shadow: 0 0 10px rgba(127, 0, 255, 0.3);
-      border-radius: 8px;
-      text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      text-align: center;
     }
     .battle-card i {
       font-size: 4rem;
-      margin-bottom: 15px;
+      margin: 15px 0;
     }
-    .battle-card.winner {
+    .battle-card.highlight {
       border-color: #7fff7f;
       box-shadow: 0 0 20px rgba(127, 255, 127, 0.6);
-    }
-    .battle-text {
-      color: #7fff7f;
-      font-weight: bold;
-      font-size: 1.2rem;
-      text-shadow: 1px 1px 4px black;
     }
     #resetContainer {
       margin-top: 20px;
       display: none;
     }
-    #resetBtn {
+    button {
       background-color: #7f00ff;
       color: white;
       border: none;
@@ -135,16 +125,21 @@
       box-shadow: 0 0 10px #7f00ff;
       transition: transform 0.2s, box-shadow 0.3s;
     }
-    #resetBtn:hover {
+    button:hover {
       transform: scale(1.1);
       box-shadow: 0 0 15px #a94bff;
     }
-    
-    /* Eltüntetjük a felesleges elemeket */
-    .small-rect,
-    #loading-indicator,
-    .status-bar {
-      display: none !important;
+    #rules {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px auto;
+      max-width: 600px;
+      text-align: center;
+    }
+    #rules ul {
+      display: inline-block;
+      text-align: left;
     }
   </style>
 </head>
@@ -152,41 +147,44 @@
 
 <h1>Kártyapárbaj</h1>
 
-<div id="rulesBox" class="info-box">
-  <h3>Szabályok</h3>
-  <p><i class="fas fa-fist-raised"></i> <strong>Erő</strong> legyőzi az <strong>Ügyességet</strong> - mert letiporja</p>
-  <p><i class="fas fa-running"></i> <strong>Ügyesség</strong> legyőzi a <strong>Bölcsességet</strong> - mert kijátssza</p>
-  <p><i class="fas fa-book"></i> <strong>Bölcsesség</strong> legyőzi az <strong>Erőt</strong> - mert túljár az eszén</p>
+<div id="rules">
+  <h3>Szabályok:</h3>
+  <ul>
+    <li><i class="fas fa-fist-raised"></i> Erő legyőzi az <i class="fas fa-running"></i> Ügyességet</li>
+    <li><i class="fas fa-running"></i> Ügyesség legyőzi a <i class="fas fa-brain"></i> Bölcsességet</li>
+    <li><i class="fas fa-brain"></i> Bölcsesség legyőzi az <i class="fas fa-fist-raised"></i> Erőt</li>
+  </ul>
 </div>
 
-<div id="turnInfo" class="info-box">Várakozás a játék indítására...</div>
-<div id="score" class="info-box">Állás: Játékos - 0 | Bot - 0</div>
+<p id="turnInfo">Válassz egy kártyát!</p>
 
-<div id="elementButtons">
-  <button class="element-btn" onclick="playRound('power')">
+<div id="player1Choices">
+  <button class="choice-btn" onclick="makeChoice('power')">
     <i class="fas fa-fist-raised"></i>
     <span>Erő</span>
   </button>
-  <button class="element-btn" onclick="playRound('agility')">
+  <button class="choice-btn" onclick="makeChoice('agility')">
     <i class="fas fa-running"></i>
     <span>Ügyesség</span>
   </button>
-  <button class="element-btn" onclick="playRound('wisdom')">
-    <i class="fas fa-book"></i>
+  <button class="choice-btn" onclick="makeChoice('wisdom')">
+    <i class="fas fa-brain"></i>
     <span>Bölcsesség</span>
   </button>
 </div>
 
 <div id="battlefield"></div>
 
-<div id="result" class="info-box"></div>
+<h2 id="result"></h2>
+<h3 id="score"></h3>
 
 <div id="resetContainer">
-  <button id="resetBtn" onclick="startGame()">Új játék</button>
+  <button onclick="startGame()">Új játék</button>
 </div>
 
 <script>
-// Játékos szokásainak követése
+let player1Wins = 0, player2Wins = 0;
+let roundInProgress = false;
 let playerChoices = {
   power: 0,
   agility: 0,
@@ -194,38 +192,13 @@ let playerChoices = {
   lastChoices: []
 };
 
-// Játék állapot
-let player1Wins = 0;
-let player2Wins = 0;
-let roundInProgress = false;
-
-// Kő-papír-olló logika: ki kit győz le
-const winLogic = {
-  power: "agility",   // Erő legyőzi az Ügyességet
-  agility: "wisdom",  // Ügyesség legyőzi a Bölcsességet
-  wisdom: "power"     // Bölcsesség legyőzi az Erőt
-};
-
-// Ikonok a választásokhoz
-const icons = {
-  power: "fa-fist-raised",
-  agility: "fa-running",
-  wisdom: "fa-book"
-};
-
-// Magyar nyelvű megnevezések
-function getHungarianName(attr) {
-  return attr === "power" ? "Erő" : attr === "agility" ? "Ügyesség" : "Bölcsesség";
-}
-
 // Játék indítása
 function startGame() {
-  // Visszaállítjuk az adatokat
   player1Wins = 0;
   player2Wins = 0;
   roundInProgress = false;
   
-  // Játékos szokásainak nullázása
+  // Játékos szokásainak nullázása új játék kezdetén
   playerChoices = {
     power: 0,
     agility: 0,
@@ -233,155 +206,120 @@ function startGame() {
     lastChoices: []
   };
 
-  // UI visszaállítása
+  // UI elemek visszaállítása
   document.getElementById("result").textContent = "";
   document.getElementById("battlefield").innerHTML = "";
   document.getElementById("score").textContent = "Állás: Játékos - 0 | Bot - 0";
-  document.getElementById("turnInfo").textContent = "Válassz egy elemet!";
+  document.getElementById("turnInfo").textContent = "Válassz egy kártyát!";
+
+  // Reset gomb elrejtése
   document.getElementById("resetContainer").style.display = "none";
   
   // Gombok engedélyezése
   enableButtons();
 }
 
-  // UI visszaállítása
-  document.getElementById("result").textContent = "";
-  document.getElementById("battlefield").innerHTML = "";
-  document.getElementById("score").textContent = "Állás: Játékos - 0 | Bot - 0";
-  document.getElementById("turnInfo").textContent = "Válassz egy elemet!";
-  document.getElementById("resetContainer").style.display = "none";
-  
-  // Gombok engedélyezése
-  enableButtons();
-}
-
-// UI frissítése
-function updateUI() {
-  document.getElementById("score").textContent = `Állás: Játékos - ${player1Wins} | Bot - ${player2Wins}`;
-  
-  if (roundInProgress) {
-    document.getElementById("turnInfo").textContent = "A kör folyamatban...";
-    disableButtons();
-  } else {
-    // Ha új kör kezdődik, töröljük az előző eredményt
-    document.getElementById("turnInfo").textContent = "Válassz egy elemet!";
-    document.getElementById("battlefield").innerHTML = "";
-    document.getElementById("result").textContent = "";
-    
-    // Eltávolítjuk az esetleges bekarikázott fekete téglalapot is
-    const elementsToRemove = document.querySelectorAll('.small-rect, #loading-indicator, [style*="background-color: black"]');
-    elementsToRemove.forEach(el => el.remove());
-    
-    enableButtons();
+// Gomb ikonok és nevek megfeleltetése
+function getChoiceIcon(choice) {
+  switch(choice) {
+    case 'power': return '<i class="fas fa-fist-raised"></i>';
+    case 'agility': return '<i class="fas fa-running"></i>';
+    case 'wisdom': return '<i class="fas fa-brain"></i>';
+    default: return '';
   }
 }
 
-// Gombok engedélyezése
+function getChoiceName(choice) {
+  switch(choice) {
+    case 'power': return 'Erő';
+    case 'agility': return 'Ügyesség';
+    case 'wisdom': return 'Bölcsesség';
+    default: return '';
+  }
+}
+
+// Gombok engedélyezése/letiltása
 function enableButtons() {
-  const buttons = document.querySelectorAll(".element-btn");
+  const buttons = document.querySelectorAll(".choice-btn");
   buttons.forEach(btn => {
     btn.classList.remove("disabled");
   });
 }
 
-// Gombok letiltása
 function disableButtons() {
-  const buttons = document.querySelectorAll(".element-btn");
+  const buttons = document.querySelectorAll(".choice-btn");
   buttons.forEach(btn => {
     btn.classList.add("disabled");
   });
 }
 
-// Kör lejátszása
-function playRound(playerChoice) {
+// Játékos választása
+function makeChoice(choice) {
   if (roundInProgress) return;
   roundInProgress = true;
   
-  // Játékos választásának követése
-  playerChoices[playerChoice]++;
-  playerChoices.lastChoices.push(playerChoice);
+  // Rögzítjük a játékos választását a szokások követéséhez
+  playerChoices[choice]++;
+  playerChoices.lastChoices.push(choice);
   // Csak az utolsó 5 választást tartjuk meg
   if (playerChoices.lastChoices.length > 5) {
     playerChoices.lastChoices.shift();
   }
   
-  // Bot választása
-  const botChoice = getBotChoice();
+  // Letiltjuk a gombokat amíg tart a kör
+  disableButtons();
   
-  // Eredmény kiértékelése
-  let result = "";
-  let playerWins = false;
-  
-  if (playerChoice === botChoice) {
-    result = "Döntetlen!";
-  } else if (winLogic[playerChoice] === botChoice) {
-    result = "Nyertél!";
-    player1Wins++;
-    playerWins = true;
-  } else {
-    result = "Bot nyert!";
-    player2Wins++;
-  }
-  
-  // Csatatér frissítése
+  // Megjelenítjük a játékos választását
   document.getElementById("battlefield").innerHTML = `
-    <div class="battle-card ${playerWins ? 'winner' : ''}">
+    <div class="battle-card">
       <h3>Játékos</h3>
-      <i class="fas ${icons[playerChoice]}"></i>
-      <p>${getHungarianName(playerChoice)}</p>
-    </div>
-    <div class="battle-card ${!playerWins && playerChoice !== botChoice ? 'winner' : ''}">
-      <h3>Bot</h3>
-      <i class="fas ${icons[botChoice]}"></i>
-      <p>${getHungarianName(botChoice)}</p>
+      ${getChoiceIcon(choice)}
+      <p>${getChoiceName(choice)}</p>
     </div>
   `;
   
-  // Eredménykijelzés
-  document.getElementById("result").textContent = result;
-  
-  // Ellenőrizzük a játék végét
-  if (player1Wins >= 5 || player2Wins >= 5) {
-    const finalResult = player1Wins >= 5 ? "Gratulálok! Megnyerted a játékot!" : "A bot nyerte a játékot!";
-    document.getElementById("result").innerHTML = `<span class="battle-text">${finalResult}</span>`;
-    document.getElementById("resetContainer").style.display = "block";
-    return;
-  }
-  
-  // Értesítjük a UI-t a frissítéshez
-  updateUI();
-  
-  // Késleltetés, hogy látható legyen a kör eredménye
+  // Bot választ kis késleltetéssel
   setTimeout(() => {
-    roundInProgress = false;
-    updateUI();
-  }, 3000);
-}
-  
-  // Ellenőrizzük a játék végét
-  if (player1Wins >= 5 || player2Wins >= 5) {
-    const finalResult = player1Wins >= 5 ? "Gratulálok! Megnyerted a játékot!" : "A bot nyerte a játékot!";
-    document.getElementById("result").innerHTML = `<span class="battle-text">${finalResult}</span>`;
-    document.getElementById("resetContainer").style.display = "block";
-    return;
-  }
-  
-  // Értesítjük a UI-t a frissítéshez
-  updateUI();
-  
-  // Késleltetés, hogy látható legyen a kör eredménye
-  setTimeout(() => {
-    roundInProgress = false;
-    updateUI();
-  }, 3000);
+    const botChoice = getBotChoice();
+    
+    // Megjelenítjük a bot választását
+    document.getElementById("battlefield").innerHTML += `
+      <div class="battle-card">
+        <h3>Bot</h3>
+        ${getChoiceIcon(botChoice)}
+        <p>${getChoiceName(botChoice)}</p>
+      </div>
+    `;
+    
+    // Kiértékeljük az eredményt
+    const result = evaluateRound(choice, botChoice);
+    
+    // Megjelenítjük az eredményt
+    displayResult(result, choice, botChoice);
+    
+    // Kör vége után újra engedélyezzük a választást
+    setTimeout(() => {
+      roundInProgress = false;
+      
+      // Ha még nincs vége a játéknak
+      if (player1Wins < 5 && player2Wins < 5) {
+        enableButtons();
+      } else {
+        // Játék vége esetén megjelenítjük az új játék gombot
+        document.getElementById("resetContainer").style.display = "block";
+      }
+    }, 2000);
+  }, 1000);
 }
 
 // Bot választása
 function getBotChoice() {
-  // Ha van elég előzmény, megpróbáljuk előrejelezni a játékos választását
+  // Bot intelligensen választ a játékos szokásai alapján
+  
+  // Analizáljuk a játékos választási mintáit
   let predictedPlayerChoice = null;
   
-  // Ha van elég előzmény a mintafelismeréshez
+  // Ha van elég előzmény, megpróbáljuk előrejelezni a következő választását
   if (playerChoices.lastChoices.length >= 3) {
     // Megvizsgáljuk, van-e ismétlődő minta
     const lastThree = playerChoices.lastChoices.slice(-3);
@@ -390,68 +328,101 @@ function getBotChoice() {
     if (lastThree[0] === lastThree[1] && lastThree[1] === lastThree[2]) {
       predictedPlayerChoice = lastThree[0];
     }
+    
     // Ha váltogatja két tulajdonság között
     else if (lastThree[0] === lastThree[2] && lastThree[0] !== lastThree[1]) {
       predictedPlayerChoice = lastThree[0];
     }
   }
   
-  // 10% eséllyel véletlen választás
-  if (Math.random() < 0.1) {
+  // 20% eséllyel véletlenszerű választás (hogy ne legyen túl kiszámítható)
+  if (Math.random() < 0.2) {
     const choices = ["power", "agility", "wisdom"];
     return choices[Math.floor(Math.random() * 3)];
   }
-  // Ha sikerült megjósolni a játékos következő választását
+  
+  // Ha sikerült megjósolni a játékos következő választását, olyan kártyát választunk, ami legyőzi
   else if (predictedPlayerChoice) {
-    // Válasszuk azt, ami legyőzi a megjósolt választást
-    const keys = Object.keys(winLogic);
-    for (const key of keys) {
-      if (winLogic[key] === predictedPlayerChoice) {
-        return key;
-      }
+    // Kiválasztjuk a nyerő kártyát
+    switch(predictedPlayerChoice) {
+      case 'power': return 'wisdom'; // Bölcsesség legyőzi az Erőt
+      case 'agility': return 'power'; // Erő legyőzi az Ügyességet
+      case 'wisdom': return 'agility'; // Ügyesség legyőzi a Bölcsességet
     }
   }
-  // 60% eséllyel ellensúlyozzuk a leggyakrabban választott tulajdonságot
-  else if (Math.random() < 0.6 && playerChoices.power + playerChoices.agility + playerChoices.wisdom > 3) {
+  
+  // 60% eséllyel a leggyakrabban választott tulajdonságot ellenőrizzük
+  else if (Math.random() < 0.6 && playerChoices.power + playerChoices.agility + playerChoices.wisdom > 2) {
     // Játékos leggyakoribb választása
     const playerFavorite = ["power", "agility", "wisdom"].reduce((max, attr) => 
       playerChoices[attr] > playerChoices[max] ? attr : max, "power");
     
-    // Válasszuk azt, ami legyőzi a leggyakoribb választást
-    const keys = Object.keys(winLogic);
-    for (const key of keys) {
-      if (winLogic[key] === playerFavorite) {
-        return key;
-      }
+    // Kiválasztjuk a nyerő kártyát
+    switch(playerFavorite) {
+      case 'power': return 'wisdom'; // Bölcsesség legyőzi az Erőt
+      case 'agility': return 'power'; // Erő legyőzi az Ügyességet
+      case 'wisdom': return 'agility'; // Ügyesség legyőzi a Bölcsességet
     }
   }
   
-  // 30% eséllyel véletlen választás
+  // Egyébként véletlenszerű választás
   const choices = ["power", "agility", "wisdom"];
   return choices[Math.floor(Math.random() * 3)];
 }
 
-// Kezdeti betöltődéskor és a document load eseménykor is eltávolítjuk a fekete téglalapot
-document.addEventListener('DOMContentLoaded', function() {
-  startGame();
+// Kör kiértékelése
+function evaluateRound(playerChoice, botChoice) {
+  // Döntetlen
+  if (playerChoice === botChoice) {
+    return "draw";
+  }
   
-  // Időzített ellenőrzés és eltávolítás
-  setTimeout(function() {
-    // Keresünk minden fekete téglalapot
-    const blackRects = document.querySelectorAll('div');
-    
-    blackRects.forEach(rect => {
-      const style = window.getComputedStyle(rect);
-      // Ha fekete háttérszínű és kicsi, eltávolítjuk
-      if (
-        (style.backgroundColor === 'rgb(0, 0, 0)' || style.backgroundColor === '#000000' || style.backgroundColor === 'black') && 
-        (parseInt(style.width) < 50 || parseInt(style.height) < 20)
-      ) {
-        rect.remove();
-      }
-    });
-  }, 500);
-});
+  // Nyert a játékos
+  if ((playerChoice === "power" && botChoice === "agility") ||
+      (playerChoice === "agility" && botChoice === "wisdom") ||
+      (playerChoice === "wisdom" && botChoice === "power")) {
+    player1Wins++;
+    return "player";
+  }
+  
+  // Nyert a bot
+  player2Wins++;
+  return "bot";
+}
+
+// Eredmény megjelenítése
+function displayResult(result, playerChoice, botChoice) {
+  // Eredmény szöveg
+  let resultText = "";
+  if (result === "draw") {
+    resultText = "Döntetlen!";
+  } else if (result === "player") {
+    resultText = "Játékos nyerte a kört!";
+  } else {
+    resultText = "Bot nyerte a kört!";
+  }
+  
+  // Jelöljük a győztes kártyát
+  const cards = document.querySelectorAll(".battle-card");
+  if (result === "player") {
+    cards[0].classList.add("highlight");
+  } else if (result === "bot") {
+    cards[1].classList.add("highlight");
+  }
+  
+  document.getElementById("result").textContent = resultText;
+  document.getElementById("score").textContent = `Állás: Játékos - ${player1Wins} | Bot - ${player2Wins}`;
+  
+  // Ellenőrizzük, hogy vége van-e a játéknak
+  if (player1Wins >= 5 || player2Wins >= 5) {
+    document.getElementById("result").innerHTML += `<br><span class="winner">${player1Wins >= 5 ? "Játékos" : "Bot"} győzött a játékban!</span>`;
+    disableButtons();
+    document.getElementById("resetContainer").style.display = "block";
+  }
+}
+
+// Játék indítása
+startGame();
 </script>
 </body>
 </html>
