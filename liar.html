@@ -2,7 +2,7 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Loki Csínytevése</title>
+  <title>Loki Bás - Isteni Hazugságok</title>
   <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400..800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
@@ -81,46 +81,57 @@
       font-size: 1.8rem;
       color: #d1c3af;
     }
-    .sparks {
-      font-size: 2.5rem;
-      margin: 15px 0;
-      text-shadow: 0 0 10px rgba(255, 100, 0, 0.5);
-    }
-    .spark-icon {
-      color: #ff6400;
-      margin: 0 5px;
-      filter: drop-shadow(0 0 5px #ff6400);
-    }
-    .lost-spark {
-      color: #482c17;
-      filter: none;
-    }
-    .dice-container {
+    .lives {
       display: flex;
       justify-content: center;
-      gap: 20px;
-      margin: 20px 0;
+      gap: 10px;
+      margin: 15px 0;
     }
-    .dice {
-      width: 60px;
-      height: 60px;
-      background-color: #291d14;
-      border-radius: 10px;
+    .life {
+      width: 40px;
+      height: 40px;
+      background-color: #482c17;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
-      color: #d1c3af;
-      box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
+      font-size: 1.5rem;
+      color: #ff6400;
+      text-shadow: 0 0 10px #ff6400;
+      box-shadow: 0 0 10px rgba(255, 100, 0, 0.4);
+      transition: all 0.3s;
+    }
+    .life.lost {
+      background-color: #291d14;
+      color: #482c17;
+      text-shadow: none;
+      box-shadow: none;
+    }
+    .dice-container {
       position: relative;
-      transition: all 0.3s ease;
+      margin: 40px 0;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
     }
-    .dice.hidden {
-      background-color: #1a140f;
-      color: transparent;
-      box-shadow: 0 0 15px rgba(255, 100, 0, 0.1);
+    .dice {
+      font-size: 4rem;
+      position: relative;
+      z-index: 2;
+      transition: transform 0.3s ease-out;
     }
-    .dice.rolling {
+    .dice-symbol {
+      display: inline-block;
+      width: 80px;
+      height: 80px;
+      line-height: 80px;
+      background-color: #291d14;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(255, 100, 0, 0.3);
+      color: #d1c3af;
+      font-size: 3rem;
+    }
+    .dice-roll {
       animation: rollDice 0.8s ease-out;
     }
     @keyframes rollDice {
@@ -128,27 +139,22 @@
       50% { transform: rotateY(720deg) rotateX(360deg); }
       100% { transform: rotateY(1440deg) rotateX(720deg); }
     }
-    .claimed-value {
-      background-color: rgba(72, 44, 23, 0.6);
-      padding: 10px;
-      border-radius: 5px;
-      margin: 15px auto;
-      max-width: 300px;
+    .dice-hidden {
+      background-color: #1a1209;
+      color: #1a1209;
     }
-    .action-buttons {
+    #controls {
+      margin-top: 30px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 15px;
-      margin-top: 30px;
     }
-    .claim-buttons {
+    .button-row {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
-      max-width: 600px;
-      margin: 0 auto;
+      margin: 10px 0;
     }
     button {
       font-family: "Eczar", serif;
@@ -164,21 +170,25 @@
       transition: all 0.3s;
       letter-spacing: 1px;
     }
-    button:hover:not(:disabled) {
+    button:hover {
       background-color: #5a381f;
       transform: scale(1.05);
       box-shadow: 0 0 15px rgba(255, 100, 0, 0.5);
     }
     button:disabled {
-      opacity: 0.5;
+      background-color: #291d14;
       cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+      opacity: 0.5;
     }
-    .claim-button {
-      padding: 8px 12px;
-      font-size: 1rem;
-      min-width: 70px;
+    .big-button {
+      font-size: 1.4rem;
+      padding: 15px 30px;
+      margin: 20px 10px;
+      background-color: #5a381f;
     }
-    #result {
+    #declaration, #result {
       font-size: 1.3rem;
       background-color: rgba(20, 14, 10, 0.7);
       padding: 15px;
@@ -198,99 +208,181 @@
       font-weight: bold;
       text-shadow: 0 0 10px rgba(255, 100, 0, 0.7);
     }
-    .rules-container {
-      background-color: rgba(20, 14, 10, 0.7);
-      padding: 15px;
+    #select-declaration {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .value-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 600px;
+      gap: 8px;
+      margin: 10px auto;
+    }
+    .value-button {
+      padding: 8px 12px;
+      font-size: 1rem;
+      background-color: #291d14;
+    }
+    .value-button:hover {
+      background-color: #482c17;
+    }
+    select {
+      font-family: "Eczar", serif;
+      background-color: #291d14;
+      color: #d1c3af;
+      padding: 8px;
+      font-size: 1.1rem;
+      border: 1px solid #482c17;
       border-radius: 5px;
-      max-width: 800px;
-      margin: 20px auto;
-      text-align: left;
-      font-size: 0.9rem;
-      line-height: 1.4;
+      outline: none;
+      margin: 10px;
     }
     .rules-toggle {
-      margin-bottom: 10px;
-      cursor: pointer;
-      display: inline-block;
-      padding: 5px 10px;
-      background-color: rgba(72, 44, 23, 0.6);
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(20, 14, 10, 0.85);
+      padding: 10px;
       border-radius: 5px;
+      cursor: pointer;
+      z-index: 10;
     }
     .rules-content {
-      display: none;
-    }
-    .rules-content.show {
-      display: block;
-    }
-    .ranking-table {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      border-collapse: collapse;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 100;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .rules-box {
+      background-color: rgba(20, 14, 10, 0.95);
+      padding: 30px;
+      border-radius: 10px;
+      border: 2px solid #482c17;
+      max-width: 800px;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .close-rules {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    .rules-box h3 {
+      color: #ff6400;
+      margin-top: 20px;
+    }
+    .rules-box ul {
+      text-align: left;
+      line-height: 1.6;
+    }
+    .truth-panel {
+      display: none;
+      background-color: rgba(20, 14, 10, 0.9);
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid #ff6400;
+      margin: 20px auto;
+      max-width: 300px;
+    }
+    .truth-title {
+      color: #ff6400;
+      margin-bottom: 10px;
+    }
+    #history-list {
+      list-style: none;
+      padding: 0;
       margin: 10px 0;
+      max-height: 150px;
+      overflow-y: auto;
+      background-color: rgba(20, 14, 10, 0.5);
+      border-radius: 5px;
+      padding: 10px;
     }
-    .ranking-table th, .ranking-table td {
+    #history-list li {
       padding: 5px;
-      border: 1px solid rgba(72, 44, 23, 0.6);
+      border-bottom: 1px solid #482c17;
     }
-    .ranking-table th {
-      background-color: rgba(72, 44, 23, 0.6);
+    #history-list li:last-child {
+      border-bottom: none;
+    }
+    .history-lie {
+      color: #ff6400;
+    }
+    @media (max-width: 600px) {
+      .dice-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .button-row {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
 
-<h1>Loki Csínytevése</h1>
+<h1>Loki Bás - Isteni Hazugságok</h1>
 
-<div class="rules-container">
-  <div class="rules-toggle" onclick="toggleRules()">Játékszabályok <i class="fas fa-chevron-down"></i></div>
-  <div class="rules-content" id="rulesContent">
-    <h3>A Játék Menete</h3>
-    <p>Mindkét játékos 3 "isteni szikrával" (életponttal) kezd. Loki (játékos) kezdi a játékot.</p>
+<div class="rules-toggle" onclick="toggleRules()">
+  <i class="fas fa-book"></i> Szabályok
+</div>
+
+<div class="rules-content" id="rulesContent">
+  <div class="rules-box">
+    <span class="close-rules" onclick="toggleRules()">×</span>
+    <h2>A Bás - Isteni Hazugságok Játékszabályai</h2>
+    
+    <h3>Áttekintés</h3>
+    <p>Ez a játék a taktikáról, a hazugságról és az ellenfél kifürkészéséről szól. A legjobb hazudó vagy a legjobb megfigyelő nyeri meg.</p>
+    
+    <h3>Előkészületek</h3>
+    <ul>
+      <li>Mindkét játékos 3 "isteni szikrával" (életponttal) kezd.</li>
+      <li>Loki (a játékos) kezdi a játékot.</li>
+    </ul>
     
     <h3>A Kör Menete</h3>
-    <ol>
+    <ul>
       <li>Az aktív játékos dob a két kockával úgy, hogy az ellenfél ne lássa az eredményt.</li>
-      <li>A dobás értékelése: a számokat mindig úgy olvassuk, hogy a nagyobb szám kerül a tízesek helyére (pl. 4 és 5 dobása = 54)</li>
+      <li>A dobás értékét bejelenti az ellenfélnek (vagy hazudik).</li>
+      <li>Az ellenfél két lehetőség közül választhat: elhiszi vagy kétségbe vonja.</li>
+      <li>Ha elhiszi: neki kell dobnia, és olyan értéket kell bejelentenie, ami magasabb az előzőnél. Hazudhat, ha kell.</li>
+      <li>Ha nem hiszi el: a dobónak meg kell mutatnia kockáit:</li>
+      <ul>
+        <li>Ha igazat mondott, az ellenfél veszít egy isteni szikrát</li>
+        <li>Ha hazudott, a dobó veszít egy isteni szikrát</li>
+      </ul>
+      <li>Az új kört mindig a vesztes kezdi, és bármilyen értéket mondhat (nem kell előzőnél nagyobbat).</li>
+    </ul>
+    
+    <h3>Értékek Rangsora (növekvő sorrendben)</h3>
+    <ul>
+      <li>31, 32, 41, 42, 43, 51, 52, 53, 54, 61, 62, 63, 64, 65</li>
+      <li>1-es Fortély (két 1-es), 2-es Fortély (két 2-es), 3-as Fortély (két 3-as), 4-es Fortély (két 4-es), 5-ös Fortély (két 5-ös), 6-os Fortély (két 6-os)</li>
+      <li>Csínytevés (21) - a legmagasabb érték</li>
+    </ul>
+    
+    <h3>Dobás Értékelése</h3>
+    <ul>
+      <li>A számokat mindig úgy olvassuk, hogy a nagyobb szám kerül a tízesek helyére (pl. 4 és 5 dobása = 54)</li>
       <li>Azonos számok dobása "Fortély": pl. két 6-os = 6-os Fortély</li>
-      <li>A legmagasabb érték a "Csínytevés": 21-es dobás</li>
-    </ol>
-    
-    <h3>Az értékek rangsora (növekvő sorrendben)</h3>
-    <table class="ranking-table">
-      <tr>
-        <th>Érték típus</th>
-        <th>Rangsor</th>
-      </tr>
-      <tr>
-        <td>Normál dobások</td>
-        <td>31, 32, 41, 42, 43, 51, 52, 53, 54, 61, 62, 63, 64, 65</td>
-      </tr>
-      <tr>
-        <td>Fortélyok</td>
-        <td>1-es Fortély, 2-es Fortély, 3-as Fortély, 4-es Fortély, 5-ös Fortély, 6-os Fortély</td>
-      </tr>
-      <tr>
-        <td>Legmagasabb</td>
-        <td>Csínytevés (21)</td>
-      </tr>
-    </table>
-    
-    <h3>Lépések</h3>
-    <ol>
-      <li>Az aktív játékos bejelenti, mit dobott (vagy hazudik).</li>
-      <li>Az ellenfél két lehetőség közül választhat:
-        <ul>
-          <li><strong>Elhiszi:</strong> Ekkor neki dobnia kell, és olyan értéket kell bejelentenie, ami magasabb az előző bejelentettnél. Hazudhat, ha kell.</li>
-          <li><strong>Nem hiszi el:</strong> Ekkor az aktív játékosnak meg kell mutatnia a kockáit:
-            <ul>
-              <li>Ha igazat mondott, az ellenfél veszít egy isteni szikrát</li>
-              <li>Ha hazudott, az aktív játékos veszít egy isteni szikrát</li>
-            </ul>
-          </li>
-        </ul>
-      </li>
-      <li>Az új kört mindig a vesztes kezdi, és bármilyen értéket mondhat.</li>
-      <li>Ha valaki "Csínytevést" (21-est) jelent be, és az ellenfél elhiszi, akkor az ellenfélnek is "Csínytevést" kell dobnia, hogy nyerjen.</li>
-    </ol>
+      <li>Ha egy 2-est és egy 1-est dobsz, az "Csínytevés" (21), a játék legmagasabb értéke</li>
+    </ul>
     
     <h3>A Játék Vége</h3>
     <p>A játék akkor ér véget, amikor az egyik játékos elveszíti az összes isteni szikráját. A győztes az, aki még rendelkezik legalább egy szikrával.</p>
@@ -299,668 +391,579 @@
 
 <div id="gameArea">
   <div id="playerSection" class="player-section active-player">
-    <h2>Loki</h2>
-    <div class="sparks" id="playerSparks">
-      <i class="fas fa-fire spark-icon"></i>
-      <i class="fas fa-fire spark-icon"></i>
-      <i class="fas fa-fire spark-icon"></i>
-    </div>
-    <div class="dice-container" id="playerDice">
-      <div class="dice" id="playerDice1">?</div>
-      <div class="dice" id="playerDice2">?</div>
+    <h2>Loki (Te)</h2>
+    <div class="lives" id="playerLives">
+      <div class="life"><i class="fas fa-fire"></i></div>
+      <div class="life"><i class="fas fa-fire"></i></div>
+      <div class="life"><i class="fas fa-fire"></i></div>
     </div>
   </div>
   
-  <div id="opponentSection" class="player-section">
-    <h2>Odin</h2>
-    <div class="sparks" id="opponentSparks">
-      <i class="fas fa-fire spark-icon"></i>
-      <i class="fas fa-fire spark-icon"></i>
-      <i class="fas fa-fire spark-icon"></i>
+  <div id="diceSection">
+    <div class="dice-container">
+      <div id="dice1" class="dice">
+        <div class="dice-symbol dice-hidden">1</div>
+      </div>
+      <div id="dice2" class="dice">
+        <div class="dice-symbol dice-hidden">1</div>
+      </div>
     </div>
-    <div class="dice-container" id="opponentDice">
-      <div class="dice hidden" id="opponentDice1">?</div>
-      <div class="dice hidden" id="opponentDice2">?</div>
+    <div class="truth-panel" id="truthPanel">
+      <div class="truth-title">A Valóság</div>
+      <div id="realValue">--</div>
+    </div>
+  </div>
+  
+  <div id="botSection" class="player-section">
+    <h2>Thor (Ellenfél)</h2>
+    <div class="lives" id="botLives">
+      <div class="life"><i class="fas fa-fire"></i></div>
+      <div class="life"><i class="fas fa-fire"></i></div>
+      <div class="life"><i class="fas fa-fire"></i></div>
     </div>
   </div>
 </div>
 
-<div class="claimed-value" id="claimedValue">
-  Aktuális bejelentett érték: <span id="currentClaim">-</span>
-</div>
+<div id="declaration">Loki, Te kezdesz! Dobj a kockákkal, és jelents be egy értéket!</div>
 
-<div class="action-buttons" id="actionButtons">
-  <div id="rollButton">
-    <button onclick="rollDice()">Kockadobás</button>
+<div id="controls">
+  <div id="roll-controls">
+    <button id="rollBtn" class="big-button" onclick="rollDice()">Dobd a Kockákat!</button>
   </div>
   
-  <div id="claimControls" style="display: none;">
-    <div class="claim-buttons" id="claimButtons">
-      <!-- A lehetséges lépések gombjai dinamikusan generálódnak -->
+  <div id="select-declaration" style="display: none;">
+    <div class="value-buttons">
+      <!-- Gombokat dinamikusan töltjük be JavaScript-tel -->
     </div>
-    <button onclick="makeClaim()" id="confirmClaimButton" disabled>Érték bejelentése</button>
+    <button id="declareBtn" class="big-button" onclick="declareValue()">Érték Bejelentése</button>
   </div>
   
-  <div id="responseControls" style="display: none;">
-    <button onclick="believe()">Elhiszem</button>
-    <button onclick="challenge()">Nem hiszem el!</button>
+  <div id="response-controls" style="display: none;">
+    <div class="button-row">
+      <button id="believeBtn" class="big-button" onclick="respondToClaim(true)">Elhiszem</button>
+      <button id="doubtBtn" class="big-button" onclick="respondToClaim(false)">Kétségbe Vonom</button>
+    </div>
   </div>
 </div>
 
-<div id="result">Loki, a csínytevés mestere készen áll a játékra. Dobj a kockákkal!</div>
+<div id="result"></div>
+
+<div id="gameHistory">
+  <h3>Körök Története</h3>
+  <ul id="history-list"></ul>
+</div>
 
 <div id="resetContainer">
   <button onclick="startGame()">Új Játék</button>
 </div>
 
 <script>
-// Játék változók
-const REGULAR_VALUES = [31, 32, 41, 42, 43, 51, 52, 53, 54, 61, 62, 63, 64, 65];
-const TRICK_VALUES = [11, 22, 33, 44, 55, 66]; // Fortélyok
-const MISCHIEF_VALUE = 21; // Csínytevés
-
-let playerSparks = 3;
-let opponentSparks = 3;
-let currentPlayer = 'player'; // 'player' vagy 'opponent'
+// Játék állapota
+let playerLives = 3;
+let botLives = 3;
+let activePlayer = 0; // 0 = játékos, 1 = bot
 let gameActive = true;
-let currentDice = [0, 0]; // Az aktuális dobás értékei
-let claimedDice = [0, 0]; // A bejelentett dobás értékei
-let claimedValue = null; // A bejelentett kombinált érték
-let selectedValue = null; // A játékos által kiválasztott érték
-let roundCounter = 0; // Játék köreinek száma
-let gameHistory = []; // Játékmenet követése az AI-hoz
+let lastDeclaredValue = null;
+let currentDiceValues = [1, 1];
+let selectedDeclaration = null;
+let gameRound = 0;
+let gameHistory = [];
+
+// Értékek rangsora
+const valueRank = {
+  '31': 1, '32': 2, '41': 3, '42': 4, '43': 5, 
+  '51': 6, '52': 7, '53': 8, '54': 9, 
+  '61': 10, '62': 11, '63': 12, '64': 13, '65': 14,
+  'fortély1': 15, 'fortély2': 16, 'fortély3': 17, 'fortély4': 18, 'fortély5': 19, 'fortély6': 20,
+  'csínytevés': 21
+};
+
+// Értékek fordított táblázata
+const valueIndex = {};
+Object.keys(valueRank).forEach(key => {
+  valueIndex[valueRank[key]] = key;
+});
+
+// Értékek ember-olvasható formátumban
+const readableValues = {
+  '31': '31', '32': '32', '41': '41', '42': '42', '43': '43', 
+  '51': '51', '52': '52', '53': '53', '54': '54', 
+  '61': '61', '62': '62', '63': '63', '64': '64', '65': '65',
+  'fortély1': '1-es Fortély', 'fortély2': '2-es Fortély', 'fortély3': '3-as Fortély', 
+  'fortély4': '4-es Fortély', 'fortély5': '5-ös Fortély', 'fortély6': '6-os Fortély',
+  'csínytevés': 'Csínytevés'
+};
 
 // DOM elemek
+const diceEl1 = document.getElementById('dice1');
+const diceEl2 = document.getElementById('dice2');
 const playerSection = document.getElementById('playerSection');
-const opponentSection = document.getElementById('opponentSection');
-const playerDice1 = document.getElementById('playerDice1');
-const playerDice2 = document.getElementById('playerDice2');
-const opponentDice1 = document.getElementById('opponentDice1');
-const opponentDice2 = document.getElementById('opponentDice2');
+const botSection = document.getElementById('botSection');
+const declarationEl = document.getElementById('declaration');
 const resultEl = document.getElementById('result');
-const currentClaimEl = document.getElementById('currentClaim');
-const claimButtonsEl = document.getElementById('claimButtons');
+const historyListEl = document.getElementById('history-list');
 
-// Játékszabályok kijelzése
-function toggleRules() {
-  const rulesContent = document.getElementById('rulesContent');
-  rulesContent.classList.toggle('show');
-}
+// Értékválasztó gombok inicializálása
+initValueButtons();
 
 // Játék indítása
 function startGame() {
-  playerSparks = 3;
-  opponentSparks = 3;
-  currentPlayer = 'player';
+  playerLives = 3;
+  botLives = 3;
+  activePlayer = 0; // Játékos kezd
   gameActive = true;
-  currentDice = [0, 0];
-  claimedDice = [0, 0];
-  claimedValue = null;
-  selectedValue = null;
-  roundCounter = 0;
+  lastDeclaredValue = null;
+  selectedDeclaration = null;
+  gameRound = 0;
   gameHistory = [];
   
   // UI visszaállítása
-  updateSparks();
-  playerDice1.textContent = '?';
-  playerDice2.textContent = '?';
-  opponentDice1.textContent = '?';
-  opponentDice2.textContent = '?';
-  opponentDice1.classList.add('hidden');
-  opponentDice2.classList.add('hidden');
-  
-  currentClaimEl.textContent = '-';
-  
-  document.getElementById('rollButton').style.display = 'block';
-  document.getElementById('claimControls').style.display = 'none';
-  document.getElementById('responseControls').style.display = 'none';
+  updateLives();
+  resetDice();
+  document.getElementById('truthPanel').style.display = 'none';
+  document.getElementById('rollBtn').style.display = 'block';
+  document.getElementById('select-declaration').style.display = 'none';
+  document.getElementById('response-controls').style.display = 'none';
   document.getElementById('resetContainer').style.display = 'none';
+  declarationEl.textContent = 'Loki, Te kezdesz! Dobj a kockákkal, és jelents be egy értéket!';
+  resultEl.textContent = '';
+  historyListEl.innerHTML = '';
   
   // Aktív játékos kijelölése
   updateActivePlayer();
-  
-  resultEl.textContent = 'Loki, a csínytevés mestere készen áll a játékra. Dobj a kockákkal!';
 }
 
-// Isteni szikrák frissítése
-function updateSparks() {
-  const playerSparksEl = document.getElementById('playerSparks');
-  const opponentSparksEl = document.getElementById('opponentSparks');
+// Kockák visszaállítása
+function resetDice() {
+  diceEl1.querySelector('.dice-symbol').innerHTML = '1';
+  diceEl2.querySelector('.dice-symbol').innerHTML = '1';
+  diceEl1.querySelector('.dice-symbol').classList.add('dice-hidden');
+  diceEl2.querySelector('.dice-symbol').classList.add('dice-hidden');
+  diceEl1.classList.remove('dice-roll');
+  diceEl2.classList.remove('dice-roll');
+  document.getElementById('realValue').textContent = '--';
+}
+
+// Kockadobás animáció és eredmény
+function rollDice() {
+  if (!gameActive || activePlayer !== 0) return;
   
-  playerSparksEl.innerHTML = '';
-  opponentSparksEl.innerHTML = '';
+  // Véletlen értékek generálása
+  const value1 = Math.floor(Math.random() * 6) + 1;
+  const value2 = Math.floor(Math.random() * 6) + 1;
+  currentDiceValues = [value1, value2];
+  
+  // Animáció és megjelenítés
+  animateDiceRoll(value1, value2);
+  
+  // Aktiváljuk az értékválasztó panelt
+  setTimeout(() => {
+    document.getElementById('rollBtn').style.display = 'none';
+    document.getElementById('select-declaration').style.display = 'block';
+    populateAvailableValues();
+    
+    if (lastDeclaredValue === null) {
+      declarationEl.textContent = 'Válassz egy értéket, amit bejelentesz Thornak!';
+    } else {
+      declarationEl.textContent = `Thor legutóbb ${getReadableValue(lastDeclaredValue)}-t jelentett be. Jelentsd be a te értékedet (nagyobbnak kell lennie)!`;
+    }
+  }, 1000);
+}
+
+// Kockadobás animáció
+function animateDiceRoll(value1, value2) {
+  diceEl1.classList.remove('dice-roll');
+  diceEl2.classList.remove('dice-roll');
+  
+  setTimeout(() => {
+    diceEl1.querySelector('.dice-symbol').innerHTML = value1;
+    diceEl2.querySelector('.dice-symbol').innerHTML = value2;
+    diceEl1.querySelector('.dice-symbol').classList.remove('dice-hidden');
+    diceEl2.querySelector('.dice-symbol').classList.remove('dice-hidden');
+    diceEl1.classList.add('dice-roll');
+    diceEl2.classList.add('dice-roll');
+  }, 10);
+}
+
+// Értékválasztó gombok inicializálása
+function initValueButtons() {
+  const container = document.querySelector('.value-buttons');
+  container.innerHTML = '';
+  
+  Object.keys(readableValues).forEach(value => {
+    const button = document.createElement('button');
+    button.className = 'value-button';
+    button.textContent = readableValues[value];
+    button.dataset.value = value;
+    button.onclick = () => selectValue(value);
+    container.appendChild(button);
+  });
+}
+
+// Elérhető értékek szűrése (ha szükséges)
+function populateAvailableValues() {
+  const buttons = document.querySelectorAll('.value-button');
+  
+  buttons.forEach(button => {
+    if (lastDeclaredValue === null) {
+      button.disabled = false;
+    } else {
+      const value = button.dataset.value;
+      button.disabled = valueRank[value] <= valueRank[lastDeclaredValue];
+    }
+  });
+}
+
+// Érték kiválasztása
+function selectValue(value) {
+  selectedDeclaration = value;
+  const buttons = document.querySelectorAll('.value-button');
+  buttons.forEach(button => {
+    if (button.dataset.value === value) {
+      button.style.backgroundColor = '#5a381f';
+    } else {
+      button.style.backgroundColor = '#291d14';
+    }
+  });
+}
+
+// Érték bejelentése
+function declareValue() {
+  if (selectedDeclaration === null) {
+    declarationEl.textContent = 'Előbb válassz egy értéket!';
+    return;
+  }
+  
+  // Valós dobás értékének kiszámítása
+  const realValue = calculateDiceValue(currentDiceValues[0], currentDiceValues[1]);
+  document.getElementById('realValue').textContent = getReadableValue(realValue);
+  
+  // Bejelentés hozzáadása a játéktörténethez
+  addToHistory({
+    round: gameRound,
+    player: 'Loki',
+    declared: selectedDeclaration,
+    actual: realValue,
+    isLie: selectedDeclaration !== realValue
+  });
+  
+  // Elrejtem a játékostól a kockákat és az értékválasztót
+  diceEl1.querySelector('.dice-symbol').classList.add('dice-hidden');
+  diceEl2.querySelector('.dice-symbol').classList.add('dice-hidden');
+  document.getElementById('select-declaration').style.display = 'none';
+  
+  // Bot válaszol
+  declarationEl.textContent = `${getReadableValue(selectedDeclaration)}-t jelentettél be. Thor gondolkodik...`;
+  
+  setTimeout(() => {
+    botRespond();
+  }, 2000);
+}
+
+// Bot válasza a bejelentésre
+function botRespond() {
+  const realValue = calculateDiceValue(currentDiceValues[0], currentDiceValues[1]);
+  const declaredRank = valueRank[selectedDeclaration];
+  const realRank = valueRank[realValue];
+  
+  // A bot stratégiája
+  let believeProbability = 0.6; // Alap esély
+  
+  // Ha túl magas értéket jelentett be a játékos
+  if (declaredRank > realRank + 4) {
+    believeProbability -= 0.3;
+  }
+  
+  // Ha a bejelentett érték nagyon magas
+  if (declaredRank >= 19) {
+    believeProbability -= 0.2;
+  }
+  
+  // Ha a bot már korábban vesztett életet, óvatosabb
+  if (botLives < 3) {
+    believeProbability += 0.1;
+  }
+  
+  // A játékos korábbi viselkedésének elemzése
+  const playerLiePattern = analyzePlayerLies();
+  believeProbability -= playerLiePattern * 0.2;
+  
+  // A bot döntése
+  const botBelieves = Math.random() < believeProbability;
+  
+  if (botBelieves) {
+    // Bot elhiszi
+    declarationEl.textContent = `Thor elhiszi a bejelentésedet (${getReadableValue(selectedDeclaration)})!`;
+    lastDeclaredValue = selectedDeclaration;
+    setTimeout(() => botTurn(), 2000);
+  } else {
+    // Bot kétségbe vonja
+    declarationEl.textContent = `Thor kétségbe vonja a bejelentésedet! Lássuk az igazságot...`;
+    document.getElementById('truthPanel').style.display = 'block';
+    diceEl1.querySelector('.dice-symbol').classList.remove('dice-hidden');
+    diceEl2.querySelector('.dice-symbol').classList.remove('dice-hidden');
+    
+    setTimeout(() => {
+      if (selectedDeclaration === realValue) {
+        // Igazat mondott a játékos
+        botLives--;
+        resultEl.textContent = `Igazat mondtál! Thor veszít egy isteni szikrát!`;
+        updateLives();
+        checkGameEnd();
+      } else {
+        // Hazudott a játékos
+        playerLives--;
+        resultEl.textContent = `Hazudtál! Te veszítesz egy isteni szikrát!`;
+        updateLives();
+        checkGameEnd();
+      }
+      
+      // Ha még tart a játék, új kör kezdése
+      if (gameActive) {
+        gameRound++;
+        lastDeclaredValue = null; // Új kör, bármilyen értéket mondhat
+        setTimeout(() => {
+          resetDice();
+          document.getElementById('truthPanel').style.display = 'none';
+          activePlayer = 1; // Bot kezd
+          updateActivePlayer();
+          botTurn();
+        }, 2000);
+      }
+    }, 2000);
+  }
+}
+
+// Bot köre
+function botTurn() {
+  if (!gameActive) return;
+  
+  declarationEl.textContent = `Thor dob a kockákkal...`;
+  
+  // Bot dob
+  const value1 = Math.floor(Math.random() * 6) + 1;
+  const value2 = Math.floor(Math.random() * 6) + 1;
+  const realValue = calculateDiceValue(value1, value2);
+  
+  // Bot stratégiája a bejelentéshez
+  let declaredValue;
+  
+  if (lastDeclaredValue === null) {
+    // Új kör, bármilyen értéket mondhat
+    if (realValue === 'csínytevés' || Math.random() < 0.8) {
+      // Valós értéket mond
+      declaredValue = realValue;
+    } else {
+      // Kicsit hazudik, de nem túl merészen
+      const availableValues = Object.keys(valueRank).filter(v => 
+        valueRank[v] > valueRank[realValue] && valueRank[v] <= valueRank[realValue] + 3
+      );
+      if (availableValues.length > 0) {
+        declaredValue = availableValues[Math.floor(Math.random() * availableValues.length)];
+      } else {
+        declaredValue = realValue;
+      }
+    }
+  } else {
+    const minRank = valueRank[lastDeclaredValue] + 1;
+    
+    if (valueRank[realValue] >= minRank) {
+      // A valós dobás elég magas, használhatja
+      declaredValue = realValue;
+    } else {
+      // Hazudnia kell
+      // Mennyire merjen hazudni?
+      const riskFactor = Math.min(1, 0.3 + (botLives / 3) * 0.4); // Több élet = nagyobb kockázat
+      const maxExtraRank = Math.floor(7 * riskFactor);
+      
+      // Lehetséges értékek a minRank és minRank+maxExtraRank között
+      const targetRank = minRank + Math.floor(Math.random() * maxExtraRank);
+      declaredValue = valueIndex[Math.min(targetRank, 21)]; // Max 21 (Csínytevés)
+    }
+  }
+  
+  // Bot bejelenti az értékét
+  addToHistory({
+    round: gameRound,
+    player: 'Thor',
+    declared: declaredValue,
+    actual: realValue,
+    isLie: declaredValue !== realValue
+  });
+  
+  setTimeout(() => {
+    declarationEl.textContent = `Thor ${getReadableValue(declaredValue)}-t jelent be. Mit teszel?`;
+    
+    // A játékos válaszol
+    document.getElementById('response-controls').style.display = 'block';
+    lastDeclaredValue = declaredValue;
+    currentDiceValues = [value1, value2]; // Elmentjük a bot dobását
+  }, 2000);
+}
+
+// Játékos válasza a bot állítására
+function respondToClaim(believes) {
+  document.getElementById('response-controls').style.display = 'none';
+  
+  // A valós dobás értéke
+  const realValue = calculateDiceValue(currentDiceValues[0], currentDiceValues[1]);
+  
+  if (believes) {
+    // Játékos elhiszi
+    declarationEl.textContent = `Elhiszed Thor állítását. Most te dobsz!`;
+    
+    setTimeout(() => {
+      resetDice();
+      activePlayer = 0; // Játékos következik
+      updateActivePlayer();
+      document.getElementById('rollBtn').style.display = 'block';
+      declarationEl.textContent = `Dobj a kockákkal, és jelents be egy ${getReadableValue(lastDeclaredValue)}-nél nagyobb értéket!`;
+    }, 2000);
+  } else {
+    // Játékos kétségbe vonja
+    declarationEl.textContent = `Kétségbe vonod Thor állítását! Lássuk az igazságot...`;
+    document.getElementById('truthPanel').style.display = 'block';
+    
+    // A kockák láthatóvá tétele
+    diceEl1.querySelector('.dice-symbol').classList.remove('dice-hidden');
+    diceEl1.querySelector('.dice-symbol').innerHTML = currentDiceValues[0];
+    diceEl2.querySelector('.dice-symbol').classList.remove('dice-hidden');
+    diceEl2.querySelector('.dice-symbol').innerHTML = currentDiceValues[1];
+    document.getElementById('realValue').textContent = getReadableValue(realValue);
+    
+    setTimeout(() => {
+      if (lastDeclaredValue === realValue) {
+        // Bot igazat mondott
+        playerLives--;
+        resultEl.textContent = `Thor igazat mondott! Te veszítesz egy isteni szikrát!`;
+        updateLives();
+        checkGameEnd();
+      } else {
+        // Bot hazudott
+        botLives--;
+        resultEl.textContent = `Thor hazudott! Ő veszít egy isteni szikrát!`;
+        updateLives();
+        checkGameEnd();
+      }
+      
+      // Ha még tart a játék, új kör kezdése
+      if (gameActive) {
+        gameRound++;
+        lastDeclaredValue = null; // Új kör, bármilyen értéket mondhat
+        setTimeout(() => {
+          resetDice();
+          document.getElementById('truthPanel').style.display = 'none';
+          activePlayer = 0; // Játékos kezd
+          updateActivePlayer();
+          document.getElementById('rollBtn').style.display = 'block';
+          declarationEl.textContent = 'Új kör! Dobj a kockákkal, és jelents be egy értéket!';
+        }, 2000);
+      }
+    }, 2000);
+  }
+}
+
+// Életpontok frissítése
+function updateLives() {
+  const playerLivesEl = document.getElementById('playerLives');
+  const botLivesEl = document.getElementById('botLives');
+  
+  playerLivesEl.innerHTML = '';
+  botLivesEl.innerHTML = '';
   
   for (let i = 0; i < 3; i++) {
-    const playerSparkIcon = document.createElement('i');
-    playerSparkIcon.className = 'fas fa-fire spark-icon';
-    if (i >= playerSparks) playerSparkIcon.classList.add('lost-spark');
-    playerSparksEl.appendChild(playerSparkIcon);
+    const playerLifeEl = document.createElement('div');
+    playerLifeEl.className = i < playerLives ? 'life' : 'life lost';
+    playerLifeEl.innerHTML = i < playerLives ? '<i class="fas fa-fire"></i>' : '<i class="fas fa-fire"></i>';
+    playerLivesEl.appendChild(playerLifeEl);
     
-    const opponentSparkIcon = document.createElement('i');
-    opponentSparkIcon.className = 'fas fa-fire spark-icon';
-    if (i >= opponentSparks) opponentSparkIcon.classList.add('lost-spark');
-    opponentSparksEl.appendChild(opponentSparkIcon);
+    const botLifeEl = document.createElement('div');
+    botLifeEl.className = i < botLives ? 'life' : 'life lost';
+    botLifeEl.innerHTML = i < botLives ? '<i class="fas fa-fire"></i>' : '<i class="fas fa-fire"></i>';
+    botLivesEl.appendChild(botLifeEl);
   }
 }
 
 // Aktív játékos frissítése
 function updateActivePlayer() {
-  if (currentPlayer === 'player') {
+  if (activePlayer === 0) {
     playerSection.classList.add('active-player');
-    opponentSection.classList.remove('active-player');
+    botSection.classList.remove('active-player');
   } else {
     playerSection.classList.remove('active-player');
-    opponentSection.classList.add('active-player');
+    botSection.classList.add('active-player');
   }
 }
 
-// Kockadobás
-function rollDice() {
-  if (!gameActive) return;
+// Dobás értékének kiszámítása
+function calculateDiceValue(value1, value2) {
+  // Csínytevés (21) ellenőrzése
+  if ((value1 === 2 && value2 === 1) || (value1 === 1 && value2 === 2)) {
+    return 'csínytevés';
+  }
   
-  currentDice = [
-    Math.floor(Math.random() * 6) + 1,
-    Math.floor(Math.random() * 6) + 1
-  ];
+  // Fortély (dupla) ellenőrzése
+  if (value1 === value2) {
+    return `fortély${value1}`;
+  }
   
-  // Dobás animálása
-  const dice1 = currentPlayer === 'player' ? playerDice1 : opponentDice1;
-  const dice2 = currentPlayer === 'player' ? playerDice2 : opponentDice2;
-  
-  dice1.classList.add('rolling');
-  dice2.classList.add('rolling');
-  
-  setTimeout(() => {
-    dice1.classList.remove('rolling');
-    dice2.classList.remove('rolling');
-    
-    if (currentPlayer === 'player') {
-      dice1.textContent = currentDice[0];
-      dice2.textContent = currentDice[1];
-      
-      // Játékos választási opciók megjelenítése
-      document.getElementById('rollButton').style.display = 'none';
-      document.getElementById('claimControls').style.display = 'block';
-      document.getElementById('responseControls').style.display = 'none';
-      
-      generateClaimButtons();
-      resultEl.textContent = 'Válassz egy értéket, amit bejelentesz! Blöffölhetsz is.';
-    } else {
-      // AI játékos dobása - a kockák rejtve maradnak
-      dice1.classList.add('hidden');
-      dice2.classList.add('hidden');
-      
-      // AI döntés
-      setTimeout(makeAIDecision, 1500);
-    }
-  }, 800);
+  // Normál értékek - nagyobb szám a tízesek helyére
+  const higher = Math.max(value1, value2);
+  const lower = Math.min(value1, value2);
+  return `${higher}${lower}`;
 }
 
-// Értékek kombinálása
-function combineDice(dice) {
-  let sorted = [...dice].sort((a, b) => b - a);
-  
-  // Csínytevés ellenőrzése (2 és 1)
-  if ((dice[0] === 2 && dice[1] === 1) || (dice[0] === 1 && dice[1] === 2)) {
-    return MISCHIEF_VALUE;
-  }
-  
-  // Fortély ellenőrzése (dupla)
-  if (dice[0] === dice[1]) {
-    return dice[0] * 10 + dice[0];
-  }
-  
-  // Normál kombináció (nagyobb a tízesek helyére)
-  return sorted[0] * 10 + sorted[1];
+// Olvasható érték formátuma
+function getReadableValue(value) {
+  return readableValues[value] || value;
 }
 
-// Érték szöveges megjelenítése
-function formatValue(value) {
-  if (value === MISCHIEF_VALUE) {
-    return "Csínytevés (21)";
-  }
+// Játékos hazudási mintájának elemzése
+function analyzePlayerLies() {
+  if (gameHistory.length < 3) return 0.5; // Alapértelmezett, ha nincs elég adat
   
-  const firstDigit = Math.floor(value / 10);
-  const secondDigit = value % 10;
+  const playerHistory = gameHistory.filter(entry => entry.player === 'Loki');
+  const lies = playerHistory.filter(entry => entry.isLie).length;
   
-  if (firstDigit === secondDigit) {
-    return `${firstDigit}-es Fortély`;
-  }
-  
-  return value.toString();
+  return lies / playerHistory.length; // 0-1 közötti érték, magasabb = gyakrabban hazudik
 }
 
-// Érték rangsorolása (1: legalacsonyabb, 21: legmagasabb)
-function getRank(value) {
-  if (value === MISCHIEF_VALUE) return 21; // Legmagasabb
+// Játéktörténet hozzáadása
+function addToHistory(entry) {
+  gameHistory.push(entry);
   
-  const firstDigit = Math.floor(value / 10);
-  const secondDigit = value % 10;
+  const li = document.createElement('li');
+  const playerText = entry.player === 'Loki' ? 'Te' : 'Thor';
+  const lieClass = entry.isLie ? 'history-lie' : '';
   
-  if (firstDigit === secondDigit) {
-    // Fortély
-    return 14 + firstDigit; // 15-20 között
-  }
+  li.innerHTML = `Kör ${entry.round + 1}: ${playerText} ${getReadableValue(entry.declared)}-t jelentettél be ` +
+                 `(Valós: ${getReadableValue(entry.actual)})` +
+                 `${entry.isLie ? ' <span class="history-lie">- HAZUGSÁG!</span>' : ''}`;
   
-  // Normál értékek
-  return REGULAR_VALUES.indexOf(value) + 1;
+  historyListEl.prepend(li);
 }
 
-// Lehetséges lépések generálása - JAVÍTOTT VÁLTOZAT
-function generateClaimButtons() {
-  claimButtonsEl.innerHTML = '';
-  const actualValue = combineDice(currentDice);
-  
-  // Speciális eset: Ha az ellenfél Csínytevést jelentett be, csak Csínytevést lehet bejelenteni
-  if (claimedValue === MISCHIEF_VALUE) {
-    addClaimButton(MISCHIEF_VALUE, actualValue === MISCHIEF_VALUE);
-    return;
-  }
-  
-  // Ha az előző körben volt bejelentés, akkor annál magasabbat kell mondani
-  const minRank = claimedValue ? getRank(claimedValue) + 1 : 1;
-  
-  // Reguláris értékek hozzáadása, amelyek a minimum fölött vannak
-  for (const value of REGULAR_VALUES) {
-    if (getRank(value) >= minRank) {
-      addClaimButton(value, actualValue === value);
-    }
-  }
-  
-  // Fortélyok hozzáadása, amelyek a minimum fölött vannak
-  for (const value of TRICK_VALUES) {
-    if (getRank(value) >= minRank) {
-      addClaimButton(value, actualValue === value);
-    }
-  }
-  
-  // Csínytevés hozzáadása, ha a minimum fölött van
-  if (getRank(MISCHIEF_VALUE) >= minRank) {
-    addClaimButton(MISCHIEF_VALUE, actualValue === MISCHIEF_VALUE);
+// Játék vége ellenőrzése
+function checkGameEnd() {
+  if (playerLives <= 0) {
+    gameActive = false;
+    resultEl.innerHTML = '<span class="winner">Thor győzött! Elvesztetted az összes isteni szikrádat.</span>';
+    document.getElementById('resetContainer').style.display = 'block';
+  } else if (botLives <= 0) {
+    gameActive = false;
+    resultEl.innerHTML = '<span class="winner">Loki győzött! Thor elvesztette az összes isteni szikráját!</span>';
+    document.getElementById('resetContainer').style.display = 'block';
   }
 }
 
-// Claim gomb hozzáadása
-function addClaimButton(value, isTrue) {
-  const button = document.createElement('button');
-  button.className = 'claim-button';
-  button.textContent = formatValue(value);
-  button.dataset.value = value;
-  button.onclick = () => selectClaim(value);
-  
-  if (isTrue) {
-    // Csak vizuális jelzés a játékosnak, hogy melyik az igazság
-    button.style.textShadow = '0 0 5px #ff6400';
-  }
-  
-  claimButtonsEl.appendChild(button);
-}
-
-// Játékos érték kiválasztása
-function selectClaim(value) {
-  selectedValue = value;
-  document.querySelectorAll('.claim-button').forEach(btn => {
-    btn.classList.remove('selected');
-    if (parseInt(btn.dataset.value) === value) {
-      btn.classList.add('selected');
-    }
-  });
-  document.getElementById('confirmClaimButton').disabled = false;
-}
-
-// Játékos bejelenti az értéket
-function makeClaim() {
-  if (selectedValue === null) return;
-  
-  claimedValue = selectedValue;
-  currentClaimEl.textContent = formatValue(claimedValue);
-  
-  // Játékmenet rögzítése
-  gameHistory.push({
-    round: roundCounter,
-    player: currentPlayer,
-    actualDice: [...currentDice],
-    claimedValue: claimedValue,
-    wasLying: combineDice(currentDice) !== claimedValue
-  });
-  
-  if (currentPlayer === 'player') {
-    // Játékos után AI válaszol
-    document.getElementById('claimControls').style.display = 'none';
-    
-    // AI döntési idő
-    resultEl.textContent = `Bejelentetted: ${formatValue(claimedValue)}. Odin gondolkodik...`;
-    setTimeout(() => {
-      const aiDecision = decideAIResponse();
-      if (aiDecision === 'believe') {
-        believe();
-      } else {
-        challenge();
-      }
-    }, 2000);
+// Szabályok megjelenítése/elrejtése
+function toggleRules() {
+  const rulesContent = document.getElementById('rulesContent');
+  if (rulesContent.style.display === 'flex') {
+    rulesContent.style.display = 'none';
   } else {
-    // AI után játékos válaszol
-    document.getElementById('responseControls').style.display = 'block';
-    resultEl.textContent = `Odin bejelentette: ${formatValue(claimedValue)}. Elhiszed vagy kihívod?`;
+    rulesContent.style.display = 'flex';
   }
-}
-
-// Elhiszi az ellenfél bejelentését
-function believe() {
-  if (!gameActive) return;
-  
-  resultEl.textContent = '';
-  
-  if (currentPlayer === 'opponent') {
-    resultEl.textContent = `Elhitted Odin bejelentését (${formatValue(claimedValue)}). Most te következel.`;
-    currentPlayer = 'player';
-  } else {
-    resultEl.textContent = `Odin elhitte a bejelentésedet (${formatValue(claimedValue)}). Most ő következik.`;
-    currentPlayer = 'opponent';
-  }
-  
-  roundCounter++;
-  updateActivePlayer();
-  
-  // Következő kör előkészítése
-  resetRound();
-  
-  // Ha az AI következik, dobjon automatikusan
-  if (currentPlayer === 'opponent') {
-    setTimeout(rollDice, 1500);
-  } else {
-    // Játékos következik, megjelenik a dobás gomb
-    document.getElementById('rollButton').style.display = 'block';
-  }
-}
-
-// Kihívja az ellenfél bejelentését
-function challenge() {
-  if (!gameActive) return;
-  
-  document.getElementById('responseControls').style.display = 'none';
-  document.getElementById('claimControls').style.display = 'none';
-  
-  // A kockák felfedése
-  if (currentPlayer === 'player') {
-    playerDice1.textContent = currentDice[0];
-    playerDice2.textContent = currentDice[1];
-  } else {
-    opponentDice1.textContent = currentDice[0];
-    opponentDice2.textContent = currentDice[1];
-    opponentDice1.classList.remove('hidden');
-    opponentDice2.classList.remove('hidden');
-  }
-  
-  const actualValue = combineDice(currentDice);
-  const wasLying = actualValue !== claimedValue;
-  
-  resultEl.textContent = wasLying 
-    ? `${currentPlayer === 'player' ? 'Odin' : 'Te'} helyesen kihívtad a blöfföt! A valódi érték ${formatValue(actualValue)} volt, nem ${formatValue(claimedValue)}.` 
-    : `${currentPlayer === 'player' ? 'Odin' : 'Te'} tévesen kihívtad! A bejelentett érték (${formatValue(claimedValue)}) igaz volt.`;
-  
-  // Isteni szikra elvesztése
-  if (wasLying) {
-    // A hazug veszít szikrát
-    if (currentPlayer === 'player') {
-      playerSparks--;
-      resultEl.textContent += ' Loki elvesztett egy isteni szikrát!';
-    } else {
-      opponentSparks--;
-      resultEl.textContent += ' Odin elvesztett egy isteni szikrát!';
-    }
-  } else {
-    // A kihívó veszít szikrát
-    if (currentPlayer === 'player') {
-      opponentSparks--;
-      resultEl.textContent += ' Odin elvesztett egy isteni szikrát!';
-    } else {
-      playerSparks--;
-      resultEl.textContent += ' Loki elvesztett egy isteni szikrát!';
-    }
-  }
-  
-  updateSparks();
-  
-  // Játék vége ellenőrzése
-  if (playerSparks === 0 || opponentSparks === 0) {
-    gameOver();
-    return;
-  }
-  
-  // A vesztes kezdi a következő kört
-  const loser = wasLying ? currentPlayer : (currentPlayer === 'player' ? 'opponent' : 'player');
-  currentPlayer = loser;
-  updateActivePlayer();
-  
-  // Következő kör előkészítése
-  setTimeout(() => {
-    resetRound();
-    roundCounter++;
-    
-    // Az aktuális játékos dob
-    if (currentPlayer === 'player') {
-      document.getElementById('rollButton').style.display = 'block';
-      resultEl.textContent += ' Te következel. Dobj a kockákkal!';
-    } else {
-      resultEl.textContent += ' Odin következik...';
-      setTimeout(rollDice, 1500);
-    }
-  }, 2500);
-}
-
-// Kör visszaállítása
-function resetRound() {
-  currentDice = [0, 0];
-  selectedValue = null;
-  
-  playerDice1.textContent = '?';
-  playerDice2.textContent = '?';
-  opponentDice1.textContent = '?';
-  opponentDice2.textContent = '?';
-  opponentDice1.classList.add('hidden');
-  opponentDice2.classList.add('hidden');
-  
-  document.getElementById('confirmClaimButton').disabled = true;
-}
-
-// Játék vége
-function gameOver() {
-  gameActive = false;
-  
-  if (playerSparks === 0) {
-    resultEl.innerHTML = '<span class="winner">Odin győzött! Minden csínytevésnek vége szakad egyszer.</span>';
-  } else {
-    resultEl.innerHTML = '<span class="winner">Loki győzött! A csínytevés mestere legyőzte az istenek királyát!</span>';
-  }
-  
-  document.getElementById('resetContainer').style.display = 'block';
-}
-
-// AI STRATÉGIA //
-
-// AI döntése: hinni vagy kihívni
-function decideAIResponse() {
-  const actualValue = combineDice(currentDice); // Az AI igazi dobásának értéke
-  const claimedRank = getRank(claimedValue);
-  const totalRanks = 21; // Összes lehetséges rang
-  
-  // Alap kihívási esély kalkulálása a bejelentett érték rangja alapján
-  // Minél magasabb a bejelentett érték, annál valószínűbb a kihívás
-  let challengeProb = claimedRank / totalRanks * 0.8;
-  
-  // Speciális esetek
-  if (claimedValue === MISCHIEF_VALUE) {
-    // A Csínytevést nagy eséllyel kihívjuk, hacsak nincs bizonyíték, hogy a játékos őszinte
-    challengeProb = 0.9;
-  } else if (TRICK_VALUES.includes(claimedValue)) {
-    // A Fortélyokat is gyakrabban kihívjuk
-    challengeProb += 0.1;
-  }
-  
-  // Játékmenet elemzése
-  if (gameHistory.length > 0) {
-    const playerMoves = gameHistory.filter(h => h.player === 'player');
-    if (playerMoves.length > 0) {
-      // Játékos hazudási aránya
-      const lyingRatio = playerMoves.filter(m => m.wasLying).length / playerMoves.length;
-      
-      // Ha a játékos sokat hazudik, növeljük a kihívás esélyét
-      if (lyingRatio > 0.6) {
-        challengeProb += 0.2;
-      }
-      // Ha a játékos ritkán hazudik, csökkentjük a kihívás esélyét
-      else if (lyingRatio < 0.3) {
-        challengeProb -= 0.2;
-      }
-      
-      // Az utolsó néhány lépés vizsgálata
-      const recentMoves = playerMoves.slice(-3);
-      
-      // Ha a játékos az utolsó lépésekben nem hazudott, az AI inkább hisz neki
-      const recentLies = recentMoves.filter(m => m.wasLying).length;
-      if (recentLies === 0 && recentMoves.length >= 2) {
-        challengeProb -= 0.15;
-      }
-      
-      // Ha a játékos az utolsó lépésekben sokat hazudott, az AI inkább kihívja
-      if (recentLies >= 2) {
-        challengeProb += 0.15;
-      }
-    }
-  }
-  
-  // Játékállás figyelembe vétele
-  if (opponentSparks === 1) {
-    // Ha AI-nak csak 1 szikrája van, kockáztatóbban játszik
-    challengeProb += 0.1;
-  }
-  if (playerSparks === 1) {
-    // Ha játékosnak csak 1 szikrája van, az AI óvatosabb
-    challengeProb -= 0.1;
-  }
-  
-  // Végleges döntés
-  challengeProb = Math.max(0, Math.min(1, challengeProb)); // 0-1 között tartsuk
-  
-  // Véletlenszerűség hozzáadása a kiszámíthatatlanságért
-  return Math.random() < challengeProb ? 'challenge' : 'believe';
-}
-
-// AI döntése: mit jelentsen be
-function makeAIDecision() {
-  const actualValue = combineDice(currentDice); // Az AI igazi dobásának értéke
-  const actualRank = getRank(actualValue);
-  
-  let possibleClaims = [];
-  
-  // JAVÍTÁS: a Csínytevés speciális esete
-  if (claimedValue === MISCHIEF_VALUE) {
-    // Ha Csínytevést jelentettek be nekünk, csak Csínytevést jelenthetünk
-    possibleClaims.push(MISCHIEF_VALUE);
-  } else {
-    const minRank = claimedValue ? getRank(claimedValue) + 1 : 1;
-    
-    // Reguláris értékek
-    for (const value of REGULAR_VALUES) {
-      if (getRank(value) >= minRank) {
-        possibleClaims.push(value);
-      }
-    }
-    
-    // Fortélyok
-    for (const value of TRICK_VALUES) {
-      if (getRank(value) >= minRank) {
-        possibleClaims.push(value);
-      }
-    }
-    
-    // Csínytevés
-    if (getRank(MISCHIEF_VALUE) >= minRank) {
-      possibleClaims.push(MISCHIEF_VALUE);
-    }
-  }
-  
-  if (possibleClaims.length === 0) {
-    // Ez nem fordulhat elő normális játékmenetben
-    resultEl.textContent = 'Odin nem tud magasabb értéket bejelenteni. A kör újraindul.';
-    resetRound();
-    currentPlayer = 'player';
-    updateActivePlayer();
-    document.getElementById('rollButton').style.display = 'block';
-    return;
-  }
-  
-  // AI stratégia
-  let selectedClaim;
-  
-  // Ha az AI-nak megfelelő dobása van, elsősorban azt jelenti be
-  if (possibleClaims.includes(actualValue)) {
-    // 70% eséllyel igazat mond, ha tud
-    if (Math.random() < 0.7) {
-      selectedClaim = actualValue;
-    }
-  }
-  
-  // Ha nincs jó dobása, vagy úgy dönt, hogy hazudik
-  if (!selectedClaim) {
-    // Lehetséges bejelentések alapján stratégia
-    
-    // Speciális eset: Ha csak Csínytevést jelenthetünk be, de nem dobtunk, akkor hazudni kell
-    if (possibleClaims.length === 1 && possibleClaims[0] === MISCHIEF_VALUE && actualValue !== MISCHIEF_VALUE) {
-      selectedClaim = MISCHIEF_VALUE;
-    }
-    // Egyéb esetekben
-    else {
-      // Játék állása alapján
-      if (opponentSparks === 1) {
-        // Veszélyben van, kockázatosabb játék
-        const highClaims = possibleClaims.filter(c => getRank(c) >= Math.floor(21 * 0.7));
-        if (highClaims.length > 0) {
-          // Magas értékek közül választ egyet
-          selectedClaim = highClaims[Math.floor(Math.random() * highClaims.length)];
-        }
-      }
-      
-      if (playerSparks === 1 && !selectedClaim) {
-        // Játékos veszélyben van, óvatosabb játék
-        const lowClaims = possibleClaims.filter(c => getRank(c) <= Math.floor(getRank(claimedValue || 0) + 3));
-        if (lowClaims.length > 0) {
-          // Alacsonyabb értékek közül választ egyet
-          selectedClaim = lowClaims[Math.floor(Math.random() * lowClaims.length)];
-        }
-      }
-      
-      // Ha még mindig nincs döntés
-      if (!selectedClaim) {
-        // Alap esetben véletlenszerűen választ, de előnyben részesíti az alacsonyabb értékeket
-        const lowerClaims = possibleClaims.filter(c => getRank(c) <= Math.floor(getRank(claimedValue || 0) + 5));
-        if (lowerClaims.length > 0 && Math.random() < 0.7) {
-          selectedClaim = lowerClaims[Math.floor(Math.random() * lowerClaims.length)];
-        } else {
-          // Teljesen véletlenszerű választás
-          selectedClaim = possibleClaims[Math.floor(Math.random() * possibleClaims.length)];
-        }
-      }
-    }
-  }
-  
-  // Bejelentés
-  claimedValue = selectedClaim;
-  currentClaimEl.textContent = formatValue(claimedValue);
-  
-  // Játékmenet rögzítése
-  gameHistory.push({
-    round: roundCounter,
-    player: currentPlayer,
-    actualDice: [...currentDice],
-    claimedValue: claimedValue,
-    wasLying: actualValue !== claimedValue
-  });
-  
-  // Játékos válaszolhat
-  document.getElementById('responseControls').style.display = 'block';
-  resultEl.textContent = `Odin bejelentette: ${formatValue(claimedValue)}. Elhiszed vagy kihívod?`;
 }
 
 // Játék indítása
