@@ -2,53 +2,41 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Hajó, Kapitány, Legénység</title>
+  <title>Pig Kockajáték</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    * { box-sizing: border-box; }
     body {
       font-family: 'Cinzel', serif;
       background-image: url('images/background.jpg.jpg');
       background-size: cover;
       background-position: center;
-      color: white;
+      background-repeat: no-repeat;
+      color: #ffffff;
       margin: 0;
       padding: 20px;
-      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     h1 {
+      font-weight: 700;
       font-size: 2.5rem;
-      margin-bottom: 10px;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 10px 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 15px rgba(127, 0, 255, 0.7);
+      text-align: center;
+    }
+    #turnInfo, #result, #status {
       background-color: rgba(0, 0, 0, 0.7);
-      padding: 10px;
-      border-radius: 10px;
-      display: inline-block;
-    }
-    #playerArea, #botArea, #result, #status, #scoreBoard {
-      margin-top: 20px;
-      font-size: 1.2rem;
-      background-color: rgba(0,0,0,0.6);
-      padding: 10px;
-      border-radius: 8px;
-      display: inline-block;
-      min-width: 300px;
-    }
-    .dice {
-      font-size: 2.5rem;
-      margin: 5px;
-      display: inline-block;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .dice.kept {
-      color: #7fff7f;
-      transform: translateY(-10px);
-    }
-    .dice.disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    #controls {
-      margin-top: 20px;
+      padding: 8px 15px;
+      border-radius: 5px;
+      margin: 10px auto;
+      box-shadow: 0 0 10px rgba(127, 0, 255, 0.4);
+      text-align: center;
     }
     button {
       background-color: #7f00ff;
@@ -60,453 +48,327 @@
       cursor: pointer;
       box-shadow: 0 0 10px #7f00ff;
       transition: transform 0.2s, box-shadow 0.3s;
-      margin: 10px;
     }
     button:hover {
       transform: scale(1.1);
       box-shadow: 0 0 15px #a94bff;
     }
-    #resetContainer {
-      display: none;
+    .dice-container {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    .dice {
+      background-color: rgba(0, 0, 0, 0.8);
+      border: 2px solid #7f00ff;
+      padding: 20px;
+      width: 140px;
+      height: 140px;
+      color: #fff;
+      box-shadow: 0 0 10px rgba(127, 0, 255, 0.3);
+      border-radius: 15px;
+      text-align: center;
+      font-size: 4em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .dice.rolling {
+      animation: roll 0.5s infinite;
+    }
+    @keyframes roll {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(-10deg); }
+      50% { transform: rotate(0deg); }
+      75% { transform: rotate(10deg); }
+      100% { transform: rotate(0deg); }
+    }
+    #gameBoard {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 800px;
       margin-top: 20px;
     }
-    #rollsLeft {
-      font-weight: bold;
-      color: #ffcc00;
-    }
-    .ship-icon, .captain-icon, .crew-icon {
-      display: inline-block;
-      margin: 0 5px;
-    }
-    .ship-icon {
-      color: #3498db;
-    }
-    .captain-icon {
-      color: #e74c3c;
-    }
-    .crew-icon {
-      color: #2ecc71;
-    }
-    .cargo {
-      color: #f1c40f;
-    }
-    .player-title {
-      margin-bottom: 10px;
-      font-size: 1.3rem;
-      text-decoration: underline;
-    }
-    #diceContainer {
-      min-height: 80px;
-    }
-    #scoreBoard {
+    .player-area {
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 10px;
+      padding: 15px;
+      width: 48%;
+      box-shadow: 0 0 10px rgba(127, 0, 255, 0.4);
       display: flex;
-      justify-content: space-around;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
+      flex-direction: column;
+      align-items: center;
     }
-    .score-column {
-      text-align: center;
+    .player-area.active {
+      border: 2px solid #7f00ff;
+      box-shadow: 0 0 15px rgba(127, 0, 255, 0.7);
     }
-    #turnStatus {
-      margin-bottom: 10px;
+    .score {
+      font-size: 2rem;
+      margin: 10px 0;
+    }
+    .round-score {
+      font-size: 1.5rem;
+      margin: 10px 0;
+      color: #a94bff;
+    }
+    #controls {
+      margin-top: 30px;
+      display: flex;
+      gap: 20px;
+    }
+    #resetContainer {
+      margin-top: 20px;
+      display: none;
+    }
+    .winner {
+      color: #7fff7f;
       font-weight: bold;
+      text-shadow: 1px 1px 4px black;
+    }
+    /* Reszponzív stílusok */
+    @media (max-width: 768px) {
+      #gameBoard {
+        flex-direction: column;
+        align-items: center;
+      }
+      .player-area {
+        width: 100%;
+        margin-bottom: 20px;
+      }
     }
   </style>
+  <!-- Font Awesome ikonokhoz -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-<h1>Hajó, Kapitány, Legénység</h1>
+<h1>Pig Kockajáték</h1>
 
-<div id="scoreBoard">
-  <div class="score-column">
-    <h3>Játékos</h3>
-    <div id="playerScore">0</div>
-  </div>
-  <div class="score-column">
-    <h3>Bot</h3>
-    <div id="botScore">0</div>
+<p id="turnInfo">Játékos 1 köre</p>
+
+<div class="dice-container">
+  <div class="dice" id="dice">
+    <i class="fas fa-dice-six"></i>
   </div>
 </div>
 
-<div id="status">
-  <div id="turnStatus">Most a játékos következik!</div>
-  <div>Hátralévő dobások: <span id="rollsLeft">3</span></div>
-</div>
-
-<div id="playerArea">
-  <div class="player-title">Játékos kockái</div>
-  <div>
-    <span class="ship-icon">🚢 Hajó (6):</span> <span id="playerShip">❌</span>
-    <span class="captain-icon">👨‍✈️ Kapitány (5):</span> <span id="playerCaptain">❌</span>
-    <span class="crew-icon">👷 Legénység (4):</span> <span id="playerCrew">❌</span>
+<div id="gameBoard">
+  <div class="player-area active" id="player1Area">
+    <h2>Játékos 1</h2>
+    <div class="score">Összpont: <span id="player1Score">0</span></div>
+    <div class="round-score">Körbeli pont: <span id="player1Round">0</span></div>
   </div>
-  <div id="diceContainer"></div>
+  
+  <div class="player-area" id="player2Area">
+    <h2>Játékos 2 (Bot)</h2>
+    <div class="score">Összpont: <span id="player2Score">0</span></div>
+    <div class="round-score">Körbeli pont: <span id="player2Round">0</span></div>
+  </div>
 </div>
 
 <div id="controls">
   <button id="rollButton" onclick="rollDice()">Dobás</button>
-  <button id="endTurnButton" onclick="endTurn()" disabled>Kör befejezése</button>
+  <button id="holdButton" onclick="holdPoints()">Megtartás</button>
 </div>
 
-<div id="botArea">
-  <div class="player-title">Bot kockái</div>
-  <div>
-    <span class="ship-icon">🚢 Hajó (6):</span> <span id="botShip">❌</span>
-    <span class="captain-icon">👨‍✈️ Kapitány (5):</span> <span id="botCaptain">❌</span>
-    <span class="crew-icon">👷 Legénység (4):</span> <span id="botCrew">❌</span>
-  </div>
-  <div id="botDiceContainer"></div>
-</div>
-
-<div id="result"></div>
+<h2 id="result"></h2>
 
 <div id="resetContainer">
   <button onclick="startGame()">Új játék</button>
 </div>
 
 <script>
-// Játék állapot
-let playerScore = 0;
-let botScore = 0;
-let currentPlayer = 'player'; // 'player' vagy 'bot'
-let rollsLeft = 3;
-let gameOver = false;
-
-// Kockák állapota
-let playerDice = [];
-let playerKept = {
-  ship: false,   // 6-os
-  captain: false, // 5-ös
-  crew: false,    // 4-es
-  cargo: []       // A többi kocka
-};
-
-let botDice = [];
-let botKept = {
-  ship: false,
-  captain: false,
-  crew: false,
-  cargo: []
-};
+// Játék változói
+let player1Score = 0;
+let player2Score = 0;
+let currentRoundScore = 0;
+let activePlayer = 1; // 1: játékos, 2: bot
+let gameInProgress = true;
 
 // Játék indítása
 function startGame() {
-  playerScore = 0;
-  botScore = 0;
-  gameOver = false;
-  document.getElementById("playerScore").textContent = playerScore;
-  document.getElementById("botScore").textContent = botScore;
-  document.getElementById("resetContainer").style.display = "none";
+  player1Score = 0;
+  player2Score = 0;
+  currentRoundScore = 0;
+  activePlayer = 1;
+  gameInProgress = true;
+  
+  // UI elemek visszaállítása
+  document.getElementById("player1Score").textContent = "0";
+  document.getElementById("player2Score").textContent = "0";
+  document.getElementById("player1Round").textContent = "0";
+  document.getElementById("player2Round").textContent = "0";
   document.getElementById("result").textContent = "";
+  document.getElementById("resetContainer").style.display = "none";
+  document.getElementById("dice").innerHTML = '<i class="fas fa-dice-six"></i>';
+  document.getElementById("player1Area").classList.add("active");
+  document.getElementById("player2Area").classList.remove("active");
+  document.getElementById("turnInfo").textContent = "Játékos 1 köre";
   
-  startPlayerTurn();
-}
-
-// A játékos körének indítása
-function startPlayerTurn() {
-  currentPlayer = 'player';
-  rollsLeft = 3;
-  
-  // Kockák alaphelyzetbe állítása
-  playerDice = [];
-  playerKept = { ship: false, captain: false, crew: false, cargo: [] };
-  
-  // UI elemek frissítése
-  document.getElementById("rollsLeft").textContent = rollsLeft;
-  document.getElementById("diceContainer").innerHTML = "";
-  document.getElementById("playerShip").textContent = "❌";
-  document.getElementById("playerCaptain").textContent = "❌";
-  document.getElementById("playerCrew").textContent = "❌";
-  document.getElementById("turnStatus").textContent = "Most a játékos következik!";
-  
+  // Gombok újra aktiválása
   document.getElementById("rollButton").disabled = false;
-  document.getElementById("endTurnButton").disabled = true;
+  document.getElementById("holdButton").disabled = false;
 }
 
-// A bot körének indítása
-function startBotTurn() {
-  currentPlayer = 'bot';
-  rollsLeft = 3;
-  
-  // Kockák alaphelyzetbe állítása
-  botDice = [];
-  botKept = { ship: false, captain: false, crew: false, cargo: [] };
-  
-  // UI elemek frissítése
-  document.getElementById("rollsLeft").textContent = rollsLeft;
-  document.getElementById("botDiceContainer").innerHTML = "";
-  document.getElementById("botShip").textContent = "❌";
-  document.getElementById("botCaptain").textContent = "❌";
-  document.getElementById("botCrew").textContent = "❌";
-  document.getElementById("turnStatus").textContent = "Most a bot következik!";
-  
-  document.getElementById("rollButton").disabled = true;
-  document.getElementById("endTurnButton").disabled = true;
-  
-  // Bot automatikusan dob
-  setTimeout(botRoll, 1000);
-}
-
-// Dobás kockákkal (játékos)
+// Kockadobás
 function rollDice() {
-  if (rollsLeft <= 0 || gameOver) return;
+  if (!gameInProgress) return;
   
-  rollsLeft--;
-  document.getElementById("rollsLeft").textContent = rollsLeft;
+  // Animáció
+  const diceElement = document.getElementById("dice");
+  diceElement.classList.add("rolling");
   
-  // Új dobás a nem megtartott kockákkal
-  let keptCount = 0;
-  if (playerKept.ship) keptCount++;
-  if (playerKept.captain) keptCount++;
-  if (playerKept.crew) keptCount++;
-  keptCount += playerKept.cargo.length;
+  // Gombok letiltása amíg gurul a kocka
+  document.getElementById("rollButton").disabled = true;
+  document.getElementById("holdButton").disabled = true;
   
-  const diceToRoll = 5 - keptCount;
-  playerDice = [];
-  
-  for (let i = 0; i < diceToRoll; i++) {
-    playerDice.push(Math.floor(Math.random() * 6) + 1);
-  }
-  
-  displayPlayerDice();
-  checkForSCC('player');
-  
-  // Ha nincs több dobás, vagy megvan minden szükséges kocka
-  if (rollsLeft <= 0 || (playerKept.ship && playerKept.captain && playerKept.crew)) {
-    document.getElementById("rollButton").disabled = true;
-    document.getElementById("endTurnButton").disabled = false;
-  }
-}
-
-// Bot dobása
-function botRoll() {
-  if (rollsLeft <= 0 || gameOver) return;
-  
-  rollsLeft--;
-  document.getElementById("rollsLeft").textContent = rollsLeft;
-  
-  // Új dobás a nem megtartott kockákkal
-  let keptCount = 0;
-  if (botKept.ship) keptCount++;
-  if (botKept.captain) keptCount++;
-  if (botKept.crew) keptCount++;
-  keptCount += botKept.cargo.length;
-  
-  const diceToRoll = 5 - keptCount;
-  botDice = [];
-  
-  for (let i = 0; i < diceToRoll; i++) {
-    botDice.push(Math.floor(Math.random() * 6) + 1);
-  }
-  
-  displayBotDice();
-  checkForSCC('bot');
-  
-  // Következő lépés automatikusan
-  if (rollsLeft > 0 && !(botKept.ship && botKept.captain && botKept.crew)) {
-    setTimeout(botRoll, 1500);
-  } else {
-    setTimeout(endTurn, 1500);
-  }
-}
-
-// Kockák megjelenítése (játékos)
-function displayPlayerDice() {
-  const container = document.getElementById("diceContainer");
-  container.innerHTML = "";
-  
-  // Megtartott kockák
-  if (playerKept.ship) {
-    container.innerHTML += `<span class="dice kept ship-icon">🎲6</span>`;
-  }
-  if (playerKept.captain) {
-    container.innerHTML += `<span class="dice kept captain-icon">🎲5</span>`;
-  }
-  if (playerKept.crew) {
-    container.innerHTML += `<span class="dice kept crew-icon">🎲4</span>`;
-  }
-  playerKept.cargo.forEach(value => {
-    container.innerHTML += `<span class="dice kept cargo">🎲${value}</span>`;
-  });
-  
-  // Kidobott, még nem megtartott kockák
-  playerDice.forEach((value, index) => {
-    const disabled = (value === 6 && !playerKept.ship) || 
-                   (value === 5 && playerKept.ship && !playerKept.captain) || 
-                   (value === 4 && playerKept.ship && playerKept.captain && !playerKept.crew);
+  // Késleltetés a dobás eredményének megjelenítéséhez
+  setTimeout(() => {
+    // Kockadobás eredménye (1-6)
+    const roll = Math.floor(Math.random() * 6) + 1;
     
-    const className = `dice ${disabled ? '' : 'disabled'}`;
-    container.innerHTML += `<span class="${className}" onclick="keepDice(${index})">${'🎲'+value}</span>`;
-  });
+    // Animáció leállítása
+    diceElement.classList.remove("rolling");
+    
+    // Dobás megjelenítése
+    diceElement.innerHTML = `<i class="fas fa-dice-${getNumberWord(roll)}"></i>`;
+    
+    // Eredmény kezelése
+    if (roll === 1) {
+      // Ha 1-est dob, körbeli pontok elvesznek
+      currentRoundScore = 0;
+      document.getElementById(`player${activePlayer}Round`).textContent = "0";
+      document.getElementById("result").textContent = `${activePlayer === 1 ? "Játékos 1" : "Bot"} 1-est dobott! Elveszti a körbeli pontjait.`;
+      
+      // Játékos váltás
+      setTimeout(() => {
+        switchPlayer();
+      }, 1500);
+    } else {
+      // Ha nem 1-est dob, pontok hozzáadása a körhöz
+      currentRoundScore += roll;
+      document.getElementById(`player${activePlayer}Round`).textContent = currentRoundScore;
+      document.getElementById("result").textContent = `${activePlayer === 1 ? "Játékos 1" : "Bot"} ${roll}-t dobott.`;
+      
+      // Ha a bot van soron, bot stratégia
+      if (activePlayer === 2) {
+        setTimeout(() => {
+          botStrategy();
+        }, 1500);
+      } else {
+        // Játékos gombok újra aktiválása
+        document.getElementById("rollButton").disabled = false;
+        document.getElementById("holdButton").disabled = false;
+      }
+    }
+  }, 800);
 }
 
-// Kockák megjelenítése (bot)
-function displayBotDice() {
-  const container = document.getElementById("botDiceContainer");
-  container.innerHTML = "";
-  
-  // Megtartott kockák
-  if (botKept.ship) {
-    container.innerHTML += `<span class="dice kept ship-icon">🎲6</span>`;
-  }
-  if (botKept.captain) {
-    container.innerHTML += `<span class="dice kept captain-icon">🎲5</span>`;
-  }
-  if (botKept.crew) {
-    container.innerHTML += `<span class="dice kept crew-icon">🎲4</span>`;
-  }
-  botKept.cargo.forEach(value => {
-    container.innerHTML += `<span class="dice kept cargo">🎲${value}</span>`;
-  });
-  
-  // Kidobott kockák
-  botDice.forEach(value => {
-    container.innerHTML += `<span class="dice">🎲${value}</span>`;
-  });
-}
-
-// Kocka megtartása (játékos)
-function keepDice(index) {
-  if (rollsLeft <= 0 || gameOver) return;
-  
-  const value = playerDice[index];
-  
-  // 6-ost mindig meg lehet tartani (hajó)
-  if (value === 6 && !playerKept.ship) {
-    playerKept.ship = true;
-    document.getElementById("playerShip").textContent = "✅";
-    playerDice.splice(index, 1);
-  }
-  // 5-öst csak akkor, ha már van hajó
-  else if (value === 5 && playerKept.ship && !playerKept.captain) {
-    playerKept.captain = true;
-    document.getElementById("playerCaptain").textContent = "✅";
-    playerDice.splice(index, 1);
-  }
-  // 4-est csak akkor, ha már van hajó és kapitány
-  else if (value === 4 && playerKept.ship && playerKept.captain && !playerKept.crew) {
-    playerKept.crew = true;
-    document.getElementById("playerCrew").textContent = "✅";
-    playerDice.splice(index, 1);
-  }
-  // Ha már megvan a hajó, kapitány és legénység, a többi kocka a rakomány
-  else if (playerKept.ship && playerKept.captain && playerKept.crew) {
-    playerKept.cargo.push(value);
-    playerDice.splice(index, 1);
-  }
-  
-  displayPlayerDice();
-  
-  // Ha megvan minden szükséges kocka
-  if (playerKept.ship && playerKept.captain && playerKept.crew && playerKept.cargo.length + playerDice.length === 2) {
-    document.getElementById("rollButton").disabled = true;
-    document.getElementById("endTurnButton").disabled = false;
-  }
-}
-
-// Ellenőrzi, hogy megvan-e a Ship, Captain, Crew (automatikusan megtartja)
-function checkForSCC(player) {
-  const dice = player === 'player' ? playerDice : botDice;
-  const kept = player === 'player' ? playerKept : botKept;
-  
-  // Ship (6) keresése
-  if (!kept.ship) {
-    const shipIndex = dice.findIndex(d => d === 6);
-    if (shipIndex !== -1) {
-      kept.ship = true;
-      dice.splice(shipIndex, 1);
-      document.getElementById(player + "Ship").textContent = "✅";
-    }
-  }
-  
-  // Captain (5) keresése (csak ha már van hajó)
-  if (kept.ship && !kept.captain) {
-    const captainIndex = dice.findIndex(d => d === 5);
-    if (captainIndex !== -1) {
-      kept.captain = true;
-      dice.splice(captainIndex, 1);
-      document.getElementById(player + "Captain").textContent = "✅";
-    }
-  }
-  
-  // Crew (4) keresése (csak ha már van hajó és kapitány)
-  if (kept.ship && kept.captain && !kept.crew) {
-    const crewIndex = dice.findIndex(d => d === 4);
-    if (crewIndex !== -1) {
-      kept.crew = true;
-      dice.splice(crewIndex, 1);
-      document.getElementById(player + "Crew").textContent = "✅";
-    }
-  }
-  
-  // Ha megvan a ship, captain, crew, automatikusan megtartjuk a rakományt is
-  if (kept.ship && kept.captain && kept.crew) {
-    kept.cargo = [...kept.cargo, ...dice];
-    dice.length = 0;
-  }
+// Játékos váltása
+function switchPlayer() {
+  currentRoundScore = 0;
+  activePlayer = activePlayer === 1 ? 2 : 1;
   
   // UI frissítése
-  if (player === 'player') {
-    displayPlayerDice();
+  document.getElementById("player1Round").textContent = "0";
+  document.getElementById("player2Round").textContent = "0";
+  document.getElementById("player1Area").classList.toggle("active");
+  document.getElementById("player2Area").classList.toggle("active");
+  document.getElementById("turnInfo").textContent = `${activePlayer === 1 ? "Játékos 1" : "Bot"} köre`;
+  
+  // Ha a bot kerül sorra
+  if (activePlayer === 2 && gameInProgress) {
+    // Bot gombok letiltása a játékosnak
+    document.getElementById("rollButton").disabled = true;
+    document.getElementById("holdButton").disabled = true;
+    
+    // Bot játéka késleltetett indítása
+    setTimeout(() => {
+      botTurn();
+    }, 1000);
   } else {
-    displayBotDice();
+    // Játékos gombok újra aktiválása
+    document.getElementById("rollButton").disabled = false;
+    document.getElementById("holdButton").disabled = false;
   }
 }
 
-// Kör befejezése
-function endTurn() {
-  if (gameOver) return;
+// Pontok megtartása (Hold gomb)
+function holdPoints() {
+  if (!gameInProgress || activePlayer !== 1) return;
   
-  let points = 0;
-  let resultText = "";
+  // Körbeli pontok hozzáadása a teljes pontszámhoz
+  player1Score += currentRoundScore;
+  document.getElementById("player1Score").textContent = player1Score;
+  document.getElementById("result").textContent = `Játékos 1 megtartotta a pontjait: +${currentRoundScore}`;
   
-  if (currentPlayer === 'player') {
-    // Játékos köre véget ér
-    if (playerKept.ship && playerKept.captain && playerKept.crew) {
-      // Sikeresen összegyűjtötte az SCC-t
-      points = playerKept.cargo.reduce((sum, val) => sum + val, 0);
-      playerScore += points;
-      resultText = `A játékos sikeresen összegyűjtötte a hajót, kapitányt és legénységet! Rakomány értéke: ${points} pont.`;
-    } else {
-      resultText = "A játékos nem tudta összegyűjteni a hajót, kapitányt és legénységet. 0 pont.";
-    }
-    
-    document.getElementById("playerScore").textContent = playerScore;
-    document.getElementById("result").textContent = resultText;
-    
-    // Bot köre következik
-    setTimeout(startBotTurn, 2000);
-  } else {
-    // Bot köre véget ér
-    if (botKept.ship && botKept.captain && botKept.crew) {
-      // Bot sikeresen összegyűjtötte az SCC-t
-      points = botKept.cargo.reduce((sum, val) => sum + val, 0);
-      botScore += points;
-      resultText = `A bot sikeresen összegyűjtötte a hajót, kapitányt és legénységet! Rakomány értéke: ${points} pont.`;
-    } else {
-      resultText = "A bot nem tudta összegyűjteni a hajót, kapitányt és legénységet. 0 pont.";
-    }
-    
-    document.getElementById("botScore").textContent = botScore;
-    document.getElementById("result").textContent = resultText;
-    
-    // Ellenőrizzük, vége-e a játéknak
-    if (playerScore >= 100 || botScore >= 100) {
-      gameOver = true;
-      const winner = playerScore >= 100 ? "Játékos" : "Bot";
-      document.getElementById("result").innerHTML += `<br><strong>${winner} nyerte a játékot!</strong>`;
-      document.getElementById("resetContainer").style.display = "block";
-    } else {
-      // Játékos köre következik
-      setTimeout(startPlayerTurn, 2000);
-    }
+  // Győzelem ellenőrzése
+  if (player1Score >= 100) {
+    endGame(1);
+    return;
   }
+  
+  // Játékos váltás
+  switchPlayer();
+}
+
+// Bot köre
+function botTurn() {
+  if (!gameInProgress) return;
+  rollDice();
+}
+
+// Bot stratégia
+function botStrategy() {
+  if (!gameInProgress) return;
+  
+  // Egyszerű bot stratégia: ha 20 pont felett van a körben, vagy ha nyerhet, tartsa meg
+  if (currentRoundScore >= 20 || (player2Score + currentRoundScore >= 100)) {
+    // Megtartás
+    player2Score += currentRoundScore;
+    document.getElementById("player2Score").textContent = player2Score;
+    document.getElementById("result").textContent = `Bot megtartotta a pontjait: +${currentRoundScore}`;
+    
+    // Győzelem ellenőrzése
+    if (player2Score >= 100) {
+      endGame(2);
+      return;
+    }
+    
+    // Játékos váltás
+    setTimeout(() => {
+      switchPlayer();
+    }, 1500);
+  } else {
+    // További dobás
+    setTimeout(() => {
+      botTurn();
+    }, 1000);
+  }
+}
+
+// Játék vége
+function endGame(winner) {
+  gameInProgress = false;
+  document.getElementById("result").innerHTML = `<span class="winner">${winner === 1 ? "Játékos 1" : "Bot"} nyerte a játékot!</span>`;
+  document.getElementById("resetContainer").style.display = "block";
+  document.getElementById("rollButton").disabled = true;
+  document.getElementById("holdButton").disabled = true;
+}
+
+// Segédfüggvény a kocka ikon számához (1-6)
+function getNumberWord(num) {
+  const words = ["one", "two", "three", "four", "five", "six"];
+  return words[num - 1];
 }
 
 // Játék indítása
 startGame();
 </script>
-
 </body>
 </html>
