@@ -680,4 +680,62 @@ function showResult(playerChallenged) {
       // Játékos blöffölt
       resultTitle = "Vesztettél egy életet!";
       resultDescription = `
-        Elkaptak blöf
+        Elkaptak blöffölés közben! Valójában ${formatValue(playerDiceValue)}-t dobtál,
+        de ${formatValue(announcedValue)}-t mondtál be. Vesztesz egy életet.
+      `;
+      playerLives--;
+    }
+  }
+  
+  document.getElementById('resultTitle').textContent = resultTitle;
+  document.getElementById('resultDescription').innerHTML = resultDescription;
+  
+  // Életek frissítése
+  updateLivesDisplay();
+  
+  // Ellenőrizzük, vége van-e a játéknak
+  if (playerLives <= 0 || botLives <= 0) {
+    endGame();
+  } else {
+    // Folytatás gomb megjelenítése
+    document.getElementById('botResponseButtons').innerHTML = `
+      <button id="continueButton" onclick="continueTurn()">Tovább</button>
+    `;
+    document.getElementById('botResponseSection').style.display = 'flex';
+    document.getElementById('botThinking').style.display = 'none';
+    document.getElementById('botResponseButtons').style.display = 'flex';
+  }
+}
+
+// Kör folytatása
+function continueTurn() {
+  lastAnnouncedValue = null;
+  document.getElementById('botResponseSection').style.display = 'none';
+  
+  // A kezdő játékos váltakozik
+  currentPlayer = (currentPlayer === 'player') ? 'bot' : 'player';
+  
+  prepareNextTurn();
+}
+
+// Játék vége
+function endGame() {
+  gameOver = true;
+  
+  let finalMessage = "";
+  if (playerLives <= 0) {
+    finalMessage = `<p class="lose-text">Vesztettél! Elfogytak az életeid.</p>`;
+  } else {
+    finalMessage = `<p class="win-text">Gratulálunk! Nyertél! A bot kifogyott az életekből.</p>`;
+  }
+  
+  document.getElementById('resultDescription').innerHTML += finalMessage;
+  document.getElementById('resetContainer').style.display = 'block';
+  document.getElementById('botResponseSection').style.display = 'none';
+}
+
+// Kezdjük a játékot
+startGame();
+</script>
+</body>
+</html>
