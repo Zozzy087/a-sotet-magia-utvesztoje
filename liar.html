@@ -2,363 +2,130 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Árnykocka - A Lélekpróba</title>
+  <title>Árnykocka – A Lélekpróba</title>
   <style>
     body {
       background-color: #111;
       color: #eee;
       font-family: 'Georgia', serif;
       text-align: center;
-      padding: 20px;
-      margin: 0;
+      padding: 2rem;
     }
-    
-    h1 {
-      color: #a00;
-      text-shadow: 0 0 10px rgba(170, 0, 0, 0.4);
-      margin-bottom: 5px;
-    }
-    
-    .subtitle {
-      color: #888;
-      margin-top: 0;
-      margin-bottom: 20px;
-      font-style: italic;
-    }
-    
     button {
-      background-color: #400;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 18px;
-      margin: 10px;
-      cursor: pointer;
-      border-radius: 3px;
-      transition: all 0.2s;
-    }
-    
-    button:hover {
-      background-color: #600;
-      transform: scale(1.05);
-    }
-    
-    #log {
-      margin: 20px auto;
-      background-color: #222;
-      padding: 10px;
-      border: 1px solid #555;
-      height: 200px;
-      overflow-y: auto;
-      max-width: 600px;
-      text-align: left;
-    }
-    
-    #dice-container {
-      margin: 20px auto;
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-    }
-    
-    .dice {
-      width: 60px;
-      height: 60px;
       background-color: #333;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 24px;
-      border-radius: 8px;
+      color: #eee;
       border: 2px solid #555;
+      padding: 0.5rem 1rem;
+      font-size: 1.1rem;
+      margin: 0.5rem;
+      cursor: pointer;
     }
-    
-    .big-dice {
-      background-color: #500;
-      width: 70px;
-      height: 70px;
-      font-size: 30px;
-    }
-    
-    .hidden {
-      background-color: #222;
-      color: #222;
-      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
-    }
-    
-    .score-board {
-      display: flex;
-      justify-content: space-around;
+    #log {
+      margin-top: 2rem;
+      background: #222;
+      padding: 1rem;
+      border: 1px solid #444;
       max-width: 600px;
-      margin: 20px auto;
-      background-color: #222;
-      padding: 10px;
-      border-radius: 5px;
-    }
-    
-    .player {
-      padding: 10px;
-      border-radius: 5px;
-    }
-    
-    .active {
-      background-color: rgba(170, 0, 0, 0.2);
-      box-shadow: 0 0 10px rgba(170, 0, 0, 0.2);
-    }
-    
-    .score {
-      font-size: 24px;
-      font-weight: bold;
-      margin: 5px 0;
-    }
-    
-    input[type="number"] {
-      background-color: #333;
-      color: white;
-      border: 1px solid #555;
-      padding: 8px;
-      font-size: 18px;
-      width: 60px;
-      border-radius: 3px;
-    }
-    
-    #choice, #bluffActions {
-      margin: 15px auto;
-      max-width: 600px;
-      background-color: #222;
-      padding: 10px;
-      border-radius: 5px;
-    }
-    
-    .game-info {
-      font-style: italic;
-      color: #888;
-      max-width: 600px;
-      margin: 10px auto;
-      text-align: left;
-      font-size: 14px;
-    }
-    
-    .winner {
-      color: #a00;
-      font-weight: bold;
+      margin-left: auto;
+      margin-right: auto;
     }
   </style>
 </head>
 <body>
+
   <h1>Árnykocka – A Lélekpróba</h1>
-  <p class="subtitle">A Hazugságok és Igazságok Játéka</p>
-  
-  <div class="score-board">
-    <div class="player" id="player1">
-      <h3>Játékos 1</h3>
-      <div class="score" id="player1Score">0</div>
-    </div>
-    <div class="player" id="player2">
-      <h3>Játékos 2</h3>
-      <div class="score" id="player2Score">0</div>
-    </div>
+  <p>Elsőként 5 lélekesszenciát gyűjtő játékos nyer!</p>
+
+  <p><strong>Játékos 1 pontjai:</strong> <span id="p1">0</span> | <strong>Játékos 2 pontjai:</strong> <span id="p2">0</span></p>
+
+  <button onclick="rollDice()">🎲 Dobás & Bemondás</button>
+  <button onclick="callBluff()">🧠 Blöfföt hívok</button>
+  <button onclick="accept()">✔️ Elfogadom</button>
+
+  <div id="log">
+    <p><em>A körök eseményei itt fognak megjelenni.</em></p>
   </div>
-  
-  <div id="dice-container">
-    <div class="dice hidden" id="dice1">?</div>
-    <div class="dice hidden" id="dice2">?</div>
-    <div class="dice big-dice hidden" id="dice3">?</div>
-  </div>
-  
-  <div id="instructions">
-    <p>Első játékos dob és bemond. Második játékos dönt: elfogadja vagy blöfföt hív.</p>
-  </div>
-  
-  <button id="rollButton" onclick="rollDice()">Dobok a kockákkal</button>
-  
-  <div id="result"></div>
-  
-  <div id="choice" style="display: none;">
-    <p>Bemondott érték: <input type="number" id="callValue" min="3" max="30"> <button onclick="submitCall()">Bemondás</button></p>
-  </div>
-  
-  <div id="bluffActions" style="display: none;">
-    <button onclick="acceptCall()">Elfogadom</button>
-    <button onclick="callBluff()">Blöfföt hívok</button>
-  </div>
-  
-  <div id="log"></div>
-  
-  <div class="game-info">
-    <p><strong>Játékszabályok:</strong> Két kicsi kocka (1-6) és egy nagy kocka (1-6, duplán számít). A játékos 1 dob és bemond egy értéket, a játékos 2 eldönti, hogy elfogadja vagy blöfföt hív. Az nyer, aki először 5 pontot szerez.</p>
-  </div>
-  
+
   <script>
-    let dice = [];
+    let currentPlayer = 1;
+    let p1Score = 0;
+    let p2Score = 0;
     let actualValue = 0;
-    let player1Score = 0;
-    let player2Score = 0;
-    let activePlayer = 1;
-    
-    updateScoreboard();
-    
+    let declaredValue = 0;
+    let bluffing = false;
+
+    function getRandomDie(sides = 6) {
+      return Math.floor(Math.random() * sides) + 1;
+    }
+
     function rollDice() {
-      // Aktiváljuk az 1. játékost
-      setActivePlayer(1);
-      
-      // Dobás animáció (egyszerű)
-      animateRoll();
-      
-      setTimeout(() => {
-        const d1 = Math.floor(Math.random() * 6) + 1; // small
-        const d2 = Math.floor(Math.random() * 6) + 1; // small
-        const big = Math.floor(Math.random() * 6) + 1; // big × 2
-        actualValue = d1 + d2 + big * 2;
-        dice = [d1, d2, big];
-        
-        document.getElementById('result').innerText = 'A kockák el vannak rejtve...';
-        document.getElementById('choice').style.display = 'block';
-        document.getElementById('bluffActions').style.display = 'none';
-        document.getElementById('rollButton').style.display = 'none';
-        
-        // Frissítjük a kockákat, de rejtve maradnak
-        document.querySelectorAll('.dice').forEach(el => {
-          el.classList.add('hidden');
-        });
-      }, 1000);
+      let small1 = getRandomDie();
+      let small2 = getRandomDie();
+      let big = getRandomDie(); // nagy kocka
+
+      actualValue = small1 + small2 + (big * 2);
+      bluffing = Math.random() < 0.5; // véletlenszerű blöff
+      declaredValue = bluffing ? actualValue + getRandomDie(4) : actualValue;
+
+      log(`🎲 <strong>Játékos ${currentPlayer}</strong> dobott és bemondta: <strong>${declaredValue}</strong>`);
     }
-    
-    function animateRoll() {
-      document.getElementById('result').innerText = 'Dobás...';
-      
-      // Kockák láthatóvá tétele az animációhoz
-      document.querySelectorAll('.dice').forEach(el => {
-        el.classList.remove('hidden');
-      });
-      
-      // Egyszerű animáció: véletlenszerű számok villogtatása
-      let count = 0;
-      const animInterval = setInterval(() => {
-        document.getElementById('dice1').innerText = Math.floor(Math.random() * 6) + 1;
-        document.getElementById('dice2').innerText = Math.floor(Math.random() * 6) + 1;
-        document.getElementById('dice3').innerText = Math.floor(Math.random() * 6) + 1;
-        
-        count++;
-        if (count > 10) {
-          clearInterval(animInterval);
-        }
-      }, 100);
-    }
-    
-    function submitCall() {
-      const call = parseInt(document.getElementById('callValue').value);
-      if (isNaN(call) || call < 3 || call > 30) {
-        alert('Érvénytelen érték! 3 és 30 között kell lennie.');
-        return;
-      }
-      
-      // Aktiváljuk a 2. játékost
-      setActivePlayer(2);
-      
-      document.getElementById('result').innerText = `Játékos 1 bemondása: ${call}`;
-      document.getElementById('choice').style.display = 'none';
-      document.getElementById('bluffActions').style.display = 'block';
-    }
-    
-    function acceptCall() {
-      const call = parseInt(document.getElementById('callValue').value);
-      revealDice();
-      
-      if (call === actualValue) {
-        player1Score++;
-        log(`Elfogadva. Igazat mondott! Játékos 1 kap 1 pontot.`);
-      } else {
-        player2Score++;
-        log(`Elfogadva. Hazudott! Játékos 2 kap 1 pontot.`);
-      }
-      
-      updateScoreboard();
-      checkWin();
-    }
-    
+
     function callBluff() {
-      const call = parseInt(document.getElementById('callValue').value);
-      revealDice();
-      
-      if (call === actualValue) {
-        player1Score++;
-        log(`Blöffhívás hibás! Játékos 1 igazat mondott. Játékos 1 kap pontot.`);
+      if (bluffing) {
+        log(`🧠 Blöff helyes! <strong>Játékos ${currentPlayer} veszít 1 pontot.</strong>`);
+        if (currentPlayer === 1 && p1Score > 0) p1Score--;
+        if (currentPlayer === 2 && p2Score > 0) p2Score--;
       } else {
-        player2Score++;
-        log(`Blöff leleplezve! Játékos 1 hazudott. Játékos 2 kap pontot.`);
+        log(`❌ Téves vád! <strong>Játékos ${other()} veszít 1 pontot.</strong>`);
+        if (currentPlayer === 1 && p2Score > 0) p2Score--;
+        if (currentPlayer === 2 && p1Score > 0) p1Score--;
       }
-      
-      updateScoreboard();
-      checkWin();
+      nextRound();
     }
-    
-    function revealDice() {
-      // Kockák felfedése
-      document.getElementById('dice1').innerText = dice[0];
-      document.getElementById('dice2').innerText = dice[1];
-      document.getElementById('dice3').innerText = dice[2];
-      
-      document.querySelectorAll('.dice').forEach(el => {
-        el.classList.remove('hidden');
-      });
+
+    function accept() {
+      if (declaredValue === actualValue) {
+        log(`✔️ Igazat mondott! <strong>Játékos ${currentPlayer} kap 1 pontot.</strong>`);
+        if (currentPlayer === 1) p1Score++;
+        else p2Score++;
+      } else {
+        log(`⚠️ Kiderült a hazugság! <strong>Játékos ${other()} kap 1 pontot.</strong>`);
+        if (currentPlayer === 1) p2Score++;
+        else p1Score++;
+      }
+      nextRound();
     }
-    
+
+    function nextRound() {
+      document.getElementById("p1").textContent = p1Score;
+      document.getElementById("p2").textContent = p2Score;
+
+      if (p1Score >= 5) {
+        log(`<strong>👑 Játékos 1 megidézte a démont! Nyer!</strong>`);
+        disableButtons();
+      } else if (p2Score >= 5) {
+        log(`<strong>👑 Játékos 2 megidézte a démont! Nyer!</strong>`);
+        disableButtons();
+      } else {
+        currentPlayer = currentPlayer === 1 ? 2 : 1;
+        log(`<em>➡️ Most Játékos ${currentPlayer} következik.</em>`);
+      }
+    }
+
+    function other() {
+      return currentPlayer === 1 ? 2 : 1;
+    }
+
     function log(text) {
-      const div = document.getElementById('log');
-      div.innerHTML += `<p>${text} <br><small>[Valódi érték: ${actualValue}, dobások: ${dice[0]} + ${dice[1]} + (${dice[2]}×2)]</small></p>`;
-      div.scrollTop = div.scrollHeight;
-      document.getElementById('bluffActions').style.display = 'none';
-      document.getElementById('rollButton').style.display = 'block';
+      const logBox = document.getElementById("log");
+      const entry = document.createElement("p");
+      entry.innerHTML = text;
+      logBox.appendChild(entry);
+      logBox.scrollTop = logBox.scrollHeight;
     }
-    
-    function checkWin() {
-      if (player1Score >= 5) {
-        document.getElementById('result').innerHTML = '<span class="winner">Játékos 1 győzött!</span>';
-        endGame("Játékos 1 győzött!");
-      }
-      else if (player2Score >= 5) {
-        document.getElementById('result').innerHTML = '<span class="winner">Játékos 2 győzött!</span>';
-        endGame("Játékos 2 győzött!");
-      }
-    }
-    
-    function endGame(message) {
-      document.getElementById('rollButton').innerText = 'Új játék';
-      document.getElementById('rollButton').onclick = resetGame;
-      log(message);
-    }
-    
-    function resetGame() {
-      player1Score = 0;
-      player2Score = 0;
-      updateScoreboard();
-      document.getElementById('result').innerText = '';
-      document.getElementById('log').innerHTML = '';
-      document.getElementById('rollButton').innerText = 'Dobok a kockákkal';
-      document.getElementById('rollButton').onclick = rollDice;
-      
-      // Kockák elrejtése
-      document.querySelectorAll('.dice').forEach(el => {
-        el.classList.add('hidden');
-        el.innerText = '?';
-      });
-    }
-    
-    function updateScoreboard() {
-      document.getElementById('player1Score').innerText = player1Score;
-      document.getElementById('player2Score').innerText = player2Score;
-    }
-    
-    function setActivePlayer(player) {
-      activePlayer = player;
-      if (player === 1) {
-        document.getElementById('player1').classList.add('active');
-        document.getElementById('player2').classList.remove('active');
-      } else {
-        document.getElementById('player1').classList.remove('active');
-        document.getElementById('player2').classList.add('active');
-      }
+
+    function disableButtons() {
+      document.querySelectorAll("button").forEach(btn => btn.disabled = true);
     }
   </script>
 </body>
