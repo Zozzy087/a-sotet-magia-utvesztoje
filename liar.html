@@ -5,128 +5,86 @@
   <title>Árnykocka – A Lélekpróba</title>
   <style>
     body {
-      background-color: #111;
-      color: #eee;
-      font-family: 'Georgia', serif;
+      font-family: 'Cinzel', serif;
+      background: #0e0e0e;
+      color: #f2f2f2;
       text-align: center;
-      padding: 2rem;
+      padding: 20px;
     }
-    button {
-      background-color: #333;
-      color: #eee;
-      border: 2px solid #555;
-      padding: 0.5rem 1rem;
-      font-size: 1.1rem;
-      margin: 0.5rem;
-      cursor: pointer;
+    h1 {
+      color: #bb00ff;
+      text-shadow: 0 0 10px #bb00ff;
     }
-    #log {
-      margin-top: 2rem;
-      background: #222;
-      padding: 1rem;
+    .kockak {
+      font-size: 2rem;
+      margin: 10px 0;
+    }
+    .log {
+      margin-top: 20px;
+      white-space: pre-line;
+      background: rgba(0,0,0,0.4);
       border: 1px solid #444;
+      padding: 10px;
+      border-radius: 8px;
       max-width: 600px;
       margin-left: auto;
       margin-right: auto;
+    }
+    button {
+      background: #7f00ff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 1.1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #7f00ff;
+    }
+    button:hover {
+      background: #a94bff;
     }
   </style>
 </head>
 <body>
 
-  <h1>Árnykocka – A Lélekpróba</h1>
-  <p>Elsőként 5 lélekesszenciát gyűjtő játékos nyer!</p>
+<h1>Árnykocka – A Lélekpróba</h1>
 
-  <p><strong>Játékos 1 pontjai:</strong> <span id="p1">0</span> | <strong>Játékos 2 pontjai:</strong> <span id="p2">0</span></p>
+<div id="status"></div>
+<div class="kockak" id="playerRolls"></div>
+<div class="kockak" id="opponentRolls"></div>
 
-  <button onclick="rollDice()">🎲 Dobás & Bemondás</button>
-  <button onclick="callBluff()">🧠 Blöfföt hívok</button>
-  <button onclick="accept()">✔️ Elfogadom</button>
+<div id="actions">
+  <button onclick="playerRoll()">🎲 Dobás</button>
+</div>
 
-  <div id="log">
-    <p><em>A körök eseményei itt fognak megjelenni.</em></p>
-  </div>
+<div id="log" class="log"></div>
 
-  <script>
-    let currentPlayer = 1;
-    let p1Score = 0;
-    let p2Score = 0;
-    let actualValue = 0;
-    let declaredValue = 0;
-    let bluffing = false;
+<script>
+let playerEssence = 0;
+let opponentEssence = 0;
 
-    function getRandomDie(sides = 6) {
-      return Math.floor(Math.random() * sides) + 1;
-    }
+let playerDice = [];
+let opponentDice = [];
+let roundPhase = 0; // 0 = dobás, 1 = bemondás, 2 = döntés, 3 = eredmény
+let claimValue = 0;
 
-    function rollDice() {
-      let small1 = getRandomDie();
-      let small2 = getRandomDie();
-      let big = getRandomDie(); // nagy kocka
+function randomDice(max = 6) {
+  return Math.floor(Math.random() * max) + 1;
+}
 
-      actualValue = small1 + small2 + (big * 2);
-      bluffing = Math.random() < 0.5; // véletlenszerű blöff
-      declaredValue = bluffing ? actualValue + getRandomDie(4) : actualValue;
+function playerRoll() {
+  playerDice = [randomDice(8), randomDice(), randomDice()];
+  opponentDice = [randomDice(8), randomDice(), randomDice()];
+  roundPhase = 1;
+  document.getElementById("playerRolls").textContent = `🎲 Saját dobásaid: [${playerDice.join(', ')}] (Nagy: ${playerDice[0]})`;
+  document.getElementById("opponentRolls").textContent = "";
+  document.getElementById("log").textContent = "";
+  showClaimOptions();
+  updateStatus();
+}
 
-      log(`🎲 <strong>Játékos ${currentPlayer}</strong> dobott és bemondta: <strong>${declaredValue}</strong>`);
-    }
-
-    function callBluff() {
-      if (bluffing) {
-        log(`🧠 Blöff helyes! <strong>Játékos ${currentPlayer} veszít 1 pontot.</strong>`);
-        if (currentPlayer === 1 && p1Score > 0) p1Score--;
-        if (currentPlayer === 2 && p2Score > 0) p2Score--;
-      } else {
-        log(`❌ Téves vád! <strong>Játékos ${other()} veszít 1 pontot.</strong>`);
-        if (currentPlayer === 1 && p2Score > 0) p2Score--;
-        if (currentPlayer === 2 && p1Score > 0) p1Score--;
-      }
-      nextRound();
-    }
-
-    function accept() {
-      if (declaredValue === actualValue) {
-        log(`✔️ Igazat mondott! <strong>Játékos ${currentPlayer} kap 1 pontot.</strong>`);
-        if (currentPlayer === 1) p1Score++;
-        else p2Score++;
-      } else {
-        log(`⚠️ Kiderült a hazugság! <strong>Játékos ${other()} kap 1 pontot.</strong>`);
-        if (currentPlayer === 1) p2Score++;
-        else p1Score++;
-      }
-      nextRound();
-    }
-
-    function nextRound() {
-      document.getElementById("p1").textContent = p1Score;
-      document.getElementById("p2").textContent = p2Score;
-
-      if (p1Score >= 5) {
-        log(`<strong>👑 Játékos 1 megidézte a démont! Nyer!</strong>`);
-        disableButtons();
-      } else if (p2Score >= 5) {
-        log(`<strong>👑 Játékos 2 megidézte a démont! Nyer!</strong>`);
-        disableButtons();
-      } else {
-        currentPlayer = currentPlayer === 1 ? 2 : 1;
-        log(`<em>➡️ Most Játékos ${currentPlayer} következik.</em>`);
-      }
-    }
-
-    function other() {
-      return currentPlayer === 1 ? 2 : 1;
-    }
-
-    function log(text) {
-      const logBox = document.getElementById("log");
-      const entry = document.createElement("p");
-      entry.innerHTML = text;
-      logBox.appendChild(entry);
-      logBox.scrollTop = logBox.scrollHeight;
-    }
-
-    function disableButtons() {
-      document.querySelectorAll("button").forEach(btn => btn.disabled = true);
-    }
-  </script>
-</body>
-</html>
+function showClaimOptions() {
+  const max = playerDice[0]*2 + playerDice[1] + playerDice[2];
+  const min = 4; // legkisebb reális minimum
+  let html = "<p
