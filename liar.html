@@ -2,7 +2,7 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Kalózkocka</title>
+  <title>Perudo - Blöff</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
@@ -30,7 +30,7 @@
       box-shadow: 0 0 15px rgba(127, 0, 255, 0.7);
       text-align: center;
     }
-    #turnInfo, #result, #score {
+    #turnInfo, #result, #score, #bidInfo, #lastBid {
       background-color: rgba(0, 0, 0, 0.7);
       padding: 8px 15px;
       border-radius: 5px;
@@ -39,6 +39,30 @@
       text-align: center;
       width: 100%;
       max-width: 500px;
+    }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin: 15px auto;
+      width: 100%;
+      max-width: 500px;
+    }
+    .bid-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      width: 100%;
+    }
+    .dice-count, .dice-value {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 5px 0;
+      width: 100%;
     }
     button {
       background-color: #7f00ff;
@@ -55,110 +79,73 @@
       transform: scale(1.1);
       box-shadow: 0 0 15px #a94bff;
     }
-    button:disabled {
+    button.disabled {
       opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
+      pointer-events: none;
+    }
+    .count-btn, .value-btn {
+      width: 50px;
+      padding: 5px;
+      font-size: 1.2rem;
+    }
+    .action-btn {
+      width: 45%;
+      margin: 5px;
     }
     .dice-area {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 500px;
+      margin: 20px auto;
+    }
+    .player-dice, .bot-dice {
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 10px;
+      padding: 15px;
+      width: 48%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .dice-container {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
-      margin: 20px auto;
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(127, 0, 255, 0.5);
-      width: 100%;
-      max-width: 500px;
-    }
-    .dice {
-      width: 60px;
-      height: 60px;
-      background-color: #f1f1f1;
-      color: #333;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 10px;
-      font-size: 2rem;
-      box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-    }
-    .hidden-dice {
-      background-color: #7f00ff;
-      color: #7f00ff; /* Elrejtjük a számot */
-    }
-    .show-all .hidden-dice {
-      background-color: #f1f1f1;
-      color: #333;
-    }
-    .bid-controls {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin: 15px auto;
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(127, 0, 255, 0.5);
-      width: 100%;
-      max-width: 500px;
-    }
-    .bid-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-    }
-    .bid-label {
-      min-width: 100px;
-      text-align: left;
-    }
-    .quantity-controls, .value-controls {
-      display: flex;
-      gap: 5px;
-      align-items: center;
-    }
-    .quantity-display, .value-display {
-      background-color: rgba(0, 0, 0, 0.5);
-      padding: 5px 15px;
-      border-radius: 5px;
-      min-width: 60px;
-      text-align: center;
-    }
-    .action-buttons {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
       margin-top: 10px;
+    }
+    .die {
+      width: 50px;
+      height: 50px;
+      background-color: white;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: black;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+    .die.hidden {
+      background-color: #7f00ff;
+      color: transparent;
+    }
+    .reveal {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .winner {
+      color: #7fff7f;
+      font-weight: bold;
+      text-shadow: 1px 1px 4px black;
     }
     #resetContainer {
       margin-top: 20px;
       display: none;
-    }
-    #result:empty {
-      display: none;
-    }
-    .history {
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 10px 15px;
-      border-radius: 5px;
-      margin: 10px auto;
-      box-shadow: 0 0 10px rgba(127, 0, 255, 0.4);
-      width: 100%;
-      max-width: 500px;
-      max-height: 150px;
-      overflow-y: auto;
-    }
-    .history-item {
-      margin: 5px 0;
-      font-size: 0.9rem;
-    }
-    .player-name {
-      font-weight: bold;
-      color: #a94bff;
     }
     
     /* Reszponzív stílusok */
@@ -167,17 +154,15 @@
         font-size: 1.8rem;
         padding: 8px 15px;
       }
-      .dice {
+      .die {
         width: 40px;
         height: 40px;
-        font-size: 1.5rem;
+        font-size: 1.2rem;
       }
-      .bid-row {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .action-buttons {
-        flex-direction: column;
+      .count-btn, .value-btn {
+        width: 40px;
+        padding: 5px;
+        font-size: 1rem;
       }
     }
   </style>
@@ -186,48 +171,45 @@
 </head>
 <body>
 
-<h1>Kalózkocka (Perudo)</h1>
+<h1>Perudo - Blöff</h1>
 
-<p id="turnInfo">A játék kezdődik!</p>
-<h3 id="score">Kockák: Játékos - 5 | AI - 5</h3>
+<p id="turnInfo">Dobj a kockákkal a játék kezdéséhez!</p>
+<p id="lastBid"></p>
 
-<div class="dice-area" id="player-dice">
-  <h3>A Te kockáid</h3>
-  <!-- Itt jelennek meg a játékos kockái -->
+<div class="dice-area">
+  <div class="player-dice">
+    <h3>Játékos kockái: <span id="playerDiceCount">5</span></h3>
+    <div class="dice-container" id="playerDice"></div>
+  </div>
+  <div class="bot-dice">
+    <h3>Ellenfél kockái: <span id="botDiceCount">5</span></h3>
+    <div class="dice-container" id="botDice"></div>
+  </div>
 </div>
 
-<div class="dice-area" id="ai-dice">
-  <h3>Ellenfél kockái</h3>
-  <!-- Itt jelennek meg az AI kockái (rejtve) -->
-</div>
-
-<div class="bid-controls" id="bid-controls">
-  <div class="bid-row">
-    <span class="bid-label">Mennyiség:</span>
-    <div class="quantity-controls">
-      <button id="quantity-minus" onclick="adjustQuantity(-1)">-</button>
-      <span class="quantity-display" id="quantity-display">1</span>
-      <button id="quantity-plus" onclick="adjustQuantity(1)">+</button>
+<div class="controls" id="controls">
+  <div id="bidInfo">Fogadás: <span id="bidCount">0</span> darab <span id="bidValue">0</span>-ös</div>
+  
+  <div class="bid-controls">
+    <div class="dice-count">
+      <button class="count-btn" onclick="decreaseBidCount()">-</button>
+      <button class="count-btn" onclick="increaseBidCount()">+</button>
+    </div>
+    <div class="dice-value">
+      <button class="value-btn" onclick="decreaseBidValue()">-</button>
+      <button class="value-btn" onclick="increaseBidValue()">+</button>
     </div>
   </div>
-  <div class="bid-row">
-    <span class="bid-label">Érték:</span>
-    <div class="value-controls">
-      <button id="value-minus" onclick="adjustValue(-1)">-</button>
-      <span class="value-display" id="value-display">1</span>
-      <button id="value-plus" onclick="adjustValue(1)">+</button>
-    </div>
-  </div>
+  
   <div class="action-buttons">
-    <button id="bid-button" onclick="placeBid()">Licit</button>
-    <button id="dudo-button" onclick="callDudo()" disabled>Blöff!</button>
+    <button class="action-btn" id="bidButton" onclick="placeBid()">Fogadok</button>
+    <button class="action-btn" id="bluffButton" onclick="callBluff()">Blöff!</button>
   </div>
+  
+  <button id="rollButton" onclick="rollDice()">Dobás</button>
 </div>
 
-<div class="history" id="history">
-  <h3>Licitek</h3>
-  <!-- Itt jelennek meg a korábbi licitek -->
-</div>
+<div class="reveal" id="reveal"></div>
 
 <h2 id="result"></h2>
 
@@ -236,465 +218,438 @@
 </div>
 
 <script>
-// Játék alapállapota
-let playerDice = [];
-let aiDice = [];
-let currentPlayer = 'player'; // 'player' vagy 'ai'
-let lastBid = null;
-let gameInProgress = true;
-let currentQuantity = 1;
-let currentValue = 1;
-let playerDiceCount = 5;
-let aiDiceCount = 5;
-let totalDiceCount = 10;
+// Játék állapot
+let gameState = {
+  playerDice: [],
+  botDice: [],
+  currentBid: { count: 0, value: 0 },
+  lastBidder: null,
+  playerTurn: true,
+  gameStarted: false,
+  roundInProgress: false,
+  isLastRound: false
+};
+
+// Fogadás beállításai
+let bidSettings = {
+  count: 1,
+  value: 1
+};
 
 // Játék indítása
 function startGame() {
-  // Alapértékek beállítása
-  playerDice = [];
-  aiDice = [];
-  currentPlayer = 'player';
-  lastBid = null;
-  gameInProgress = true;
-  currentQuantity = 1;
-  currentValue = 1;
-  playerDiceCount = 5;
-  aiDiceCount = 5;
-  totalDiceCount = 10;
+  // Játékállapot alaphelyzetbe állítása
+  gameState = {
+    playerDice: [],
+    botDice: [],
+    currentBid: { count: 0, value: 0 },
+    lastBidder: null,
+    playerTurn: true,
+    gameStarted: false,
+    roundInProgress: false,
+    isLastRound: false
+  };
   
-  // UI elemek visszaállítása
+  // Kezdő fogadási értékek
+  bidSettings = {
+    count: 1,
+    value: 1
+  };
+  
+  // UI visszaállítása
+  document.getElementById("playerDiceCount").textContent = "5";
+  document.getElementById("botDiceCount").textContent = "5";
+  document.getElementById("bidCount").textContent = "0";
+  document.getElementById("bidValue").textContent = "0";
+  document.getElementById("lastBid").textContent = "";
   document.getElementById("result").textContent = "";
-  document.getElementById("turnInfo").textContent = "Te kezdesz! Tégy egy licitet.";
-  document.getElementById("score").textContent = `Kockák: Játékos - ${playerDiceCount} | AI - ${aiDiceCount}`;
-  document.getElementById("history").innerHTML = "<h3>Licitek</h3>";
+  document.getElementById("reveal").innerHTML = "";
   document.getElementById("resetContainer").style.display = "none";
-  document.getElementById("quantity-display").textContent = "1";
-  document.getElementById("value-display").textContent = "1";
+  document.getElementById("turnInfo").textContent = "Dobj a kockákkal a játék kezdéséhez!";
   
-  // Gombok beállítása
-  document.getElementById("bid-button").disabled = false;
-  document.getElementById("dudo-button").disabled = true;
+  // Gombok alaphelyzetbe
+  document.getElementById("rollButton").style.display = "block";
+  document.getElementById("bidButton").disabled = true;
+  document.getElementById("bluffButton").disabled = true;
   
-  // Kockák dobása
-  rollDice();
+  // Kockaterületek kiürítése
+  document.getElementById("playerDice").innerHTML = "";
+  document.getElementById("botDice").innerHTML = "";
   
-  // Kockák megjelenítése
-  renderDice();
-  
-  // Vezérlők beállítása
-  updateControls();
+  updateBidDisplay();
 }
 
-// Kockák dobása
+// Kockadobás
 function rollDice() {
-  playerDice = [];
-  aiDice = [];
+  if (gameState.roundInProgress) return;
   
-  // Játékos kockáinak dobása
-  for (let i = 0; i < playerDiceCount; i++) {
-    playerDice.push(Math.floor(Math.random() * 6) + 1);
+  // Játékos kockáinak létrehozása/újradobása
+  gameState.playerDice = [];
+  for (let i = 0; i < 5 - document.getElementById("playerDice").children.length; i++) {
+    gameState.playerDice.push(Math.floor(Math.random() * 6) + 1);
   }
   
-  // AI kockáinak dobása
-  for (let i = 0; i < aiDiceCount; i++) {
-    aiDice.push(Math.floor(Math.random() * 6) + 1);
+  // Bot kockáinak létrehozása/újradobása
+  gameState.botDice = [];
+  for (let i = 0; i < 5 - document.getElementById("botDice").children.length; i++) {
+    gameState.botDice.push(Math.floor(Math.random() * 6) + 1);
   }
+  
+  // Játék indítása, ha még nem kezdődött el
+  if (!gameState.gameStarted) {
+    gameState.gameStarted = true;
+    gameState.playerTurn = true;
+    document.getElementById("rollButton").style.display = "none";
+    document.getElementById("bidButton").disabled = false;
+    document.getElementById("bluffButton").disabled = true;
+    document.getElementById("turnInfo").textContent = "Te jössz! Tegyél egy fogadást.";
+  }
+  
+  renderDice();
+  updateBidDisplay();
 }
 
 // Kockák megjelenítése
 function renderDice() {
-  const playerDiceArea = document.getElementById("player-dice");
-  const aiDiceArea = document.getElementById("ai-dice");
+  const playerDiceContainer = document.getElementById("playerDice");
+  const botDiceContainer = document.getElementById("botDice");
   
   // Játékos kockái
-  let playerDiceHTML = "<h3>A Te kockáid</h3>";
-  playerDice.forEach(dice => {
-    playerDiceHTML += `<div class="dice">${getDiceIcon(dice)}</div>`;
+  playerDiceContainer.innerHTML = "";
+  gameState.playerDice.forEach(value => {
+    const die = document.createElement("div");
+    die.className = "die";
+    die.textContent = value;
+    playerDiceContainer.appendChild(die);
   });
-  playerDiceArea.innerHTML = playerDiceHTML;
   
-  // AI kockái (rejtve)
-  let aiDiceHTML = "<h3>Ellenfél kockái</h3>";
-  aiDice.forEach(dice => {
-    aiDiceHTML += `<div class="dice hidden-dice">${getDiceIcon(dice)}</div>`;
+  // Bot kockái - elrejtve
+  botDiceContainer.innerHTML = "";
+  gameState.botDice.forEach(() => {
+    const die = document.createElement("div");
+    die.className = "die hidden";
+    die.textContent = "?";
+    botDiceContainer.appendChild(die);
   });
-  aiDiceArea.innerHTML = aiDiceHTML;
+  
+  // Kockaszámok frissítése
+  document.getElementById("playerDiceCount").textContent = gameState.playerDice.length;
+  document.getElementById("botDiceCount").textContent = gameState.botDice.length;
 }
 
-// Kocka ikon lekérése
-function getDiceIcon(value) {
-  const icons = {
-    1: '<i class="fas fa-dice-one"></i>',
-    2: '<i class="fas fa-dice-two"></i>',
-    3: '<i class="fas fa-dice-three"></i>',
-    4: '<i class="fas fa-dice-four"></i>',
-    5: '<i class="fas fa-dice-five"></i>',
-    6: '<i class="fas fa-dice-six"></i>'
-  };
-  return icons[value];
+// Fogadás növelése/csökkentése
+function increaseBidCount() {
+  const totalDice = gameState.playerDice.length + gameState.botDice.length;
+  
+  if (bidSettings.count < totalDice) {
+    bidSettings.count++;
+    updateBidDisplay();
+  }
 }
 
-// Licit mennyiség állítása
-function adjustQuantity(change) {
-  const min = 1;
-  const max = totalDiceCount;
+function decreaseBidCount() {
+  // Nem lehet kevesebb mint az előző fogadás, vagy legalább 1
+  const minCount = (gameState.currentBid.value === bidSettings.value) ? 
+                   gameState.currentBid.count + 1 : 
+                   (gameState.currentBid.value < bidSettings.value) ? 1 : gameState.currentBid.count;
   
-  // Ha van előző licit, akkor annak függvényében állítjuk a minimum értéket
-  if (lastBid) {
-    if (currentValue > lastBid.value) {
-      // Ha nagyobb értéket választottunk, lehet kevesebb a mennyiség
-      currentQuantity = Math.max(min, Math.min(max, currentQuantity + change));
-    } else if (currentValue === lastBid.value) {
-      // Ha ugyanaz az érték, a mennyiségnek nagyobbnak kell lennie
-      currentQuantity = Math.max(lastBid.quantity + 1, Math.min(max, currentQuantity + change));
+  if (bidSettings.count > minCount) {
+    bidSettings.count--;
+    updateBidDisplay();
+  }
+}
+
+function increaseBidValue() {
+  if (bidSettings.value < 6) {
+    bidSettings.value++;
+    
+    // Ha a szám növekszik, a minimum kockaszám 1-re áll
+    if (gameState.currentBid.value < bidSettings.value) {
+      bidSettings.count = Math.max(1, bidSettings.count);
     } else {
-      // Ha kisebb az érték, akkor nem lehet érvényes licit
-      currentQuantity = Math.max(lastBid.quantity + 1, Math.min(max, currentQuantity + change));
-    }
-  } else {
-    currentQuantity = Math.max(min, Math.min(max, currentQuantity + change));
-  }
-  
-  document.getElementById("quantity-display").textContent = currentQuantity;
-  updateControls();
-}
-
-// Licit érték állítása
-function adjustValue(change) {
-  const min = 1;
-  const max = 6;
-  
-  currentValue = Math.max(min, Math.min(max, currentValue + change));
-  document.getElementById("value-display").textContent = currentValue;
-  updateControls();
-}
-
-// Vezérlők frissítése az aktuális játékállapot szerint
-function updateControls() {
-  const quantityMinus = document.getElementById("quantity-minus");
-  const quantityPlus = document.getElementById("quantity-plus");
-  const valueMinus = document.getElementById("value-minus");
-  const valuePlus = document.getElementById("value-plus");
-  const bidButton = document.getElementById("bid-button");
-  const dudoButton = document.getElementById("dudo-button");
-  
-  // Csak a játékos köre esetén aktívak a gombok
-  const isPlayerTurn = currentPlayer === 'player';
-  quantityMinus.disabled = !isPlayerTurn;
-  quantityPlus.disabled = !isPlayerTurn;
-  valueMinus.disabled = !isPlayerTurn;
-  valuePlus.disabled = !isPlayerTurn;
-  bidButton.disabled = !isPlayerTurn;
-  
-  // Dudo gomb csak akkor aktív, ha van előző licit
-  dudoButton.disabled = !isPlayerTurn || !lastBid;
-  
-  // Ellenőrizzük, hogy a licit érvényes-e
-  if (lastBid) {
-    const isValidBid = 
-      (currentValue > lastBid.value) || 
-      (currentValue === lastBid.value && currentQuantity > lastBid.quantity);
-    
-    bidButton.disabled = !isPlayerTurn || !isValidBid;
-  }
-  
-  // Min-max gombok letiltása, ha elértük a határokat
-  quantityMinus.disabled = !isPlayerTurn || currentQuantity <= 1;
-  quantityPlus.disabled = !isPlayerTurn || currentQuantity >= totalDiceCount;
-  valueMinus.disabled = !isPlayerTurn || currentValue <= 1;
-  valuePlus.disabled = !isPlayerTurn || currentValue >= 6;
-}
-
-// Licit leadása
-function placeBid() {
-  if (currentPlayer !== 'player') return;
-  
-  // Licit rögzítése
-  lastBid = {
-    player: 'player',
-    quantity: currentQuantity,
-    value: currentValue
-  };
-  
-  // Licit hozzáadása a történethez
-  addToHistory('player', currentQuantity, currentValue);
-  
-  // Játékos váltás
-  currentPlayer = 'ai';
-  document.getElementById("turnInfo").textContent = "AI gondolkodik...";
-  
-  // Vezérlők frissítése
-  updateControls();
-  
-  // AI körének szimulálása késleltetéssel
-  setTimeout(aiTurn, 1500);
-}
-
-// AI köre
-function aiTurn() {
-  if (currentPlayer !== 'ai') return;
-  
-  // AI döntés: licit vagy blöff
-  const aiDecision = makeAiDecision();
-  
-  if (aiDecision.action === 'bid') {
-    // AI licitál
-    lastBid = {
-      player: 'ai',
-      quantity: aiDecision.quantity,
-      value: aiDecision.value
-    };
-    
-    // Licit hozzáadása a történethez
-    addToHistory('ai', aiDecision.quantity, aiDecision.value);
-    
-    // Frissítjük az aktuális értékeket a játékos számára
-    currentQuantity = aiDecision.quantity;
-    currentValue = aiDecision.value;
-    document.getElementById("quantity-display").textContent = currentQuantity;
-    document.getElementById("value-display").textContent = currentValue;
-    
-    // Játékos váltás
-    currentPlayer = 'player';
-    document.getElementById("turnInfo").textContent = "Te következel! Licitálj vagy mondj blöfföt.";
-    
-  } else {
-    // AI blöfföt mond
-    callDudo('ai');
-    return;
-  }
-  
-  // Vezérlők frissítése
-  updateControls();
-}
-
-// AI döntéshozatal
-function makeAiDecision() {
-  if (!lastBid) {
-    // Ha nincs előző licit, akkor az AI kezdi
-    return decideBestFirstBid();
-  }
-  
-  // Kockák összeszámolása a TELJES készletre
-  const countAllDice = countDiceValues([...aiDice, ...playerDice]);
-  
-  // Az előző licit értékének számolása, az 1-esek jokerek
-  const actualDiceWithValue = countActualDiceWithValue(lastBid.value);
-  
-  // Ha a licit nagyon valószínűtlen, érdemes blöfföt mondani
-  if (lastBid.quantity > (actualDiceWithValue + 1)) {
-    // A valószínűsége, hogy blöfföt mond, a licit túlzottságától függ
-    const bluffChance = Math.min(0.8, (lastBid.quantity - actualDiceWithValue) / totalDiceCount);
-    
-    if (Math.random() < bluffChance) {
-      return { action: 'dudo' };
-    }
-  }
-  
-  // Különben az AI licitál
-  return decideNextBid();
-  
-  // AI segédfüggvények
-  
-  // Kezdő licit döntése
-  function decideBestFirstBid() {
-    // AI saját kockáinak számlálása
-    const aiDiceCounts = countDiceValues(aiDice);
-    
-    // A leggyakoribb érték megtalálása
-    let maxCount = 0;
-    let bestValue = 1;
-    
-    for (let i = 1; i <= 6; i++) {
-      const count = aiDiceCounts[i] || 0;
-      if (count > maxCount) {
-        maxCount = count;
-        bestValue = i;
+      // Különben az előző fogadásnál nagyobbnak kell lennie
+      if (bidSettings.count <= gameState.currentBid.count) {
+        bidSettings.count = gameState.currentBid.count + 1;
       }
     }
     
-    // Óvatos licit: a saját leggyakoribb értékből kicsit több
-    const quantity = Math.max(1, maxCount + Math.floor(Math.random() * 2));
-    
-    return {
-      action: 'bid',
-      quantity: quantity,
-      value: bestValue
-    };
-  }
-  
-  // Következő licit döntése
-  function decideNextBid() {
-    // Előző licit megemelése
-    let newQuantity = lastBid.quantity;
-    let newValue = lastBid.value;
-    
-    // AI próbálja becsülni a teljes asztalon lévő kockák számát az adott értékkel
-    const aiDiceCounts = countDiceValues(aiDice);
-    const aiCount = aiDiceCounts[lastBid.value] || 0;
-    const oneCount = aiDiceCounts[1] || 0; // Az egyesek jokerek
-    
-    // Becsült darabszám: saját + várt (játékostól)
-    const estimatedCount = Math.floor((aiCount + oneCount) * (totalDiceCount / aiDiceCount));
-    
-    // Stratégia: ha túl magasnak tűnik a mennyiség, inkább növeljük az értéket
-    if (lastBid.quantity >= estimatedCount + 1) {
-      newValue = lastBid.value + 1;
-      if (newValue > 6) newValue = 2; // 1-re nem licitálunk, mert az joker
-      newQuantity = Math.max(1, Math.floor(lastBid.quantity * 0.7)); // Csökkentjük a mennyiséget
-    } else {
-      // Különben növeljük a mennyiséget
-      newQuantity = lastBid.quantity + 1;
-    }
-    
-    // Biztosítjuk, hogy a licit érvényes legyen
-    if (newValue === lastBid.value) {
-      newQuantity = Math.max(lastBid.quantity + 1, newQuantity);
-    } else if (newValue < lastBid.value) {
-      newQuantity = Math.max(lastBid.quantity + 1, newQuantity);
-    }
-    
-    return {
-      action: 'bid',
-      quantity: newQuantity,
-      value: newValue
-    };
-  }
-  
-  // Kocka értékek számolása
-  function countDiceValues(diceArray) {
-    const counts = {};
-    diceArray.forEach(dice => {
-      counts[dice] = (counts[dice] || 0) + 1;
-    });
-    return counts;
+    updateBidDisplay();
   }
 }
 
-// A tényleges kockák számolása egy adott értékkel (1-esek jokerként számítanak)
-function countActualDiceWithValue(value) {
-  // Megszámoljuk a megadott értékű kockákat + a jokereket (1-esek)
-  const allDice = [...playerDice, ...aiDice];
-  let count = 0;
-  
-  allDice.forEach(dice => {
-    if (dice === value || dice === 1) {
-      count++;
+function decreaseBidValue() {
+  // Ha csökkentjük az értéket, növelni kell a kockaszámot
+  if (bidSettings.value > 1) {
+    const oldValue = bidSettings.value;
+    bidSettings.value--;
+    
+    // Ha kisebb értékre váltunk, több kockát kell mondanunk
+    if (gameState.currentBid.value >= bidSettings.value && gameState.currentBid.count > 0) {
+      // Új értéknél minimum kockaszám
+      const minCount = Math.ceil(gameState.currentBid.count * 
+                      (oldValue === gameState.currentBid.value ? 2 : 1.5));
+      bidSettings.count = Math.max(bidSettings.count, minCount);
     }
+    
+    updateBidDisplay();
+  }
+}
+
+// Fogadás megjelenítése
+function updateBidDisplay() {
+  document.getElementById("bidCount").textContent = bidSettings.count;
+  document.getElementById("bidValue").textContent = bidSettings.value;
+  
+  // Gombok engedélyezése/letiltása a szabályok szerint
+  const bidButton = document.getElementById("bidButton");
+  
+  // Fogadás gomb csak akkor aktív, ha a fogadás érvényes
+  if (gameState.gameStarted && gameState.playerTurn) {
+    const isValidBid = isValidPlayerBid();
+    bidButton.disabled = !isValidBid;
+  }
+}
+
+// Ellenőrzi, hogy a játékos érvényes fogadást tett-e
+function isValidPlayerBid() {
+  if (gameState.currentBid.count === 0) return true;
+  
+  // Ha ugyanaz az érték, akkor több kockát kell mondani
+  if (bidSettings.value === gameState.currentBid.value) {
+    return bidSettings.count > gameState.currentBid.count;
+  }
+  
+  // Ha kisebb érték, akkor jelentősen több kockát kell mondani
+  if (bidSettings.value < gameState.currentBid.value) {
+    return bidSettings.count >= gameState.currentBid.count * 2;
+  }
+  
+  // Ha nagyobb érték, akkor érvényes (min. 1 kocka)
+  return bidSettings.count > 0;
+}
+
+// Fogadás megtétele
+function placeBid() {
+  if (!gameState.gameStarted || !gameState.playerTurn || !isValidPlayerBid()) return;
+  
+  // Fogadás rögzítése
+  gameState.currentBid = { count: bidSettings.count, value: bidSettings.value };
+  gameState.lastBidder = "player";
+  gameState.playerTurn = false;
+  
+  document.getElementById("lastBid").textContent = `Utolsó fogadás: ${gameState.currentBid.count} darab ${gameState.currentBid.value}-ös`;
+  document.getElementById("turnInfo").textContent = "Ellenfél gondolkodik...";
+  document.getElementById("bidButton").disabled = true;
+  document.getElementById("bluffButton").disabled = true;
+  
+  // Bot lép
+  setTimeout(botTurn, 2000);
+}
+
+// Bot lépése
+function botTurn() {
+  if (!gameState.gameStarted || gameState.playerTurn) return;
+  
+  // Valós kockák számolása a bot döntéséhez
+  const allDice = [...gameState.playerDice, ...gameState.botDice];
+  const targetCount = countDiceWithValue(allDice, gameState.currentBid.value);
+  
+  // Bot döntése - 70% eséllyel blöfföl a játékos, ha kevés a tényleges kocka
+  if (targetCount < gameState.currentBid.count && Math.random() < 0.7) {
+    callBluffBot();
+    return;
+  }
+  
+  // Ellenkező esetben új fogadás
+  const botWillBluff = Math.random() < 0.3;
+  let newBid;
+  
+  if (botWillBluff) {
+    // Blöff - többet mond a valósnál
+    newBid = createBotBluffBid();
+  } else {
+    // Reális fogadás
+    newBid = createBotRealisticBid(targetCount);
+  }
+  
+  // Bot fogadás beállítása
+  gameState.currentBid = newBid;
+  gameState.lastBidder = "bot";
+  gameState.playerTurn = true;
+  
+  document.getElementById("lastBid").textContent = `Utolsó fogadás: ${gameState.currentBid.count} darab ${gameState.currentBid.value}-ös`;
+  document.getElementById("turnInfo").textContent = "Te jössz! Tegyél egy fogadást, vagy mondd, hogy blöff!";
+  document.getElementById("bidButton").disabled = false;
+  document.getElementById("bluffButton").disabled = false;
+  
+  // Játékos fogadásának alapértékeit frissítjük
+  bidSettings.count = Math.min(gameState.currentBid.count + 1, gameState.playerDice.length + gameState.botDice.length);
+  bidSettings.value = gameState.currentBid.value;
+  updateBidDisplay();
+}
+
+// Bot blöff hívása
+function callBluffBot() {
+  document.getElementById("turnInfo").textContent = "Ellenfél: Blöff!";
+  
+  setTimeout(() => {
+    revealDice();
+    checkBluff("bot");
+  }, 1500);
+}
+
+// Bot blöff fogadásának létrehozása
+function createBotBluffBid() {
+  const totalDice = gameState.playerDice.length + gameState.botDice.length;
+  const currentValue = gameState.currentBid.value;
+  const currentCount = gameState.currentBid.count;
+  
+  // 50% eséllyel ugyanaz az érték, több kocka
+  if (Math.random() < 0.5) {
+    return {
+      value: currentValue,
+      count: Math.min(currentCount + 1 + Math.floor(Math.random() * 2), totalDice)
+    };
+  } else {
+    // Másik 50% eséllyel más érték
+    const newValue = Math.min(6, currentValue + 1);
+    return {
+      value: newValue,
+      count: Math.max(1, Math.min(currentCount, totalDice))
+    };
+  }
+}
+
+// Bot reális fogadásának létrehozása
+function createBotRealisticBid(actualCount) {
+  const totalDice = gameState.playerDice.length + gameState.botDice.length;
+  const currentValue = gameState.currentBid.value;
+  const currentCount = gameState.currentBid.count;
+  
+  // Bot számol azzal, hogy valószínűleg még van plusz a játékosnál
+  const estimatedCount = actualCount + Math.floor(Math.random() * 2);
+  
+  // 70% eséllyel ugyanaz az érték, több kocka
+  if (Math.random() < 0.7) {
+    return {
+      value: currentValue,
+      count: Math.min(currentCount + 1, estimatedCount, totalDice)
+    };
+  } else {
+    // 30% eséllyel más, magasabb érték
+    const newValue = Math.min(6, currentValue + 1);
+    return {
+      value: newValue,
+      count: Math.max(1, Math.min(Math.floor(currentCount / 2) + 1, totalDice))
+    };
+  }
+}
+
+// Blöff hívása
+function callBluff() {
+  if (!gameState.gameStarted || gameState.playerTurn || gameState.currentBid.count === 0) return;
+  
+  revealDice();
+  checkBluff("player");
+}
+
+// Kockák felfedése
+function revealDice() {
+  // Bot kockáinak felfedése
+  const botDiceContainer = document.getElementById("botDice");
+  botDiceContainer.innerHTML = "";
+  
+  gameState.botDice.forEach(value => {
+    const die = document.createElement("div");
+    die.className = "die";
+    die.textContent = value;
+    botDiceContainer.appendChild(die);
   });
-  
-  return count;
 }
 
-// Blöff (dudo) hívása
-function callDudo(caller = 'player') {
-  if (!lastBid) return;
+// Adott értékű kockák számolása
+function countDiceWithValue(diceArray, value) {
+  return diceArray.filter(die => die === value).length;
+}
+
+// Blöff ellenőrzése
+function checkBluff(caller) {
+  const allDice = [...gameState.playerDice, ...gameState.botDice];
+  const targetCount = countDiceWithValue(allDice, gameState.currentBid.value);
   
-  // Kockák felfedése
-  document.getElementById("ai-dice").classList.add("show-all");
+  const revealArea = document.getElementById("reveal");
+  revealArea.innerHTML = `
+    <p>Fogadás: ${gameState.currentBid.count} darab ${gameState.currentBid.value}-ös</p>
+    <p>Valódi mennyiség: ${targetCount} darab ${gameState.currentBid.value}-ös</p>
+  `;
   
-  // Megszámoljuk a ténylegesen meglévő kockákat az adott értékkel
-  const actualCount = countActualDiceWithValue(lastBid.value);
-  
-  // Blöff eredményének meghatározása
-  const lastBidder = lastBid.player;
-  const isDudo = actualCount < lastBid.quantity;
-  
-  let resultText = "";
-  let loser = "";
-  
-  if (isDudo) {
-    // A blöff sikeres volt, az előző licitáló veszít
-    loser = lastBidder;
-    resultText = `Blöff! ${lastBidder === 'player' ? 'Te blöfföltél' : 'Az AI blöffölt'}. ${actualCount} db ${lastBid.value}-es volt (a licit ${lastBid.quantity} db volt).`;
-  } else {
-    // A blöff nem volt sikeres, a blöfföt mondó veszít
+  // Meghatározzuk, ki veszít
+  let loser;
+  if (targetCount >= gameState.currentBid.count) {
+    // A hívó veszít - a fogadás igaz volt
     loser = caller;
-    resultText = `Nem blöff! ${lastBidder === 'player' ? 'Te igazat mondtál' : 'Az AI igazat mondott'}. ${actualCount} db ${lastBid.value}-es volt (a licit ${lastBid.quantity} db volt).`;
-  }
-  
-  // Vesztes kockáinak csökkentése
-  if (loser === 'player') {
-    playerDiceCount--;
+    revealArea.innerHTML += `<p>A fogadás igaz volt! ${caller === "player" ? "Játékos" : "Ellenfél"} veszít egy kockát.</p>`;
   } else {
-    aiDiceCount--;
+    // A fogadó veszít - a fogadás blöff volt
+    loser = gameState.lastBidder;
+    revealArea.innerHTML += `<p>A fogadás blöff volt! ${loser === "player" ? "Játékos" : "Ellenfél"} veszít egy kockát.</p>`;
   }
   
-  // Játék végének ellenőrzése
-  if (playerDiceCount === 0 || aiDiceCount === 0) {
-    // Játék vége
-    gameInProgress = false;
+  // Kocka elvesztése
+  if (loser === "player") {
+    gameState.playerDice.pop();
+  } else {
+    gameState.botDice.pop();
+  }
+  
+  // Ellenőrizzük, hogy vége van-e a játéknak
+  if (gameState.playerDice.length === 0) {
+    endGame("bot");
+    return;
+  }
+  if (gameState.botDice.length === 0) {
+    endGame("player");
+    return;
+  }
+  
+  // Következő kört előkészítjük
+  gameState.roundInProgress = true;
+  
+  setTimeout(() => {
+    // Új kör indítása
+    gameState.currentBid = { count: 0, value: 0 };
+    gameState.lastBidder = null;
+    gameState.playerTurn = true;
+    gameState.roundInProgress = false;
     
-    if (playerDiceCount === 0) {
-      resultText += "<br><span class='winner'>Az AI nyert!</span>";
-    } else {
-      resultText += "<br><span class='winner'>Te nyertél!</span>";
-    }
+    bidSettings.count = 1;
+    bidSettings.value = 1;
     
-    document.getElementById("resetContainer").style.display = "block";
-  }
-  
-  // Eredmény kijelzése
-  document.getElementById("result").innerHTML = resultText;
-  document.getElementById("score").textContent = `Kockák: Játékos - ${playerDiceCount} | AI - ${aiDiceCount}`;
-  
-  // Ha a játék még folytatódik, új kört kezdünk
-  if (gameInProgress) {
-    setTimeout(() => {
-      // Új kör indítása
-      startNewRound(loser === 'player' ? 'ai' : 'player');
-    }, 3000);
-  }
+    document.getElementById("rollButton").style.display = "block";
+    document.getElementById("bidButton").disabled = true;
+    document.getElementById("bluffButton").disabled = true;
+    document.getElementById("lastBid").textContent = "";
+    document.getElementById("turnInfo").textContent = "Dobj a kockákkal az új körért!";
+    document.getElementById("reveal").innerHTML = "";
+    
+    renderDice();
+    updateBidDisplay();
+  }, 3000);
 }
 
-// Új kör indítása
-function startNewRound(firstPlayer) {
-  // Kockák elrejtése
-  document.getElementById("ai-dice").classList.remove("show-all");
-  
-  // Kockák újradobása
-  rollDice();
-  
-  // Kockák megjelenítése
-  renderDice();
-  
-  // Alapértékek beállítása
-  currentPlayer = firstPlayer;
-  lastBid = null;
-  currentQuantity = 1;
-  currentValue = 1;
-  totalDiceCount = playerDiceCount + aiDiceCount;
-  
-  // UI frissítése
-  document.getElementById("result").textContent = "";
-  document.getElementById("quantity-display").textContent = "1";
-  document.getElementById("value-display").textContent = "1";
-  
-  // Játékállapot kijelzése
-  if (currentPlayer === 'player') {
-    document.getElementById("turnInfo").textContent = "Te kezdesz! Tégy egy licitet.";
+// Játék vége
+function endGame(winner) {
+  const result = document.getElementById("result");
+  if (winner === "player") {
+    result.innerHTML = '<span class="winner">Gratulálok! Megnyerted a játékot!</span>';
   } else {
-    document.getElementById("turnInfo").textContent = "AI gondolkodik...";
-    setTimeout(aiTurn, 1500);
+    result.innerHTML = '<span class="winner">Vesztettél! Az ellenfél nyerte a játékot.</span>';
   }
   
-  // Vezérlők frissítése
-  updateControls();
-}
-
-// Licit hozzáadása a történethez
-function addToHistory(player, quantity, value) {
-  const history = document.getElementById("history");
-  const newItem = document.createElement("div");
-  newItem.className = "history-item";
-  newItem.innerHTML = `<span class="player-name">${player === 'player' ? 'Te' : 'AI'}</span>: ${quantity} db ${value}-es`;
-  
-  // Az új elem az elején jelenjen meg
-  const historyTitle = history.querySelector("h3");
-  history.insertBefore(newItem, historyTitle.nextSibling);
-  
-  // Görgetés az elejére
-  history.scrollTop = 0;
+  document.getElementById("resetContainer").style.display = "block";
+  document.getElementById("rollButton").style.display = "none";
+  document.getElementById("bidButton").disabled = true;
+  document.getElementById("bluffButton").disabled = true;
 }
 
 // Játék indítása
