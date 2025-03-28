@@ -2,7 +2,7 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Bás - A Hazugságok Isteni Játéka</title>
+  <title>Isteni Kockajáték - Hazudós Kockapóker</title>
   <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400..800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
@@ -82,47 +82,40 @@
       color: #d1c3af;
     }
     .sparks-container {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
       margin: 15px 0;
     }
-    .divine-spark {
-      width: 30px;
-      height: 30px;
-      background-color: #ff6400;
-      border-radius: 50%;
-      box-shadow: 0 0 10px #ff6400;
-      transition: all 0.3s;
-      opacity: 1;
+    .spark {
+      color: #ff6400;
+      font-size: 2rem;
+      margin: 0 5px;
+      text-shadow: 0 0 10px rgba(255, 100, 0, 0.7);
     }
-    .divine-spark.lost {
-      opacity: 0.2;
-      background-color: #482c17;
-      box-shadow: none;
+    .lost-spark {
+      color: #482c17;
+      text-shadow: none;
     }
     .dice-container {
       display: flex;
       justify-content: center;
-      gap: 20px;
-      margin: 30px 0;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      min-height: 80px;
     }
-    .dice {
-      position: relative;
-      width: 80px;
-      height: 80px;
-      margin: 10px;
+    .die {
+      width: 60px;
+      height: 60px;
       background-color: #291d14;
       border-radius: 10px;
-      box-shadow: 0 0 15px rgba(255, 100, 0, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 2rem;
       color: #d1c3af;
-      font-size: 2.5rem;
-      transition: transform 0.3s ease-out;
+      box-shadow: 0 0 15px rgba(255, 100, 0, 0.3);
+      transition: all 0.3s ease;
     }
-    .dice-roll {
+    .rolling {
       animation: rollDice 0.8s ease-out;
     }
     @keyframes rollDice {
@@ -130,44 +123,50 @@
       50% { transform: rotateY(720deg) rotateX(360deg); }
       100% { transform: rotateY(1440deg) rotateX(720deg); }
     }
-    .hidden-value {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      width: 100%;
-      font-size: 3rem;
-    }
-    .claimed-value {
+    #announce-container {
       background-color: rgba(20, 14, 10, 0.85);
       padding: 15px;
       border-radius: 5px;
-      margin: 15px auto;
-      max-width: 400px;
-      font-size: 1.3rem;
-    }
-    .previous-claim {
-      font-size: 1rem;
-      opacity: 0.8;
-      margin-bottom: 8px;
-    }
-    #controls {
-      margin-top: 20px;
+      margin: 20px auto;
+      max-width: 600px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 15px;
     }
-    .button-group {
+    .combo-selector {
       display: flex;
-      gap: 15px;
       flex-wrap: wrap;
       justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .combo-option {
+      background-color: rgba(72, 44, 23, 0.6);
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+    .combo-option:hover, .combo-option.selected {
+      background-color: rgba(255, 100, 0, 0.3);
+      border-color: #ff6400;
+    }
+    .combo-option img {
+      width: 140px;
+      height: 40px;
+      object-fit: contain;
+    }
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
     }
     button {
       font-family: "Eczar", serif;
-      font-size: 1.2rem;
-      padding: 12px 25px;
+      font-size: 1.1rem;
+      padding: 12px 20px;
       margin: 5px;
       border-radius: 5px;
       border: none;
@@ -176,6 +175,8 @@
       color: #d1c3af;
       box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
       transition: all 0.3s;
+      letter-spacing: 1px;
+      min-width: 120px;
     }
     button:hover:not(:disabled) {
       background-color: #5a381f;
@@ -197,6 +198,87 @@
       letter-spacing: 1px;
       line-height: 1.4;
     }
+    #game-log {
+      background-color: rgba(20, 14, 10, 0.7);
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 20px;
+      max-height: 150px;
+      overflow-y: auto;
+      text-align: left;
+      width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .log-entry {
+      margin: 5px 0;
+      font-size: 0.9rem;
+      color: #a09080;
+    }
+    #ability-panel {
+      background-color: rgba(20, 14, 10, 0.85);
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px auto;
+      max-width: 600px;
+      display: none;
+    }
+    .ability-title {
+      color: #ff6400;
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+    .ability-description {
+      margin-bottom: 15px;
+    }
+    .rules-panel {
+      background-color: rgba(20, 14, 10, 0.85);
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px auto;
+      max-width: 800px;
+      text-align: left;
+    }
+    .rules-panel h3 {
+      color: #ff6400;
+      border-bottom: 1px solid #ff6400;
+      padding-bottom: 5px;
+    }
+    .rules-panel ul {
+      padding-left: 20px;
+    }
+    .rules-panel li {
+      margin: 8px 0;
+    }
+    .hidden {
+      display: none;
+    }
+    .combo-tooltip {
+      position: relative;
+      display: inline-block;
+    }
+    .combo-tooltip .tooltiptext {
+      visibility: hidden;
+      width: 200px;
+      background-color: #291d14;
+      color: #d1c3af;
+      text-align: center;
+      border-radius: 5px;
+      padding: 10px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      font-size: 0.9rem;
+    }
+    .combo-tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
     #resetContainer {
       display: none;
       margin-top: 30px;
@@ -206,733 +288,951 @@
       font-weight: bold;
       text-shadow: 0 0 10px rgba(255, 100, 0, 0.7);
     }
-    .rules-section {
-      background-color: rgba(20, 14, 10, 0.7);
-      padding: 15px;
-      border-radius: 5px;
-      max-width: 800px;
-      margin: 20px auto;
-      text-align: left;
-      font-size: 1rem;
-    }
-    .rules-section h3 {
-      color: #ff6400;
-      text-align: center;
-    }
-    .rules-section ul {
-      padding-left: 20px;
-    }
-    .claim-input {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 15px;
-    }
-    .claim-input select {
-      background-color: #291d14;
-      color: #d1c3af;
-      border: 1px solid #482c17;
-      padding: 8px;
-      border-radius: 5px;
-      font-family: "Eczar", serif;
-      font-size: 1.1rem;
-    }
-    .special-value {
-      font-weight: bold;
-      color: #ff6400;
-    }
   </style>
 </head>
 <body>
 
-<h1>Bás - A Hazugságok Isteni Játéka</h1>
+<h1>Isteni Kockajáték - Hazudós Kockapóker</h1>
 
-<div class="rules-section">
+<div class="rules-panel">
   <h3>Játékszabályok</h3>
-  <p>Mindkét játékos 3 isteni szikrával kezd. A játékban két kockával dobsz, de csak te látod az értéket. A kockákon lévő értékekből a nagyobb szám a tízesek helyére kerül (pl. 4 és 5 = 54). A dobás értékét be kell jelentened ellenfeled felé, de hazudhatsz is!</p>
-  <p><strong>Értékek (növekvő sorrendben):</strong><br>
-  31, 32, 41, 42, 43, 51, 52, 53, 54, 61, 62, 63, 64, 65,<br>
-  <span class="special-value">1-es Fortély</span> (két 1-es), <span class="special-value">2-es Fortély</span>, <span class="special-value">3-as Fortély</span>, <span class="special-value">4-es Fortély</span>, <span class="special-value">5-ös Fortély</span>, <span class="special-value">6-os Fortély</span>,<br>
-  <span class="special-value">Csínytevés</span> (21 = 1-es és 2-es)</p>
-  <p>Az ellenfél vagy elhiszi a bejelentésedet, vagy kétségbe vonja azt. Ha kétségbe vonja és hazudtál, te veszítesz egy szikrát. Ha igazat mondtál, ő veszít.</p>
-  <p>Ha elhiszi, akkor neki kell dobnia, és <strong>csak nagyobb vagy egyenlő értéket jelenthet be</strong> a te bejelentésedhez képest!</p>
+  <p>Mindkét játékos 5 "isteni szikrával" (életponttal) kezd. Dobj 5 kockával, majd jelents be egy kombinációt (vagy blöffölj).</p>
+  
+  <h3>Kombinációk</h3>
+  <ul>
+    <li><strong>Három egyforma</strong> - Képesség: Meglesheted az ellenfél következő dobását</li>
+    <li><strong>Full house</strong> (Három egyforma + két egyforma) - Képesség: Ha nem hiszik el, és igazat mondtál, az ellenfél 2 szikrát veszít</li>
+    <li><strong>Négy egyforma</strong> - Képesség: Védelmet kapsz egy isteni szikra elvesztése ellen</li>
+    <li><strong>Öt egyforma</strong> - Képesség: Visszaszerezhetsz egy elvesztett isteni szikrát</li>
+  </ul>
+  
+  <h3>Kör menete</h3>
+  <ol>
+    <li>Az aktív játékos dob és bejelent egy kombinációt (vagy blöfföl)</li>
+    <li>Az ellenfél dönt: elhiszi vagy leleplezi</li>
+    <li>Ha elhiszi: ő jön, és nagyobb értéket kell bejelentenie</li>
+    <li>Ha leleplezi és a bejelentés hamis: a bejelentő veszít egy szikrát</li>
+    <li>Ha leleplezi és a bejelentés igaz: a leleplező veszít egy (vagy több) szikrát</li>
+  </ol>
+  
+  <h3>Rangsor (növekvő erősség)</h3>
+  <p>Három egyforma < Full house < Négy egyforma < Öt egyforma</p>
+  <p>Egyenló kombinációknál a nagyobb értékű kocka erősebb (pl. három 6-os > három 5-ös)</p>
 </div>
 
 <div id="gameArea">
   <div id="playerSection" class="player-section active-player">
-    <h2>Loki (Te)</h2>
+    <h2>Kalandor</h2>
     <div class="sparks-container" id="playerSparks">
-      <div class="divine-spark"></div>
-      <div class="divine-spark"></div>
-      <div class="divine-spark"></div>
+      <i class="fas fa-fire spark"></i>
+      <i class="fas fa-fire spark"></i>
+      <i class="fas fa-fire spark"></i>
+      <i class="fas fa-fire spark"></i>
+      <i class="fas fa-fire spark"></i>
     </div>
+    <div class="dice-container" id="playerDice"></div>
   </div>
   
   <div id="botSection" class="player-section">
-    <h2>Odin (Bot)</h2>
+    <h2>Sötét Nagyúr</h2>
     <div class="sparks-container" id="botSparks">
-      <div class="divine-spark"></div>
-      <div class="divine-spark"></div>
-      <div class="divine-spark"></div>
+      <i class="fas fa-fire spark"></i>
+      <i class="fas fa-fire spark"></i>
+      <i class="fas fa-fire spark"></i>
+      <i class="fas fa-fire spark"></i>
+      <i class="fas fa-fire spark"></i>
     </div>
+    <div class="dice-container" id="botDice"></div>
   </div>
 </div>
 
-<div class="dice-container" id="diceContainer">
-  <div class="dice">
-    <div class="hidden-value">?</div>
+<div id="announce-container">
+  <h3 id="announce-title">Válaszd ki a bejelentendő kombinációt</h3>
+  <div class="combo-selector" id="combo-selector">
+    <div class="combo-option combo-tooltip" data-combo="three" data-dice-value="1">
+      <span class="tooltiptext">Három egyforma (1-es)</span>
+      <div class="combo-display">
+        <i class="fas fa-dice-one" style="font-size: 1.5rem;"></i>
+        <i class="fas fa-dice-one" style="font-size: 1.5rem;"></i>
+        <i class="fas fa-dice-one" style="font-size: 1.5rem;"></i>
+        <span> + </span>
+        <i class="fas fa-dice" style="font-size: 1.5rem;"></i>
+        <i class="fas fa-dice" style="font-size: 1.5rem;"></i>
+      </div>
+    </div>
+    <div class="combo-option combo-tooltip" data-combo="three" data-dice-value="2">
+      <span class="tooltiptext">Három egyforma (2-es)</span>
+      <div class="combo-display">
+        <i class="fas fa-dice-two" style="font-size: 1.5rem;"></i>
+        <i class="fas fa-dice-two" style="font-size: 1.5rem;"></i>
+        <i class="fas fa-dice-two" style="font-size: 1.5rem;"></i>
+        <span> + </span>
+        <i class="fas fa-dice" style="font-size: 1.5rem;"></i>
+        <i class="fas fa-dice" style="font-size: 1.5rem;"></i>
+      </div>
+    </div>
+    <!-- További combo opciók... -->
   </div>
-  <div class="dice">
-    <div class="hidden-value">?</div>
+  <div class="action-buttons" id="action-buttons">
+    <button id="roll-btn">Dobás</button>
+    <button id="announce-btn" disabled>Bejelentés</button>
+    <button id="believe-btn" disabled>Elhiszem</button>
+    <button id="doubt-btn" disabled>Kétségbe vonom</button>
   </div>
 </div>
 
-<div class="claimed-value">
-  <div class="previous-claim" id="previousClaim">Még nincs korábbi bejelentés</div>
-  <div id="currentClaim">Kezdheted a játékot, dobj és jelentsd be az értéket!</div>
-</div>
-
-<div id="controls">
-  <div class="button-group" id="rollControls">
-    <button id="rollBtn" onclick="rollDice()">Dobj a kockákkal!</button>
-  </div>
-  
-  <div class="claim-input" id="claimInputs" style="display:none;">
-    <select id="claimSelect"></select>
-    <button id="claimBtn" onclick="makePlayerClaim()">Bejelentem ezt az értéket</button>
-  </div>
-  
-  <div class="button-group" id="believeControls" style="display:none;">
-    <button id="believeBtn" onclick="playerBelieves()">Elhiszem</button>
-    <button id="doubtBtn" onclick="playerDoubts()">Nem hiszem el</button>
+<div id="ability-panel">
+  <div class="ability-title" id="ability-title">Képesség aktiválva!</div>
+  <div class="ability-description" id="ability-description"></div>
+  <div class="action-buttons">
+    <button id="use-ability-btn">Használom</button>
+    <button id="skip-ability-btn">Kihagyom</button>
   </div>
 </div>
 
-<div id="result">Válaszd a kockákkal való dobást a játék kezdéséhez!</div>
+<div id="result">Üdvözöllek a Kockajátékban! Dobj a kockákkal a kezdéshez.</div>
+
+<div id="game-log"></div>
 
 <div id="resetContainer">
   <button onclick="startGame()">Új Játék</button>
 </div>
 
 <script>
-// Játék konstansok
-const VALUES = [
-  { name: "31", value: 0 },
-  { name: "32", value: 1 },
-  { name: "41", value: 2 },
-  { name: "42", value: 3 },
-  { name: "43", value: 4 },
-  { name: "51", value: 5 },
-  { name: "52", value: 6 },
-  { name: "53", value: 7 },
-  { name: "54", value: 8 },
-  { name: "61", value: 9 },
-  { name: "62", value: 10 },
-  { name: "63", value: 11 },
-  { name: "64", value: 12 },
-  { name: "65", value: 13 },
-  { name: "1-es Fortély", value: 14 },
-  { name: "2-es Fortély", value: 15 },
-  { name: "3-as Fortély", value: 16 },
-  { name: "4-es Fortély", value: 17 },
-  { name: "5-ös Fortély", value: 18 },
-  { name: "6-os Fortély", value: 19 },
-  { name: "Csínytevés", value: 20 }
-];
+// Játék állapot és változók
+let gameState = {
+  playerSparks: 5,
+  botSparks: 5,
+  playerDice: [],
+  botDice: [],
+  activePlayer: 'player', // 'player' vagy 'bot'
+  lastAnnouncement: null,
+  currentPhase: 'roll', // 'roll', 'announce', 'respond', 'ability'
+  playerAbilities: {
+    shield: false,
+    peek: false
+  },
+  botAbilities: {
+    shield: false,
+    peek: false
+  },
+  gameHistory: []
+};
 
-// Játék változók
-let gameActive = true;
-let playerSparks = 3;
-let botSparks = 3;
-let activePlayer = 0; // 0 = játékos, 1 = bot
-let currentDice = [0, 0];
-let lastClaimedValue = null;
-let playerHistory = [];
-let botHistory = [];
+// Konstansok és segédfüggvények
+const DICE_FACES = 6;
+const COMBINATIONS = {
+  'three': {name: 'Három egyforma', rank: 1, ability: 'peek'},
+  'fullhouse': {name: 'Full house', rank: 2, ability: 'double'},
+  'four': {name: 'Négy egyforma', rank: 3, ability: 'shield'},
+  'five': {name: 'Öt egyforma', rank: 4, ability: 'heal'}
+};
 
 // DOM elemek
-const diceContainer = document.getElementById('diceContainer');
+const playerDiceContainer = document.getElementById('playerDice');
+const botDiceContainer = document.getElementById('botDice');
+const playerSparksContainer = document.getElementById('playerSparks');
+const botSparksContainer = document.getElementById('botSparks');
 const playerSection = document.getElementById('playerSection');
 const botSection = document.getElementById('botSection');
-const resultEl = document.getElementById('result');
-const claimInputs = document.getElementById('claimInputs');
-const believeControls = document.getElementById('believeControls');
-const rollControls = document.getElementById('rollControls');
-const claimSelect = document.getElementById('claimSelect');
-const currentClaimEl = document.getElementById('currentClaim');
-const previousClaimEl = document.getElementById('previousClaim');
-
-// Értékválasztó lista feltöltése
-function populateClaimSelect(minValue = 0) {
-  claimSelect.innerHTML = '';
-  
-  for (let i = minValue; i < VALUES.length; i++) {
-    const option = document.createElement('option');
-    option.value = i;
-    option.textContent = VALUES[i].name;
-    claimSelect.appendChild(option);
-  }
-}
+const comboSelector = document.getElementById('combo-selector');
+const announceBtn = document.getElementById('announce-btn');
+const rollBtn = document.getElementById('roll-btn');
+const believeBtn = document.getElementById('believe-btn');
+const doubtBtn = document.getElementById('doubt-btn');
+const resultDisplay = document.getElementById('result');
+const gameLog = document.getElementById('game-log');
+const abilityPanel = document.getElementById('ability-panel');
+const abilityTitle = document.getElementById('ability-title');
+const abilityDescription = document.getElementById('ability-description');
+const useAbilityBtn = document.getElementById('use-ability-btn');
+const skipAbilityBtn = document.getElementById('skip-ability-btn');
+const resetContainer = document.getElementById('resetContainer');
 
 // Játék indítása
 function startGame() {
-  gameActive = true;
-  playerSparks = 3;
-  botSparks = 3;
-  activePlayer = 0; // Játékos kezd
-  currentDice = [0, 0];
-  lastClaimedValue = null;
-  playerHistory = [];
-  botHistory = [];
+  gameState = {
+    playerSparks: 5,
+    botSparks: 5,
+    playerDice: [],
+    botDice: [],
+    activePlayer: 'player',
+    lastAnnouncement: null,
+    currentPhase: 'roll',
+    playerAbilities: {
+      shield: false,
+      peek: false
+    },
+    botAbilities: {
+      shield: false,
+      peek: false
+    },
+    gameHistory: []
+  };
   
-  // UI visszaállítása
-  updateSparksDisplay();
+  updateUI();
+  resultDisplay.textContent = 'Üdvözöllek a Kockajátékban! Dobb a kockákkal a kezdéshez.';
+  resetContainer.style.display = 'none';
+  clearLog();
+  addLogEntry('Új játék kezdődött!');
   
-  // Kockák visszaállítása
-  resetDice();
-  
-  // Bejelentés visszaállítása
-  previousClaimEl.textContent = "Még nincs korábbi bejelentés";
-  currentClaimEl.textContent = "Kezdheted a játékot, dobj és jelentsd be az értéket!";
-  
-  // Gombok beállítása
-  rollControls.style.display = 'block';
-  claimInputs.style.display = 'none';
-  believeControls.style.display = 'none';
-  document.getElementById('resetContainer').style.display = 'none';
-  
-  // Játékos kijelölése
-  playerSection.classList.add('active-player');
-  botSection.classList.remove('active-player');
-  
-  // Üzenet megjelenítése
-  displayMessage("Kezdheted a játékot! Dobj a kockákkal.");
-  
-  // Értékválasztó feltöltése
-  populateClaimSelect();
+  // Combo selector opciók generálása
+  generateComboOptions();
 }
 
-// Kockák visszaállítása
-function resetDice() {
-  const diceElements = diceContainer.querySelectorAll('.dice');
-  
-  diceElements.forEach(dice => {
-    dice.innerHTML = '<div class="hidden-value">?</div>';
-    dice.classList.remove('dice-roll');
-  });
+// Kockadobás
+function rollDice(count = 5) {
+  const dice = [];
+  for (let i = 0; i < count; i++) {
+    dice.push(Math.floor(Math.random() * DICE_FACES) + 1);
+  }
+  return dice;
 }
 
-// Életpontok frissítése
-function updateSparksDisplay() {
-  const playerSparksEl = document.getElementById('playerSparks');
-  const botSparksEl = document.getElementById('botSparks');
+// Játékos dob
+function playerRoll() {
+  if (gameState.currentPhase !== 'roll' || gameState.activePlayer !== 'player') return;
   
-  const playerSparkDivs = playerSparksEl.querySelectorAll('.divine-spark');
-  const botSparkDivs = botSparksEl.querySelectorAll('.divine-spark');
+  gameState.playerDice = rollDice();
+  displayDice(gameState.playerDice, playerDiceContainer, true);
   
-  for (let i = 0; i < 3; i++) {
-    if (i < playerSparks) {
-      playerSparkDivs[i].classList.remove('lost');
+  addLogEntry('Dobtál a kockákkal.');
+  
+  // Elemezzük a dobott kombinációkat
+  const validCombos = analyzeValidCombinations(gameState.playerDice);
+  updateComboSelector(validCombos, gameState.lastAnnouncement);
+  
+  // Frissítjük a játék állapotát
+  gameState.currentPhase = 'announce';
+  updateUI();
+}
+
+// Bot dob
+function botRoll() {
+  if (gameState.currentPhase !== 'roll' || gameState.activePlayer !== 'bot') return;
+  
+  // Bot dobás rejtetten
+  gameState.botDice = rollDice();
+  displayDice(['?', '?', '?', '?', '?'], botDiceContainer, true);
+  
+  addLogEntry('A Sötét Nagyúr dobott a kockákkal.');
+  
+  // Bot elemzi a lehetőségeit és bejelent egy kombinációt
+  setTimeout(() => botAnnounce(), 1500);
+}
+
+// Kockák megjelenítése
+function displayDice(dice, container, animate = false) {
+  container.innerHTML = '';
+  
+  dice.forEach(value => {
+    const die = document.createElement('div');
+    die.className = 'die';
+    if (animate) die.classList.add('rolling');
+    
+    if (value === '?') {
+      die.innerHTML = '<i class="fas fa-question"></i>';
     } else {
-      playerSparkDivs[i].classList.add('lost');
+      die.innerHTML = getDiceIcon(value);
     }
     
-    if (i < botSparks) {
-      botSparkDivs[i].classList.remove('lost');
-    } else {
-      botSparkDivs[i].classList.add('lost');
-    }
-  }
+    container.appendChild(die);
+  });
 }
 
-// Játékos kockát dob
-function rollDice() {
-  if (!gameActive || activePlayer !== 0) return;
-  
-  // Kockadobás animáció
-  const diceElements = diceContainer.querySelectorAll('.dice');
-  
-  diceElements.forEach(dice => {
-    dice.classList.remove('dice-roll');
-    void dice.offsetWidth; // Trükk az animáció újraindításához
-    dice.classList.add('dice-roll');
+// Kocka ikon lekérése
+function getDiceIcon(value) {
+  const icons = {
+    1: '<i class="fas fa-dice-one"></i>',
+    2: '<i class="fas fa-dice-two"></i>',
+    3: '<i class="fas fa-dice-three"></i>',
+    4: '<i class="fas fa-dice-four"></i>',
+    5: '<i class="fas fa-dice-five"></i>',
+    6: '<i class="fas fa-dice-six"></i>'
+  };
+  return icons[value] || '<i class="fas fa-dice"></i>';
+}
+
+// Kombinációk elemzése
+function analyzeValidCombinations(dice) {
+  const counts = {};
+  dice.forEach(value => {
+    counts[value] = (counts[value] || 0) + 1;
   });
   
-  // Valódi dobás
-  const die1 = Math.floor(Math.random() * 6) + 1;
-  const die2 = Math.floor(Math.random() * 6) + 1;
-  currentDice = [die1, die2];
+  const result = [];
   
-  // Kockákat mutatjuk a játékosnak
-  setTimeout(() => {
-    diceElements[0].innerHTML = `<div class="hidden-value">${die1}</div>`;
-    diceElements[1].innerHTML = `<div class="hidden-value">${die2}</div>`;
-    
-    // Értékválasztó megjelenítése
-    rollControls.style.display = 'none';
-    claimInputs.style.display = 'flex';
-    
-    // Értékek kiszámolása
-    const actualValue = calculateDiceValue(die1, die2);
-    const actualValueIndex = getDiceValueIndex(actualValue);
-    
-    // Üzenet frissítése
-    displayMessage(`Dobtál: ${VALUES[actualValueIndex].name}. Jelentsd be ezt, vagy blöffölj!`);
-    
-    // Előző érték kezelése
-    if (lastClaimedValue !== null) {
-      populateClaimSelect(lastClaimedValue);
-    } else {
-      populateClaimSelect();
+  // Öt egyforma
+  for (let i = 1; i <= 6; i++) {
+    if (counts[i] === 5) {
+      result.push({combo: 'five', diceValue: i});
     }
-  }, 800);
+  }
+  
+  // Négy egyforma
+  for (let i = 1; i <= 6; i++) {
+    if (counts[i] === 4) {
+      result.push({combo: 'four', diceValue: i});
+    }
+  }
+  
+  // Full house
+  for (let i = 1; i <= 6; i++) {
+    if (counts[i] === 3) {
+      for (let j = 1; j <= 6; j++) {
+        if (i !== j && counts[j] === 2) {
+          result.push({combo: 'fullhouse', diceValue: i});
+        }
+      }
+    }
+  }
+  
+  // Három egyforma
+  for (let i = 1; i <= 6; i++) {
+    if (counts[i] === 3) {
+      result.push({combo: 'three', diceValue: i});
+    }
+  }
+  
+  return result;
 }
 
-// Kockák értékének kiszámolása
-function calculateDiceValue(die1, die2) {
-  // Fortély ellenőrzése (két azonos szám)
-  if (die1 === die2) {
-    return { type: "fortely", value: die1 };
-  }
-  
-  // Csínytevés ellenőrzése (1-es és 2-es)
-  if ((die1 === 1 && die2 === 2) || (die1 === 2 && die2 === 1)) {
-    return { type: "csiny", value: 0 };
-  }
-  
-  // Normál érték: nagyobb szám elöl
-  const tens = Math.max(die1, die2);
-  const ones = Math.min(die1, die2);
-  return { type: "normal", tens: tens, ones: ones };
+// Kombinációk nevének formázása
+function formatComboName(combo, diceValue) {
+  const baseName = COMBINATIONS[combo].name;
+  return `${baseName} (${diceValue}-ös)`;
 }
 
-// Megkapjuk a dobás index értékét a VALUES tömbben
-function getDiceValueIndex(diceValue) {
-  if (diceValue.type === "csiny") {
-    return 20; // Csínytevés a legmagasabb érték
-  }
-  
-  if (diceValue.type === "fortely") {
-    return 13 + diceValue.value; // 1-es Fortély = 14, 2-es Fortély = 15, stb.
-  }
-  
-  // Normál értéknél megkeressük a megfelelő értéket
-  const valueStr = `${diceValue.tens}${diceValue.ones}`;
-  const index = VALUES.findIndex(v => v.name === valueStr);
-  return index;
+// Combo-k rangsorolása
+function rankCombination(combo, diceValue) {
+  return COMBINATIONS[combo].rank * 10 + diceValue;
 }
 
-// Játékos bejelenti az értéket
-function makePlayerClaim() {
-  const claimedValueIndex = parseInt(claimSelect.value);
-  const claimedValue = VALUES[claimedValueIndex];
+// Kombinációk összehasonlítása
+function isHigherCombination(newCombo, newValue, lastCombo, lastValue) {
+  const newRank = rankCombination(newCombo, newValue);
+  const lastRank = rankCombination(lastCombo, lastValue);
+  return newRank > lastRank;
+}
+
+// Combo selector frissítése
+function updateComboSelector(validCombos, lastAnnouncement) {
+  comboSelector.innerHTML = '';
   
-  // Játékos történet frissítése
-  const actualValue = calculateDiceValue(currentDice[0], currentDice[1]);
-  const actualValueIndex = getDiceValueIndex(actualValue);
+  // Minden lehetséges kombináció generálása (1-6 értékekkel minden típushoz)
+  const allPossibleCombos = [];
   
-  playerHistory.push({
-    actualValue: actualValueIndex,
-    claimedValue: claimedValueIndex,
-    isLying: actualValueIndex !== claimedValueIndex
+  Object.keys(COMBINATIONS).forEach(combo => {
+    for (let i = 1; i <= 6; i++) {
+      allPossibleCombos.push({combo, diceValue: i});
+    }
   });
   
-  // Bejelentés frissítése
-  if (lastClaimedValue !== null) {
-    previousClaimEl.textContent = `Előző bejelentés: ${VALUES[lastClaimedValue].name}`;
-  }
-  currentClaimEl.textContent = `Loki bejelentése: ${claimedValue.name}`;
-  
-  // Játékos bejelentette, bot következik
-  lastClaimedValue = claimedValueIndex;
-  
-  // UI frissítése
-  claimInputs.style.display = 'none';
-  
-  // Játékos váltás
-  setTimeout(() => {
-    resetDice();
-    switchPlayer();
-    botTurn();
-  }, 1000);
-}
-
-// Bot köre
-function botTurn() {
-  if (!gameActive || activePlayer !== 1) return;
-  
-  displayMessage("Odin mérlegeli a bejelentésedet...");
-  
-  setTimeout(() => {
-    // Bot eldönti, elhiszi-e
-    const believeDecision = botDecidesBelieve();
-    
-    if (believeDecision) {
-      // Bot elhiszi, dobnia kell
-      displayMessage("Odin elhiszi a bejelentésedet és most ő dob.");
-      
-      setTimeout(() => {
-        botRollAndClaim();
-      }, 1500);
-    } else {
-      // Bot nem hiszi el
-      displayMessage("Odin nem hiszi el a bejelentésedet!");
-      
-      setTimeout(() => {
-        revealPlayerDice();
-      }, 1500);
-    }
-  }, 2000);
-}
-
-// Bot dönt, elhiszi-e a játékos bejelentését
-function botDecidesBelieve() {
-  // Az érték, amit a játékos bejelentett
-  const claimedValue = lastClaimedValue;
-  
-  // Magasabb értékek esetén nagyobb az esély, hogy igazat mond a játékos
-  const highValueThreshold = 14; // Fortély és fölötte
-  
-  // Bot intelligens döntési logikája
-  
-  // 1. Ha a játékos tényleg magas értéket jelentett be (pl. Fortély vagy Csínytevés)
-  if (claimedValue >= highValueThreshold) {
-    // Alacsonyabb valószínűséggel vonja kétségbe a magas értékeket
-    // De nézünk eddigi mintákat is
-    const lyingHabit = analyzeLyingHabit();
-    
-    // Ha a játékos gyakran hazudik magas értékeknél
-    if (lyingHabit.highValueLieRate > 0.6) {
-      return Math.random() > 0.7; // 30% esély, hogy elhiszi
-    }
-    
-    return Math.random() > 0.4; // 60% esély, hogy elhiszi
-  }
-  
-  // 2. Ha a bejelentett érték csak kicsivel nagyobb az előzőnél, nagyobb eséllyel hazudik
-  if (playerHistory.length > 1) {
-    const previousClaim = playerHistory[playerHistory.length - 2].claimedValue;
-    
-    if (claimedValue - previousClaim <= 2 && claimedValue > 10) {
-      return Math.random() > 0.6; // 40% esély, hogy elhiszi
-    }
-  }
-  
-  // 3. Statisztikák alapján
-  const stats = analyzeLyingHabit();
-  const randomFactor = Math.random() * 0.2; // Véletlenszerűség hozzáadása
-  
-  // Általános hazugságarány alapján dönt
-  return Math.random() > (stats.overallLieRate + randomFactor);
-}
-
-// Játékos hazudási szokásainak elemzése
-function analyzeLyingHabit() {
-  if (playerHistory.length < 2) {
-    return { overallLieRate: 0.5, highValueLieRate: 0.5 };
-  }
-  
-  // Összes hazugság számolása
-  const totalLies = playerHistory.filter(h => h.isLying).length;
-  const overallLieRate = totalLies / playerHistory.length;
-  
-  // Magas értékeknél történő hazugság
-  const highValueClaims = playerHistory.filter(h => h.claimedValue >= 14);
-  const highValueLies = highValueClaims.filter(h => h.isLying).length;
-  const highValueLieRate = highValueClaims.length > 0 ? highValueLies / highValueClaims.length : 0.5;
-  
-  return { overallLieRate, highValueLieRate };
-}
-
-// Bot dob és bejelent
-function botRollAndClaim() {
-  // Bot dob
-  const die1 = Math.floor(Math.random() * 6) + 1;
-  const die2 = Math.floor(Math.random() * 6) + 1;
-  currentDice = [die1, die2];
-  
-  // Kockákkal való dobás animálása
-  const diceElements = diceContainer.querySelectorAll('.dice');
-  
-  diceElements.forEach(dice => {
-    dice.classList.remove('dice-roll');
-    void dice.offsetWidth;
-    dice.classList.add('dice-roll');
+  // Rendezzük a kombinációkat rangsor szerint
+  allPossibleCombos.sort((a, b) => {
+    return rankCombination(a.combo, a.diceValue) - rankCombination(b.combo, b.diceValue);
   });
   
-  // Kockák elrejtése a játékos elől (csak bot láthatja)
-  diceElements.forEach(dice => {
-    dice.innerHTML = '<div class="hidden-value">?</div>';
-  });
+  // Szűrjük a lehetséges bejelentéseket az előző bejelentés alapján
+  let filteredCombos = allPossibleCombos;
+  if (lastAnnouncement) {
+    filteredCombos = allPossibleCombos.filter(combo => {
+      return isHigherCombination(
+        combo.combo, 
+        combo.diceValue, 
+        lastAnnouncement.combo, 
+        lastAnnouncement.diceValue
+      );
+    });
+  }
   
-  setTimeout(() => {
-    // Bot értékének kiszámolása
-    const actualValue = calculateDiceValue(die1, die2);
-    const actualValueIndex = getDiceValueIndex(actualValue);
+  filteredCombos.forEach(comboObj => {
+    const { combo, diceValue } = comboObj;
+    const isValid = validCombos.some(
+      validCombo => validCombo.combo === combo && validCombo.diceValue === diceValue
+    );
     
-    // Bot dönt, hazudjon-e
-    const botClaimedValue = botDecidesClaim(actualValueIndex);
+    const option = document.createElement('div');
+    option.className = 'combo-option combo-tooltip';
+    option.dataset.combo = combo;
+    option.dataset.diceValue = diceValue;
     
-    // Bot történetének frissítése
-    botHistory.push({
-      actualValue: actualValueIndex,
-      claimedValue: botClaimedValue,
-      isLying: actualValueIndex !== botClaimedValue
+    // Tooltip a kombinációhoz
+    const tooltip = document.createElement('span');
+    tooltip.className = 'tooltiptext';
+    tooltip.textContent = formatComboName(combo, diceValue);
+    option.appendChild(tooltip);
+    
+    // Kombinációt megjelenítő div
+    const comboDisplay = document.createElement('div');
+    comboDisplay.className = 'combo-display';
+    
+    // Kockák megjelenítése a kombinációban
+    if (combo === 'three') {
+      for (let i = 0; i < 3; i++) {
+        comboDisplay.innerHTML += `<i class="fas fa-dice-${getNumberWord(diceValue)}" style="font-size: 1.5rem;"></i>`;
+      }
+      comboDisplay.innerHTML += `<span> + </span>`;
+      comboDisplay.innerHTML += `<i class="fas fa-dice" style="font-size: 1.5rem;"></i>`;
+      comboDisplay.innerHTML += `<i class="fas fa-dice" style="font-size: 1.5rem;"></i>`;
+    } 
+    else if (combo === 'fullhouse') {
+      for (let i = 0; i < 3; i++) {
+        comboDisplay.innerHTML += `<i class="fas fa-dice-${getNumberWord(diceValue)}" style="font-size: 1.5rem;"></i>`;
+      }
+      comboDisplay.innerHTML += `<span> + </span>`;
+      const otherValue = diceValue === 6 ? 1 : diceValue + 1;
+      comboDisplay.innerHTML += `<i class="fas fa-dice-${getNumberWord(otherValue)}" style="font-size: 1.5rem;"></i>`;
+      comboDisplay.innerHTML += `<i class="fas fa-dice-${getNumberWord(otherValue)}" style="font-size: 1.5rem;"></i>`;
+    } 
+    else if (combo === 'four') {
+      for (let i = 0; i < 4; i++) {
+        comboDisplay.innerHTML += `<i class="fas fa-dice-${getNumberWord(diceValue)}" style="font-size: 1.5rem;"></i>`;
+      }
+      comboDisplay.innerHTML += `<span> + </span>`;
+      comboDisplay.innerHTML += `<i class="fas fa-dice" style="font-size: 1.5rem;"></i>`;
+    } 
+    else if (combo === 'five') {
+      for (let i = 0; i < 5; i++) {
+        comboDisplay.innerHTML += `<i class="fas fa-dice-${getNumberWord(diceValue)}" style="font-size: 1.5rem;"></i>`;
+      }
+    }
+    
+    option.appendChild(comboDisplay);
+    
+    // Hozzáadjuk a valós kombinációk jelölését
+    if (isValid) {
+      option.classList.add('valid-combo');
+      option.style.borderBottom = '2px solid #7fff7f';
+    }
+    
+    // Eseménykezelés a kiválasztáshoz
+    option.addEventListener('click', () => {
+      document.querySelectorAll('.combo-option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      option.classList.add('selected');
+      announceBtn.disabled = false;
     });
     
-    // Bejelentés frissítése
-    previousClaimEl.textContent = `Előző bejelentés: ${VALUES[lastClaimedValue].name}`;
-    currentClaimEl.textContent = `Odin bejelentése: ${VALUES[botClaimedValue].name}`;
+    comboSelector.appendChild(option);
+  });
+  
+  if (filteredCombos.length === 0) {
+    const noCombo = document.createElement('div');
+    noCombo.textContent = 'Nincs lehetséges kombináció, amit bejelenthetnél. Az ellenfél nyer!';
+    noCombo.style.color = '#ff6400';
+    comboSelector.appendChild(noCombo);
     
-    lastClaimedValue = botClaimedValue;
-    
-    // Játékos lehetőségeinek megjelenítése
-    believeControls.style.display = 'flex';
-    
-    displayMessage("Odin bejelentette értékét. Elhiszed, vagy kétségbe vonod?");
-  }, 1000);
+    setTimeout(() => {
+      endGame('bot');
+    }, 2000);
+  }
 }
 
-// Bot eldönti, milyen értéket jelentsen be
-function botDecidesClaim(actualValueIndex) {
-  // Minimális érték (az előző bejelentésnél nagyobb vagy egyenlő)
-  const minValue = lastClaimedValue;
+// Szám szó verzió (dice ikon osztálynévhez)
+function getNumberWord(num) {
+  const words = ['one', 'two', 'three', 'four', 'five', 'six'];
+  return words[num - 1] || 'one';
+}
+
+// Kombinációs opciók generálása
+function generateComboOptions() {
+  updateComboSelector([], null);
+}
+
+// Játékos bejelent
+function playerAnnounce() {
+  if (gameState.currentPhase !== 'announce' || gameState.activePlayer !== 'player') return;
   
-  // Ha a valós dobás magasabb, mint a minimum, akkor mondhat igazat
-  if (actualValueIndex >= minValue) {
-    // 70% eséllyel igazat mond
-    if (Math.random() < 0.7) {
-      return actualValueIndex;
+  const selectedOption = document.querySelector('.combo-option.selected');
+  if (!selectedOption) return;
+  
+  const combo = selectedOption.dataset.combo;
+  const diceValue = parseInt(selectedOption.dataset.diceValue);
+  
+  gameState.lastAnnouncement = {
+    player: 'player',
+    combo,
+    diceValue,
+    isReal: false // Még nem tudjuk, hogy valós-e
+  };
+  
+  // Ellenőrizzük, hogy igazi-e a kombináció
+  const validCombos = analyzeValidCombinations(gameState.playerDice);
+  gameState.lastAnnouncement.isReal = validCombos.some(
+    valid => valid.combo === combo && valid.diceValue === diceValue
+  );
+  
+  addLogEntry(`Bejelentést tettél: ${formatComboName(combo, diceValue)}`);
+  resultDisplay.textContent = `Bejelentés: ${formatComboName(combo, diceValue)}. A Sötét Nagyúr válaszára vársz.`;
+  
+  // Váltás válasz fázisra
+  gameState.currentPhase = 'respond';
+  gameState.activePlayer = 'bot';
+  updateUI();
+  
+  // Bot gondolkodik és válaszol
+  setTimeout(() => botRespond(), 2000);
+}
+
+// Bot bejelent
+function botAnnounce() {
+  if (gameState.currentPhase !== 'announce' || gameState.activePlayer !== 'bot') return;
+  
+  // Elemezzük a bot kockáit
+  const validCombos = analyzeValidCombinations(gameState.botDice);
+  
+  // Bot stratégia a bejelentéshez
+  let announcement = decideBotAnnouncement(validCombos);
+  
+  gameState.lastAnnouncement = {
+    player: 'bot',
+    combo: announcement.combo,
+    diceValue: announcement.diceValue,
+    isReal: announcement.isReal
+  };
+  
+  addLogEntry(`A Sötét Nagyúr bejelentése: ${formatComboName(announcement.combo, announcement.diceValue)}`);
+  resultDisplay.textContent = `A Sötét Nagyúr bejelentése: ${formatComboName(announcement.combo, announcement.diceValue)}. Mit teszel?`;
+  
+  // Váltás válasz fázisra
+  gameState.currentPhase = 'respond';
+  gameState.activePlayer = 'player';
+  updateUI();
+}
+
+// Bot stratégia a bejelentéshez
+function decideBotAnnouncement(validCombos) {
+  const botIntelligence = 0.7; // 0-1 közötti érték, mennyire okos a bot (0: mindig igazat mond, 1: tökéletesen blöfföl)
+  
+  // Ha van valódi kombináció, eséllyel azt jelenti be
+  if (validCombos.length > 0 && Math.random() > botIntelligence * 0.5) {
+    const chosenCombo = validCombos[Math.floor(Math.random() * validCombos.length)];
+    return {
+      combo: chosenCombo.combo,
+      diceValue: chosenCombo.diceValue,
+      isReal: true
+    };
+  }
+  
+  // Különben blöfföl
+  // Magasabb rangú kombinációt választ, mint az utolsó bejelentés, ha van
+  let possibleCombos = [];
+  
+  for (let combo in COMBINATIONS) {
+    for (let value = 1; value <= 6; value++) {
+      if (!gameState.lastAnnouncement || 
+          isHigherCombination(combo, value, gameState.lastAnnouncement.combo, gameState.lastAnnouncement.diceValue)) {
+        possibleCombos.push({combo, diceValue: value});
+      }
     }
   }
   
-  // Hazudnia kell vagy úgy dönt, hogy hazudik
+  // Ha nincs lehetséges kombináció, elbukta a játékot
+  if (possibleCombos.length === 0) {
+    addLogEntry('A Sötét Nagyúr nem tud magasabb értéket bejelenteni. Te nyertél!');
+    endGame('player');
+    return { combo: 'three', diceValue: 1, isReal: false }; // Csak kitöltés, nem fogja használni
+  }
   
-  // Bot stratégia hazudáshoz
-  const gameState = analyzeGameState();
+  // Súlyozás a kombinációk szerint - nem jelent be túl magas értéket, hogy hihetőbb legyen
+  possibleCombos.sort((a, b) => {
+    return rankCombination(a.combo, a.diceValue) - rankCombination(b.combo, b.diceValue);
+  });
   
-  // 1. Ha a bot vesztésre áll, nagyobbat blöfföl
-  if (gameState === "losing") {
-    // Vakmerőbb blöff
-    const highValues = [15, 16, 17, 18, 19, 20]; // Fortélyok és Csínytevés
-    const randomHighValue = highValues[Math.floor(Math.random() * highValues.length)];
+  // A legalacsonyabbak közül választ egyet
+  const threshold = Math.floor(possibleCombos.length * (1 - botIntelligence));
+  const chosenIndex = Math.floor(Math.random() * Math.min(3 + threshold, possibleCombos.length));
+  const chosenCombo = possibleCombos[chosenIndex];
+  
+  return {
+    combo: chosenCombo.combo,
+    diceValue: chosenCombo.diceValue,
+    isReal: false
+  };
+}
+
+// Bot válaszol
+function botRespond() {
+  if (gameState.currentPhase !== 'respond' || gameState.activePlayer !== 'bot') return;
+  
+  // Bot elemzi az esélyeket és eldönti, hogy elhiszi-e vagy sem
+  const botDecision = decideBotResponse();
+  
+  if (botDecision === 'believe') {
+    addLogEntry('A Sötét Nagyúr elhiszi a bejelentésedet.');
+    resultDisplay.textContent = 'A Sötét Nagyúr elhiszi a bejelentésedet. Most ő következik.';
     
-    // De csak 40% eséllyel hazudik nagyon nagyot
-    if (Math.random() < 0.4) {
-      return Math.max(minValue, randomHighValue);
-    }
-  }
-  
-  // 2. Alacsonyabb értéknél kicsit nagyobbat mond, hogy hihetőbb legyen
-  if (minValue < 10) {
-    // Csak 1-3 értékkel nagyobbat mond
-    const increment = Math.floor(Math.random() * 3) + 1;
-    return Math.min(minValue + increment, 13); // Ne menjen Fortély fölé
-  }
-  
-  // 3. Magasabb értékeknél óvatosabban hazudik
-  if (minValue >= 13) {
-    // 30% esély, hogy nagy blöfföt tesz
-    if (Math.random() < 0.3) {
-      return Math.min(20, minValue + Math.floor(Math.random() * 3) + 1);
-    }
-    
-    // 70% esély, hogy csak eggyel nagyobbat mond
-    return minValue + 1;
-  }
-  
-  // Alapértelmezett: minimális értéknél csak kicsit nagyobbat mond
-  return minValue + Math.floor(Math.random() * 2) + 1;
-}
-
-// Játékállás elemzése
-function analyzeGameState() {
-  if (playerSparks > botSparks + 1) {
-    return "losing"; // Bot vesztésre áll
-  }
-  
-  if (botSparks > playerSparks + 1) {
-    return "winning"; // Bot nyerésre áll
-  }
-  
-  return "even"; // Kiegyenlített
-}
-
-// Játékos elhiszi a bot bejelentését
-function playerBelieves() {
-  // Játékos elhiszi, mostantól ő következik
-  displayMessage("Elhiszed Odin bejelentését. Most te dobsz.");
-  
-  // Játékos aktív lesz
-  setTimeout(() => {
-    switchPlayer();
-    // Dobás gomb megjelenítése
-    believeControls.style.display = 'none';
-    rollControls.style.display = 'block';
-  }, 1000);
-}
-
-// Játékos kétségbe vonja a bot bejelentését
-function playerDoubts() {
-  displayMessage("Nem hiszed el Odin bejelentését! Lássuk, igazat mondott-e...");
-  
-  // Bot felfedi a kockáit
-  setTimeout(() => {
-    revealBotDice();
-  }, 1000);
-}
-
-// Játékos kockáinak felfedése (amikor a bot nem hiszi el)
-function revealPlayerDice() {
-  // Utolsó játékos-bejelentés
-  const lastPlayerClaim = playerHistory[playerHistory.length - 1];
-  
-  // Valós dobás megjelenítése
-  const diceElements = diceContainer.querySelectorAll('.dice');
-  diceElements[0].innerHTML = `<div class="hidden-value">${currentDice[0]}</div>`;
-  diceElements[1].innerHTML = `<div class="hidden-value">${currentDice[1]}</div>`;
-  
-  // Ellenőrzés, hazudott-e a játékos
-  setTimeout(() => {
-    if (lastPlayerClaim.isLying) {
-      // Játékos hazudott, szikrát veszít
-      playerSparks--;
-      updateSparksDisplay();
-      
-      displayMessage("Hazudtál! Elvesztettél egy isteni szikrát.");
-      
-      // Új kör, bot kezd
-      setTimeout(() => {
-        lastClaimedValue = null; // Új kör, bármi mondható
-        previousClaimEl.textContent = "Új kör kezdődik";
-        currentClaimEl.textContent = "Odin kezd";
-        
-        if (checkGameEnd()) return;
-        
-        resetDice();
-        activePlayer = 1; // Bot kezd
-        switchPlayer();
-        botTurn();
-      }, 2000);
+    // Képesség ellenőrzése
+    if (gameState.lastAnnouncement.isReal) {
+      const ability = COMBINATIONS[gameState.lastAnnouncement.combo].ability;
+      handlePlayerAbility(ability);
     } else {
-      // Játékos igazat mondott, bot veszít szikrát
-      botSparks--;
-      updateSparksDisplay();
-      
-      displayMessage("Igazat mondtál! Odin elvesztett egy isteni szikrát.");
-      
-      // Új kör, játékos kezd
-      setTimeout(() => {
-        lastClaimedValue = null; // Új kör, bármi mondható
-        previousClaimEl.textContent = "Új kör kezdődik";
-        currentClaimEl.textContent = "Te kezdesz";
-        
-        if (checkGameEnd()) return;
-        
-        resetDice();
-        activePlayer = 0; // Játékos kezd
-        switchPlayer();
-        
-        // Dobás gomb megjelenítése
-        believeControls.style.display = 'none';
-        rollControls.style.display = 'block';
-      }, 2000);
+      // Csak cseréljük az aktív játékost és lépünk tovább
+      gameState.activePlayer = 'bot';
+      gameState.currentPhase = 'roll';
+      updateUI();
+      setTimeout(() => botRoll(), 1500);
     }
+  } else {
+    addLogEntry('A Sötét Nagyúr kétségbe vonja a bejelentésedet!');
+    resultDisplay.textContent = 'A Sötét Nagyúr kétségbe vonja a bejelentésedet! A kockák leleplezésre kerülnek...';
+    
+    // A játékos valós kockáinak megjelenítése
+    displayDice(gameState.playerDice, playerDiceContainer);
+    
+    setTimeout(() => {
+      resolveChallenge('player');
+    }, 1500);
+  }
+}
+
+// Bot stratégia a válaszhoz
+function decideBotResponse() {
+  const { combo, diceValue } = gameState.lastAnnouncement;
+  const comboRank = COMBINATIONS[combo].rank;
+  
+  // Az ítélet alapja: minél magasabb rangú a bejelentett kombináció, annál valószínűbb, hogy kétségbe vonja
+  let doubtProbability = 0.3; // Alap kétségbe vonás esélye
+  
+  // Kombináció rangjának hatása
+  doubtProbability += comboRank * 0.1;
+  
+  // Korábbi bejelentések és a bot játékstílusa alapján további módosítások
+  // A bot személyiségét itt tovább lehet finomítani
+  
+  // A bot "gondolkodik"
+  return Math.random() < doubtProbability ? 'doubt' : 'believe';
+}
+
+// Játékos elhiszi
+function playerBelieve() {
+  if (gameState.currentPhase !== 'respond' || gameState.activePlayer !== 'player') return;
+  
+  addLogEntry('Elhiszed a Sötét Nagyúr bejelentését.');
+  resultDisplay.textContent = 'Elhiszed a bejelentést. Most te következel.';
+  
+  // Képesség ellenőrzése
+  if (gameState.lastAnnouncement.isReal) {
+    const ability = COMBINATIONS[gameState.lastAnnouncement.combo].ability;
+    handleBotAbility(ability);
+  } else {
+    // Csak cseréljük az aktív játékost és lépünk tovább
+    gameState.activePlayer = 'player';
+    gameState.currentPhase = 'roll';
+    updateUI();
+  }
+}
+
+// Játékos kétségbe von
+function playerDoubt() {
+  if (gameState.currentPhase !== 'respond' || gameState.activePlayer !== 'player') return;
+  
+  addLogEntry('Kétségbe vonod a Sötét Nagyúr bejelentését!');
+  resultDisplay.textContent = 'Kétségbe vonod a bejelentést! A kockák leleplezésre kerülnek...';
+  
+  // A bot valós kockáinak megjelenítése
+  displayDice(gameState.botDice, botDiceContainer);
+  
+  setTimeout(() => {
+    resolveChallenge('bot');
   }, 1500);
 }
 
-// Bot kockáinak felfedése (amikor a játékos nem hiszi el)
-function revealBotDice() {
-  // Utolsó bot-bejelentés
-  const lastBotClaim = botHistory[botHistory.length - 1];
+// Kihívás eredményének feldolgozása
+function resolveChallenge(challengedPlayer) {
+  if (challengedPlayer !== 'player' && challengedPlayer !== 'bot') return;
   
-  // Valós dobás megjelenítése
-  const diceElements = diceContainer.querySelectorAll('.dice');
-  diceElements[0].innerHTML = `<div class="hidden-value">${currentDice[0]}</div>`;
-  diceElements[1].innerHTML = `<div class="hidden-value">${currentDice[1]}</div>`;
+  const announcement = gameState.lastAnnouncement;
+  const isReal = announcement.isReal;
   
-  // Ellenőrzés, hazudott-e a bot
-  setTimeout(() => {
-    if (lastBotClaim.isLying) {
-      // Bot hazudott, szikrát veszít
-      botSparks--;
-      updateSparksDisplay();
-      
-      displayMessage("Leleplezted Odin hazugságát! Odin elvesztett egy isteni szikrát.");
-      
-      // Új kör, játékos kezd
-      setTimeout(() => {
-        lastClaimedValue = null; // Új kör, bármi mondható
-        previousClaimEl.textContent = "Új kör kezdődik";
-        currentClaimEl.textContent = "Te kezdesz";
-        
-        if (checkGameEnd()) return;
-        
-        resetDice();
-        activePlayer = 0; // Játékos kezd
-        switchPlayer();
-        
-        // Dobás gomb megjelenítése
-        believeControls.style.display = 'none';
-        rollControls.style.display = 'block';
-      }, 2000);
+  if (isReal) {
+    // A bejelentés igaz volt, a kihívó veszít
+    let sparksLost = 1;
+    
+    // Full house képesség ellenőrzése (2 szikrát veszt, ha full house-t von kétségbe)
+    if (announcement.combo === 'fullhouse') {
+      sparksLost = 2;
+      addLogEntry(`A bejelentés valódi volt! Ez full house, így ${sparksLost} isteni szikrát veszítesz!`);
     } else {
-      // Bot igazat mondott, játékos veszít szikrát
-      playerSparks--;
-      updateSparksDisplay();
-      
-      displayMessage("Odin igazat mondott! Elvesztettél egy isteni szikrát.");
-      
-      // Új kör, bot kezd
-      setTimeout(() => {
-        lastClaimedValue = null; // Új kör, bármi mondható
-        previousClaimEl.textContent = "Új kör kezdődik";
-        currentClaimEl.textContent = "Odin kezd";
-        
-        if (checkGameEnd()) return;
-        
-        resetDice();
-        activePlayer = 1; // Bot kezd
-        switchPlayer();
-        botTurn();
-      }, 2000);
+      addLogEntry('A bejelentés valódi volt! 1 isteni szikrát veszítesz.');
     }
-  }, 1500);
+    
+    if (challengedPlayer === 'player') {
+      // Bot veszít szikrát
+      loseSparkWithCheck('bot', sparksLost);
+    } else {
+      // Játékos veszít szikrát
+      loseSparkWithCheck('player', sparksLost);
+    }
+    
+    // Képesség ellenőrzése
+    const ability = COMBINATIONS[announcement.combo].ability;
+    if (challengedPlayer === 'player') {
+      handlePlayerAbility(ability);
+    } else {
+      handleBotAbility(ability);
+    }
+  } else {
+    // A bejelentés hamis volt, a bejelentő veszít
+    addLogEntry('A bejelentés hamis volt! A bejelentő 1 isteni szikrát veszít.');
+    
+    if (announcement.player === 'player') {
+      // Játékos veszít szikrát
+      loseSparkWithCheck('player', 1);
+    } else {
+      // Bot veszít szikrát
+      loseSparkWithCheck('bot', 1);
+    }
+    
+    // Új kör, a kihívott játékos kezd
+    if (challengedPlayer === 'player') {
+      // Játékos kezd
+      gameState.activePlayer = 'player';
+    } else {
+      // Bot kezd
+      gameState.activePlayer = 'bot';
+    }
+    
+    // Új körben bármilyen értéket be lehet jelenteni
+    gameState.lastAnnouncement = null;
+    gameState.currentPhase = 'roll';
+    updateUI();
+    
+    if (gameState.activePlayer === 'bot') {
+      setTimeout(() => botRoll(), 1500);
+    }
+  }
 }
 
-// Játék vége ellenőrzése
-function checkGameEnd() {
-  if (playerSparks <= 0) {
-    // Bot nyert
-    gameActive = false;
-    displayMessage('<span class="winner">Vesztettél! Odin minden isteni szikrádat elvette.</span>');
-    document.getElementById('resetContainer').style.display = 'block';
-    return true;
+// Isteni szikra vesztése pajzs képesség ellenőrzésével
+function loseSparkWithCheck(player, count) {
+  if (player !== 'player' && player !== 'bot') return;
+  
+  // Pajzs képesség ellenőrzése
+  if (player === 'player' && gameState.playerAbilities.shield) {
+    addLogEntry('A pajzs képességed megvéd egy isteni szikra elvesztésétől!');
+    gameState.playerAbilities.shield = false;
+    count -= 1;
+  } else if (player === 'bot' && gameState.botAbilities.shield) {
+    addLogEntry('A Sötét Nagyúr pajzsa megvédi egy isteni szikra elvesztésétől!');
+    gameState.botAbilities.shield = false;
+    count -= 1;
   }
   
-  if (botSparks <= 0) {
-    // Játékos nyert
-    gameActive = false;
-    displayMessage('<span class="winner">Győztél! Loki fortélyai legyőzték Odint.</span>');
-    document.getElementById('resetContainer').style.display = 'block';
-    return true;
+  // Szikrák levonása
+  if (count > 0) {
+    if (player === 'player') {
+      gameState.playerSparks = Math.max(0, gameState.playerSparks - count);
+    } else {
+      gameState.botSparks = Math.max(0, gameState.botSparks - count);
+    }
   }
   
-  return false;
+  // UI frissítése
+  updateSparksDisplay();
+  
+  // Játék vége ellenőrzése
+  if (gameState.playerSparks === 0 || gameState.botSparks === 0) {
+    const winner = gameState.playerSparks > 0 ? 'player' : 'bot';
+    endGame(winner);
+  }
 }
 
-// Játékos váltás
-function switchPlayer() {
-  // Aktív játékos vizuális jelölése
-  playerSection.classList.toggle('active-player');
-  botSection.classList.toggle('active-player');
+// Játékos képesség kezelése
+function handlePlayerAbility(ability) {
+  if (!ability) return;
+  
+  switch (ability) {
+    case 'peek':
+      abilityTitle.textContent = 'Meglesheted az ellenfél következő dobását!';
+      abilityDescription.textContent = 'Használod a képességed, hogy meglásd a Sötét Nagyúr kockáit a következő körben?';
+      gameState.currentPhase = 'ability';
+      abilityPanel.style.display = 'block';
+      break;
+      
+    case 'shield':
+      abilityTitle.textContent = 'Pajzs képesség aktiválva!';
+      abilityDescription.textContent = 'Védelmet kapsz egy isteni szikra elvesztése ellen.';
+      gameState.currentPhase = 'ability';
+      abilityPanel.style.display = 'block';
+      break;
+      
+    case 'heal':
+      abilityTitle.textContent = 'Gyógyítás képesség aktiválva!';
+      abilityDescription.textContent = 'Visszaszerezhetsz egy elvesztett isteni szikrát.';
+      gameState.currentPhase = 'ability';
+      abilityPanel.style.display = 'block';
+      break;
+      
+    case 'double':
+      // Ezt már kezeltük a loseSparkWithCheck függvényben
+      continueAfterAbility();
+      break;
+      
+    default:
+      continueAfterAbility();
+  }
 }
 
-// Üzenet megjelenítése
-function displayMessage(message) {
-  resultEl.innerHTML = message;
+// Bot képesség kezelése
+function handleBotAbility(ability) {
+  if (!ability) return;
+  
+  switch (ability) {
+    case 'peek':
+      gameState.botAbilities.peek = true;
+      addLogEntry('A Sötét Nagyúr meg fogja látni a következő dobásodat!');
+      break;
+      
+    case 'shield':
+      gameState.botAbilities.shield = true;
+      addLogEntry('A Sötét Nagyúr védelmet kapott egy isteni szikra elvesztése ellen.');
+      break;
+      
+    case 'heal':
+      if (gameState.botSparks < 5) {
+        gameState.botSparks++;
+        addLogEntry('A Sötét Nagyúr visszaszerzett egy elvesztett isteni szikrát!');
+        updateSparksDisplay();
+      } else {
+        addLogEntry('A Sötét Nagyúrnak már maximális isteni szikrája van, nem használja a képességet.');
+      }
+      break;
+  }
+  
+  // Folytatás
+  continueAfterAbility();
 }
+
+// Játék folytatása képesség után
+function continueAfterAbility() {
+  // Alapértelmezés szerint, a következő kört az a játékos kezdi, aki kétségbe vonta az igaz bejelentést
+  gameState.currentPhase = 'roll';
+  gameState.lastAnnouncement = null;
+  updateUI();
+  
+  if (gameState.activePlayer === 'bot') {
+    setTimeout(() => botRoll(), 1500);
+  }
+}
+
+// Képesség használata
+function useAbility() {
+  const ability = COMBINATIONS[gameState.lastAnnouncement.combo].ability;
+  
+  switch (ability) {
+    case 'peek':
+      gameState.playerAbilities.peek = true;
+      addLogEntry('Használod a képességet: meg fogod látni a Sötét Nagyúr következő dobását!');
+      break;
+      
+    case 'shield':
+      gameState.playerAbilities.shield = true;
+      addLogEntry('Használod a képességet: védelmet kapsz egy isteni szikra elvesztése ellen.');
+      break;
+      
+    case 'heal':
+      if (gameState.playerSparks < 5) {
+        gameState.playerSparks++;
+        addLogEntry('Használod a képességet: visszaszereztél egy elvesztett isteni szikrát!');
+        updateSparksDisplay();
+      } else {
+        addLogEntry('Már maximális isteni szikrád van, nem használtad a képességet.');
+      }
+      break;
+  }
+  
+  abilityPanel.style.display = 'none';
+  continueAfterAbility();
+}
+
+// Képesség kihagyása
+function skipAbility() {
+  addLogEntry('Nem használtad a képességet.');
+  abilityPanel.style.display = 'none';
+  continueAfterAbility();
+}
+
+// Játék vége
+function endGame(winner) {
+  gameState.currentPhase = 'end';
+  
+  if (winner === 'player') {
+    resultDisplay.innerHTML = '<span class="winner">Gratulálok! Legyőzted a Sötét Nagyurat!</span>';
+  } else {
+    resultDisplay.innerHTML = '<span class="winner">A Sötét Nagyúr elpusztította a világodat! Elbukott a küldetésed.</span>';
+  }
+  
+  resetContainer.style.display = 'block';
+}
+
+// Isteni szikrák megjelenítésének frissítése
+function updateSparksDisplay() {
+  playerSparksContainer.innerHTML = '';
+  botSparksContainer.innerHTML = '';
+  
+  for (let i = 0; i < 5; i++) {
+    const playerSpark = document.createElement('i');
+    playerSpark.className = i < gameState.playerSparks ? 'fas fa-fire spark' : 'fas fa-fire spark lost-spark';
+    playerSparksContainer.appendChild(playerSpark);
+    
+    const botSpark = document.createElement('i');
+    botSpark.className = i < gameState.botSparks ? 'fas fa-fire spark' : 'fas fa-fire spark lost-spark';
+    botSparksContainer.appendChild(botSpark);
+  }
+}
+
+// UI frissítése a játék állapot alapján
+function updateUI() {
+  // Aktív játékos jelölése
+  playerSection.classList.toggle('active-player', gameState.activePlayer === 'player');
+  botSection.classList.toggle('active-player', gameState.activePlayer === 'bot');
+  
+  // Isteni szikrák frissítése
+  updateSparksDisplay();
+  
+  // Gombok állapotának frissítése
+  rollBtn.disabled = !(gameState.currentPhase === 'roll' && gameState.activePlayer === 'player');
+  announceBtn.disabled = !(gameState.currentPhase === 'announce' && gameState.activePlayer === 'player');
+  believeBtn.disabled = !(gameState.currentPhase === 'respond' && gameState.activePlayer === 'player');
+  doubtBtn.disabled = !(gameState.currentPhase === 'respond' && gameState.activePlayer === 'player');
+  
+  // Combo selector láthatósága
+  comboSelector.style.display = (gameState.currentPhase === 'announce' && gameState.activePlayer === 'player') ? 'flex' : 'none';
+  
+  // Announce panel címe
+  const announceTitle = document.getElementById('announce-title');
+  if (gameState.currentPhase === 'announce') {
+    announceTitle.textContent = 'Válaszd ki a bejelentendő kombinációt';
+  } else if (gameState.currentPhase === 'respond') {
+    announceTitle.textContent = 'Elhiszed vagy kétségbe vonod?';
+  } else {
+    announceTitle.textContent = 'Válaszd ki a következő lépést';
+  }
+}
+
+// Játéknapló kezelése
+function addLogEntry(message) {
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  entry.textContent = `» ${message}`;
+  gameLog.appendChild(entry);
+  gameLog.scrollTop = gameLog.scrollHeight;
+}
+
+function clearLog() {
+  gameLog.innerHTML = '';
+}
+
+// Eseménykezelők
+rollBtn.addEventListener('click', playerRoll);
+announceBtn.addEventListener('click', playerAnnounce);
+believeBtn.addEventListener('click', playerBelieve);
+doubtBtn.addEventListener('click', playerDoubt);
+useAbilityBtn.addEventListener('click', useAbility);
+skipAbilityBtn.addEventListener('click', skipAbility);
 
 // Játék indítása
 startGame();
