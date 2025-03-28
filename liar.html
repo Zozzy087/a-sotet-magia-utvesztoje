@@ -42,12 +42,19 @@
       border-radius: 5px;
       min-width: 200px;
       text-align: center;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .active-player {
+      box-shadow: 0 0 25px rgba(255, 100, 0, 0.7);
+      border: 2px solid #ff6400;
     }
     .spark-icon {
       color: #ff6400;
       font-size: 1.5rem;
       margin: 0 3px;
       text-shadow: 0 0 10px rgba(255, 100, 0, 0.7);
+      transition: all 0.5s ease;
     }
     .inactive {
       color: #482c17;
@@ -60,6 +67,7 @@
       margin: 20px 0;
       border: 1px solid #482c17;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      transition: all 0.5s ease;
     }
     .dice-title {
       font-size: 1.4rem;
@@ -71,35 +79,62 @@
       margin: 5px;
       display: inline-block;
       transition: all 0.3s ease;
+      color: #ff6400;
+      text-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
+      line-height: 1;
+    }
+    .dice.highlighted {
+      color: #ffcc00;
+      transform: scale(1.2);
+      text-shadow: 0 0 15px rgba(255, 204, 0, 0.7);
     }
     .dice-container {
       margin: 10px 0;
+      min-height: 60px;
     }
     .controls {
       background-color: rgba(20, 14, 10, 0.85);
       padding: 20px;
       border-radius: 5px;
       margin: 20px 0;
+      transition: all 0.3s ease;
     }
     .announcement {
       margin-bottom: 20px;
       font-size: 1.2rem;
     }
-    select, button {
+    select {
       font-family: 'Eczar', serif;
       font-size: 1rem;
-      padding: 10px;
+      padding: 10px 15px;
       margin: 5px;
       border-radius: 5px;
       border: none;
       cursor: pointer;
-      background-color: #482c17;
-      color: #d1c3af;
-    }
-    select {
       background-color: #291d14;
+      color: #d1c3af;
+      box-shadow: 0 0 8px rgba(127, 0, 255, 0.3);
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%23d1c3af" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+      transition: all 0.3s ease;
+    }
+    select:hover, select:focus {
+      background-color: #3a2a1d;
+      box-shadow: 0 0 12px rgba(127, 0, 255, 0.5);
     }
     button {
+      font-family: 'Eczar', serif;
+      font-size: 1rem;
+      padding: 10px 20px;
+      margin: 5px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
       background-color: #7f00ff;
       color: white;
       box-shadow: 0 0 10px #7f00ff;
@@ -111,6 +146,13 @@
       transform: scale(1.05);
       box-shadow: 0 0 15px #a94bff;
     }
+    button:disabled {
+      background-color: #4a2d75;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+      opacity: 0.7;
+    }
     .ability-button {
       background-color: #ff6400;
       box-shadow: 0 0 10px #ff6400;
@@ -119,6 +161,13 @@
       background-color: #ff8a44;
       box-shadow: 0 0 15px #ff8a44;
     }
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px 0;
+    }
     .status {
       background-color: rgba(20, 14, 10, 0.85);
       padding: 15px;
@@ -126,6 +175,8 @@
       margin: 20px 0;
       font-size: 1.2rem;
       line-height: 1.4;
+      min-height: 80px;
+      transition: all 0.3s ease;
     }
     .current-player {
       color: #ff6400;
@@ -133,26 +184,68 @@
     }
     .hidden {
       display: none;
+      opacity: 0;
+      visibility: hidden;
+    }
+    .fadeIn {
+      animation: fadeIn 0.5s ease forwards;
+    }
+    .fadeOut {
+      animation: fadeOut 0.5s ease forwards;
     }
     .combination-info {
       background-color: rgba(20, 14, 10, 0.7);
-      padding: 10px;
+      padding: 15px;
       border-radius: 5px;
       margin: 10px 0;
-      font-size: 0.9rem;
+      font-size: 1rem;
       text-align: left;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 15px;
+    }
+    .combination-card {
+      background-color: rgba(40, 25, 15, 0.7);
+      border-radius: 5px;
+      padding: 10px;
+      border: 1px solid #482c17;
+      transition: all 0.3s ease;
+    }
+    .combination-card:hover {
+      background-color: rgba(60, 35, 20, 0.7);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    .combination-title {
+      color: #ff6400;
+      font-weight: bold;
+      margin: 0 0 8px 0;
+      border-bottom: 1px solid rgba(255, 100, 0, 0.3);
+      padding-bottom: 4px;
+    }
+    .combination-description {
+      margin: 0;
+      font-size: 0.9rem;
     }
     .highlight {
       color: #ff6400;
       font-weight: bold;
+      text-shadow: 0 0 5px rgba(255, 100, 0, 0.3);
     }
     .dice-roll {
       animation: rollDice 0.8s ease-out;
     }
-    @keyframes rollDice {
-      0% { transform: rotateY(0deg); }
-      50% { transform: rotateY(180deg); }
-      100% { transform: rotateY(360deg); }
+    .spark-lost {
+      animation: sparkLost 1s ease-out;
+    }
+    .spark-gained {
+      animation: sparkGained 1s ease-out;
+    }
+    .flicker {
+      animation: flicker 2s infinite;
+    }
+    .pulse {
+      animation: pulse 2s infinite;
     }
     #abilities {
       display: flex;
@@ -160,6 +253,116 @@
       justify-content: center;
       gap: 10px;
       margin-top: 15px;
+    }
+    .ability-active {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background-color: #ff6400;
+      color: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 10px rgba(255, 100, 0, 0.7);
+      animation: pulse 1.5s infinite;
+    }
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px 12px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      width: 200px;
+      font-size: 0.9rem;
+    }
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+    .history-log {
+      max-height: 150px;
+      overflow-y: auto;
+      margin-top: 20px;
+      background-color: rgba(20, 14, 10, 0.8);
+      border-radius: 5px;
+      padding: 10px;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    .history-entry {
+      margin: 5px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 5px;
+    }
+    
+    @keyframes rollDice {
+      0% { transform: rotateY(0deg) scale(1); opacity: 1; }
+      50% { transform: rotateY(180deg) scale(1.2); opacity: 0.7; }
+      100% { transform: rotateY(360deg) scale(1); opacity: 1; }
+    }
+    @keyframes sparkLost {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.7; color: red; }
+      100% { transform: scale(1); opacity: 0.3; color: #482c17; }
+    }
+    @keyframes sparkGained {
+      0% { transform: scale(0.5); opacity: 0.3; color: #482c17; }
+      50% { transform: scale(1.5); opacity: 0.7; color: #ffcc00; }
+      100% { transform: scale(1); opacity: 1; color: #ff6400; }
+    }
+    @keyframes flicker {
+      0% { opacity: 1; }
+      25% { opacity: 0.7; }
+      50% { opacity: 0.9; }
+      75% { opacity: 0.8; }
+      100% { opacity: 1; }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .combination-info {
+        grid-template-columns: 1fr;
+      }
+      .dice {
+        font-size: 2rem;
+      }
+      .controls-row {
+        flex-direction: column;
+        align-items: center;
+      }
+      select, button {
+        width: 100%;
+        margin: 5px 0;
+      }
     }
   </style>
 </head>
@@ -169,11 +372,50 @@
 
 <div class="game-container">
   <div class="combination-info">
-    <p><span class="highlight">Kombinációk és képességek:</span></p>
-    <p>• <strong>Három egyforma:</strong> Meglesheted az ellenfél következő dobását</p>
-    <p>• <strong>Három egyforma + két egyforma (Full House):</strong> Ha nem hiszik el, és igazad van, 2 isteni szikrát veszítenek</p>
-    <p>• <strong>Négy egyforma:</strong> Védelmet kapsz egy isteni szikra elvesztése ellen</p>
-    <p>• <strong>Öt egyforma:</strong> Visszaszerezhetsz egy elvesztett isteni szikrát</p>
+    <div class="combination-card">
+      <h3 class="combination-title">Három egyforma</h3>
+      <p class="combination-description">Meglesheted az ellenfél következő dobását</p>
+      <div class="dice-example">
+        <span class="dice highlighted"><i class="fas fa-dice-four"></i></span>
+        <span class="dice highlighted"><i class="fas fa-dice-four"></i></span>
+        <span class="dice highlighted"><i class="fas fa-dice-four"></i></span>
+        <span class="dice"><i class="fas fa-dice-one"></i></span>
+        <span class="dice"><i class="fas fa-dice-six"></i></span>
+      </div>
+    </div>
+    <div class="combination-card">
+      <h3 class="combination-title">Full House</h3>
+      <p class="combination-description">Ha nem hiszik el, és igazad van, 2 isteni szikrát veszítenek</p>
+      <div class="dice-example">
+        <span class="dice highlighted"><i class="fas fa-dice-five"></i></span>
+        <span class="dice highlighted"><i class="fas fa-dice-five"></i></span>
+        <span class="dice highlighted"><i class="fas fa-dice-five"></i></span>
+        <span class="dice highlighted"><i class="fas fa-dice-two"></i></span>
+        <span class="dice highlighted"><i class="fas fa-dice-two"></i></span>
+      </div>
+    </div>
+    <div class="combination-card">
+      <h3 class="combination-title">Négy egyforma</h3>
+      <p class="combination-description">Védelmet kapsz egy isteni szikra elvesztése ellen</p>
+      <div class="dice-example">
+        <span class="dice highlighted"><i class="fas fa-dice-three"></i></span>
+        <span class="dice highlighted"><i class="fas fa-dice-three"></i></span>
+        <span class="dice highlighted"><i class="fas fa-dice-three"></i></span>
+        <span class="dice highlighted"><i class="fas fa-dice-three"></i></span>
+        <span class="dice"><i class="fas fa-dice-one"></i></span>
+      </div>
+    </div>
+    <div class="combination-card">
+      <h3 class="combination-title">Öt egyforma</h3>
+      <p class="combination-description">Visszaszerezhetsz egy elvesztett isteni szikrát</p>
+      <div class="dice-example">
+        <span class="dice highlighted"><i class="fas fa-dice-six"></i></span>
+        <span class="dice highlighted"><i class="fas fa-dice-six"></i></span>
+        <span class="dice highlighted"><i class="fas fa-dice-six"></i></span>
+        <span class="dice highlighted"><i class="fas fa-dice-six"></i></span>
+        <span class="dice highlighted"><i class="fas fa-dice-six"></i></span>
+      </div>
+    </div>
   </div>
 
   <div class="sparks-container">
@@ -186,6 +428,7 @@
         <i class="fas fa-fire spark-icon"></i>
         <i class="fas fa-fire spark-icon"></i>
       </div>
+      <div id="playerAbilityIndicator" class="ability-active hidden"><i class="fas fa-shield-alt"></i></div>
     </div>
     <div class="sparks" id="botSparks">
       <h3>Gép Isteni Szikrái</h3>
@@ -196,6 +439,7 @@
         <i class="fas fa-fire spark-icon"></i>
         <i class="fas fa-fire spark-icon"></i>
       </div>
+      <div id="botAbilityIndicator" class="ability-active hidden"><i class="fas fa-shield-alt"></i></div>
     </div>
   </div>
 
@@ -212,37 +456,47 @@
   <div class="controls" id="announceControls">
     <div class="announcement">
       <p>Mit jelentesz be? (választhatsz igazat vagy blöffölhetsz)</p>
-      <select id="combinationSelect">
-        <option value="none">-- Válassz kombinációt --</option>
-        <option value="three">Három egyforma</option>
-        <option value="fullhouse">Full House (három + két egyforma)</option>
-        <option value="four">Négy egyforma</option>
-        <option value="five">Öt egyforma</option>
-      </select>
-      <select id="valueSelect">
-        <option value="1">1-esek</option>
-        <option value="2">2-esek</option>
-        <option value="3">3-asok</option>
-        <option value="4">4-esek</option>
-        <option value="5">5-ösök</option>
-        <option value="6">6-osok</option>
-      </select>
-      <button id="announceBtn" onclick="announcePlayerCombination()">Bejelentés</button>
+      <div class="controls-row">
+        <select id="combinationSelect">
+          <option value="none">-- Válassz kombinációt --</option>
+          <option value="three">Három egyforma</option>
+          <option value="fullhouse">Full House</option>
+          <option value="four">Négy egyforma</option>
+          <option value="five">Öt egyforma</option>
+        </select>
+        <select id="valueSelect">
+          <option value="1">1-esek</option>
+          <option value="2">2-esek</option>
+          <option value="3">3-asok</option>
+          <option value="4">4-esek</option>
+          <option value="5">5-ösök</option>
+          <option value="6">6-osok</option>
+        </select>
+        <button id="announceBtn" onclick="announcePlayerCombination()">Bejelentés</button>
+      </div>
+    </div>
+    <div class="controls-row">
+      <div class="tooltip">
+        <button id="rerollBtn" onclick="rerollPlayerDice()">Újradobás</button>
+        <span class="tooltiptext">Újradobhatod a kockáidat, de legfeljebb egyszer körönként</span>
+      </div>
     </div>
   </div>
 
   <div class="controls hidden" id="responseControls">
     <div class="announcement">
       <p>A gép bejelentése: <span id="botAnnouncement" class="highlight"></span></p>
-      <button id="believeBtn" onclick="believeBotAnnouncement()">Elhiszem</button>
-      <button id="challengeBtn" onclick="challengeBotAnnouncement()">Nem hiszem el!</button>
+      <div class="controls-row">
+        <button id="believeBtn" onclick="believeBotAnnouncement()">Elhiszem</button>
+        <button id="challengeBtn" onclick="challengeBotAnnouncement()">Nem hiszem el!</button>
+      </div>
     </div>
   </div>
 
   <div class="controls hidden" id="botResponseControls">
     <div class="announcement">
       <p>A játékos bejelentése: <span id="playerAnnouncement" class="highlight"></span></p>
-      <p>A gép döntése: <span id="botDecision" class="highlight"></span></p>
+      <p>A gép döntése: <span id="botDecision" class="highlight pulse"></span></p>
       <button id="continueBtn" onclick="continueAfterResponse()">Folytatás</button>
     </div>
   </div>
@@ -262,6 +516,11 @@
   <div class="controls hidden" id="newGameControls">
     <button id="newGameBtn" onclick="startNewGame()">Új játék</button>
   </div>
+
+  <div class="history-log hidden" id="historyLog">
+    <h3>Játékmenet</h3>
+    <div id="historyEntries"></div>
+  </div>
 </div>
 
 <script>
@@ -273,8 +532,14 @@ let gameState = {
   botDice: [],
   currentPlayer: 'player', // 'player' vagy 'bot'
   lastAnnouncement: null,
-  activeAbility: null,
-  lastLoser: null
+  playerActiveAbility: null,
+  botActiveAbility: null,
+  lastLoser: null,
+  playerBluffHistory: [], // Játékos blöffjeinek nyilvántartása
+  botBluffHistory: [], // Bot blöffjeinek nyilvántartása
+  roundNumber: 1,
+  playerRerolledThisRound: false,
+  gameHistory: []
 };
 
 // Kombinációk és értékeik
@@ -293,6 +558,44 @@ const abilities = {
   'restoreSpark': { name: 'Helyreállítás', description: 'Visszaszerzel egy elvesztett isteni szikrát' }
 };
 
+// Segédfüggvények
+function showElement(id) {
+  const element = document.getElementById(id);
+  element.classList.remove('hidden');
+  element.classList.add('fadeIn');
+}
+
+function hideElement(id) {
+  const element = document.getElementById(id);
+  element.classList.add('fadeOut');
+  setTimeout(() => {
+    element.classList.add('hidden');
+    element.classList.remove('fadeOut');
+  }, 500);
+}
+
+function updateGameStatus(message) {
+  const statusElement = document.getElementById('gameStatus');
+  statusElement.innerHTML = `<p>${message}</p>`;
+}
+
+function addHistoryEntry(message) {
+  gameState.gameHistory.push({
+    round: gameState.roundNumber,
+    message: message
+  });
+  
+  // Frissítjük a történet megjelenítést
+  const historyEntriesElement = document.getElementById('historyEntries');
+  const entry = document.createElement('div');
+  entry.className = 'history-entry';
+  entry.innerHTML = `<strong>Kör ${gameState.roundNumber}:</strong> ${message}`;
+  historyEntriesElement.prepend(entry);
+  
+  // Megjelenítjük a történeti naplót, ha még nem látható
+  showElement('historyLog');
+}
+
 // Játék indítása
 function startNewGame() {
   gameState = {
@@ -302,28 +605,44 @@ function startNewGame() {
     botDice: [],
     currentPlayer: 'player',
     lastAnnouncement: null,
-    activeAbility: null,
-    lastLoser: null
+    playerActiveAbility: null,
+    botActiveAbility: null,
+    lastLoser: null,
+    playerBluffHistory: [],
+    botBluffHistory: [],
+    roundNumber: 1,
+    playerRerolledThisRound: false,
+    gameHistory: []
   };
   
   updateSparksUI();
   startNewRound();
   
-  document.getElementById('newGameControls').classList.add('hidden');
-  document.getElementById('botDiceArea').classList.add('hidden');
-  document.getElementById('abilities').classList.add('hidden');
-  document.getElementById('gameStatus').innerHTML = '<p>A játék kezdődik. Te következel!</p>';
+  // UI elemek visszaállítása
+  hideElement('newGameControls');
+  hideElement('botDiceArea');
+  hideElement('abilities');
+  hideElement('historyLog');
+  document.getElementById('historyEntries').innerHTML = '';
+  document.getElementById('playerAbilityIndicator').classList.add('hidden');
+  document.getElementById('botAbilityIndicator').classList.add('hidden');
+  
+  updateGameStatus('A játék kezdődik. Te következel!');
+  addHistoryEntry('Új játék kezdődött');
 }
 
 // Új kör indítása
 function startNewRound() {
+  gameState.roundNumber++;
+  gameState.playerRerolledThisRound = false;
+  
   // Előző kör takarítása
-  document.getElementById('announceControls').classList.add('hidden');
-  document.getElementById('responseControls').classList.add('hidden');
-  document.getElementById('botResponseControls').classList.add('hidden');
-  document.getElementById('nextRoundControls').classList.add('hidden');
-  document.getElementById('abilities').classList.add('hidden');
-  document.getElementById('botDiceArea').classList.add('hidden');
+  hideElement('announceControls');
+  hideElement('responseControls');
+  hideElement('botResponseControls');
+  hideElement('nextRoundControls');
+  hideElement('abilities');
+  hideElement('botDiceArea');
   
   // Meghatározzuk ki kezd (legutóbbi vesztes)
   if (gameState.lastLoser) {
@@ -340,16 +659,33 @@ function startNewRound() {
   renderDice(gameState.playerDice, 'playerDice');
   document.getElementById('botDice').innerHTML = '';
   
+  // Emeljük ki a soron következő játékost
+  updateActivePlayer();
+  
   if (gameState.currentPlayer === 'player') {
-    document.getElementById('announceControls').classList.remove('hidden');
-    document.getElementById('gameStatus').innerHTML = '<p><span class="current-player">Te következel!</span> Válassz egy kombinációt, amit bejelentesz.</p>';
+    showElement('announceControls');
+    document.getElementById('rerollBtn').disabled = false;
+    updateGameStatus('<span class="current-player">Te következel!</span> Válassz egy kombinációt, amit bejelentesz.');
+    addHistoryEntry('Játékos következik');
   } else {
-    document.getElementById('gameStatus').innerHTML = '<p><span class="current-player">A gép következik...</span> Gondolkozik a bejelentésen.</p>';
+    updateGameStatus('<span class="current-player">A gép következik...</span> Gondolkozik a bejelentésen.');
+    addHistoryEntry('Gép következik');
     setTimeout(botAnnounce, 2000);
   }
   
   updateSparksUI();
   gameState.lastAnnouncement = null;
+}
+
+// Aktuális játékos kiemelése
+function updateActivePlayer() {
+  if (gameState.currentPlayer === 'player') {
+    document.getElementById('playerSparks').classList.add('active-player');
+    document.getElementById('botSparks').classList.remove('active-player');
+  } else {
+    document.getElementById('playerSparks').classList.remove('active-player');
+    document.getElementById('botSparks').classList.add('active-player');
+  }
 }
 
 // Következő kör indítása
@@ -366,12 +702,13 @@ function startNextRound() {
 function endGame() {
   let winner = gameState.playerSparks > 0 ? 'player' : 'bot';
   let message = winner === 'player' ? 
-    'Gratulálunk! Te nyerted a játékot!' : 
-    'Sajnáljuk, a gép nyerte a játékot!';
+    '<span class="highlight">Gratulálunk!</span> Te nyerted a játékot!' : 
+    '<span class="highlight">Sajnáljuk,</span> a gép nyerte a játékot!';
   
-  document.getElementById('gameStatus').innerHTML = `<p><span class="highlight">${message}</span></p>`;
-  document.getElementById('newGameControls').classList.remove('hidden');
-  document.getElementById('nextRoundControls').classList.add('hidden');
+  updateGameStatus(message);
+  showElement('newGameControls');
+  hideElement('nextRoundControls');
+  addHistoryEntry(winner === 'player' ? 'Játékos nyerte a játékot!' : 'Gép nyerte a játékot!');
 }
 
 // 5 kocka dobása
@@ -383,6 +720,21 @@ function rollDice(count) {
   return dice;
 }
 
+// Játékos újradobás
+function rerollPlayerDice() {
+  if (gameState.playerRerolledThisRound) {
+    alert('Ebben a körben már újradobtad a kockáidat!');
+    return;
+  }
+  
+  gameState.playerDice = rollDice(5);
+  renderDice(gameState.playerDice, 'playerDice');
+  gameState.playerRerolledThisRound = true;
+  document.getElementById('rerollBtn').disabled = true;
+  
+  addHistoryEntry('Játékos újradobta a kockáit');
+}
+
 // Kockák megjelenítése
 function renderDice(dice, containerId) {
   const container = document.getElementById(containerId);
@@ -391,15 +743,81 @@ function renderDice(dice, containerId) {
   // Rendezzük a kockákat a jobb láthatóság érdekében
   const sortedDice = [...dice].sort((a, b) => a - b);
   
-  sortedDice.forEach(value => {
+  // Keressük a kombinációkat a kiemeléshez
+  const combinations = findCombinations(sortedDice);
+  
+  sortedDice.forEach((value, index) => {
     const diceEl = document.createElement('span');
     diceEl.className = 'dice dice-roll';
+    
+    // Kiemeljük a kombinációkat
+    if (combinations.some(combo => combo.indices.includes(index))) {
+      diceEl.classList.add('highlighted');
+    }
+    
     diceEl.innerHTML = getDiceHTML(value);
     container.appendChild(diceEl);
   });
 }
 
-// Kocka HTML (emojik helyett Font Awesome ikonok)
+// Kombinációk keresése
+function findCombinations(dice) {
+  const valueCounts = {};
+  dice.forEach((value, index) => {
+    if (!valueCounts[value]) valueCounts[value] = { count: 0, indices: [] };
+    valueCounts[value].count++;
+    valueCounts[value].indices.push(index);
+  });
+  
+  const combinations = [];
+  
+  // Öt egyforma
+  Object.entries(valueCounts).forEach(([value, data]) => {
+    if (data.count === 5) {
+      combinations.push({ type: 'five', value: parseInt(value), indices: data.indices });
+    }
+  });
+  
+  // Négy egyforma
+  Object.entries(valueCounts).forEach(([value, data]) => {
+    if (data.count === 4) {
+      combinations.push({ type: 'four', value: parseInt(value), indices: data.indices });
+    }
+  });
+  
+  // Full House
+  let threeOfAKindValue = null;
+  let threeOfAKindIndices = [];
+  let pairValue = null;
+  let pairIndices = [];
+  
+  Object.entries(valueCounts).forEach(([value, data]) => {
+    if (data.count === 3) {
+      threeOfAKindValue = parseInt(value);
+      threeOfAKindIndices = data.indices;
+    } else if (data.count === 2) {
+      pairValue = parseInt(value);
+      pairIndices = data.indices;
+    }
+  });
+  
+  if (threeOfAKindValue !== null && pairValue !== null) {
+    combinations.push({ 
+      type: 'fullhouse', 
+      value: threeOfAKindValue, 
+      indices: [...threeOfAKindIndices, ...pairIndices] 
+    });
+  }
+  
+  // Három egyforma (ha nincs full house)
+  if (threeOfAKindValue !== null && pairValue === null) {
+    combinations.push({ type: 'three', value: threeOfAKindValue, indices: threeOfAKindIndices });
+  }
+  
+  return combinations;
+}
+
+// Kocka HTML (Font Awesome ikonok)
 function getDiceHTML(value) {
   return `<i class="fas fa-dice-${getDiceIcon(value)}"></i>`;
 }
@@ -414,6 +832,19 @@ function getDiceIcon(value) {
 function updateSparksUI() {
   updateSparkIcons('playerSparksIcons', gameState.playerSparks);
   updateSparkIcons('botSparksIcons', gameState.botSparks);
+  
+  // Képesség indikátorok
+  if (gameState.playerActiveAbility === 'protection') {
+    document.getElementById('playerAbilityIndicator').classList.remove('hidden');
+  } else {
+    document.getElementById('playerAbilityIndicator').classList.add('hidden');
+  }
+  
+  if (gameState.botActiveAbility === 'protection') {
+    document.getElementById('botAbilityIndicator').classList.remove('hidden');
+  } else {
+    document.getElementById('botAbilityIndicator').classList.add('hidden');
+  }
 }
 
 // Szikra ikonok frissítése
@@ -422,9 +853,20 @@ function updateSparkIcons(containerId, count) {
   const icons = container.querySelectorAll('.spark-icon');
   
   icons.forEach((icon, index) => {
+    // Eltávolítjuk a korábbi animációs osztályokat
+    icon.classList.remove('spark-lost', 'spark-gained');
+    
     if (index < count) {
+      if (icon.classList.contains('inactive')) {
+        // Ha korábban inaktív volt és most aktív lesz
+        icon.classList.add('spark-gained');
+      }
       icon.classList.remove('inactive');
     } else {
+      if (!icon.classList.contains('inactive')) {
+        // Ha korábban aktív volt és most inaktív lesz
+        icon.classList.add('spark-lost');
+      }
       icon.classList.add('inactive');
     }
   });
@@ -447,14 +889,23 @@ function announcePlayerCombination() {
     player: 'player'
   };
   
+  // Ellenőrizzük, blöfföl-e a játékos
+  const isBluff = !checkCombination(gameState.playerDice, gameState.lastAnnouncement);
+  
+  // Tároljuk a játékos blöfftörténetében
+  gameState.playerBluffHistory.push(isBluff);
+  if (gameState.playerBluffHistory.length > 5) {
+    gameState.playerBluffHistory.shift();
+  }
+  
   document.getElementById('playerAnnouncement').textContent = 
-    `${combination.name} ${valueType}-es értékkel`;
+    `${combination.name} ${valueType}-ös értékkel`;
   
-  document.getElementById('announceControls').classList.add('hidden');
-  document.getElementById('botResponseControls').classList.remove('hidden');
+  hideElement('announceControls');
+  showElement('botResponseControls');
   
-  document.getElementById('gameStatus').innerHTML = 
-    `<p>Bejelentetted: <span class="highlight">${combination.name} ${valueType}-es értékkel</span>. A gép dönt, hogy elhiszi-e...</p>`;
+  updateGameStatus(`Bejelentetted: <span class="highlight">${combination.name} ${valueType}-ös értékkel</span>. A gép dönt, hogy elhiszi-e...`);
+  addHistoryEntry(`Játékos bejelentett: ${combination.name} ${valueType}-ös értékkel${isBluff ? ' (blöff)' : ''}`);
   
   // Bot döntése
   setTimeout(() => {
@@ -462,8 +913,8 @@ function announcePlayerCombination() {
     document.getElementById('botDecision').textContent = botBelieves ? 'Elhiszem' : 'Nem hiszem el!';
     
     if (botBelieves) {
-      document.getElementById('gameStatus').innerHTML += 
-        `<p>A gép elhiszi a bejelentésedet. Most ő következik!</p>`;
+      updateGameStatus(`A gép elhiszi a bejelentésedet. Most ő következik!`);
+      addHistoryEntry('A gép elhitte a bejelentést');
       
       // Ellenőrizzük, volt-e valódi kombináció
       const playerHasAnnouncement = checkCombination(gameState.playerDice, gameState.lastAnnouncement);
@@ -474,17 +925,19 @@ function announcePlayerCombination() {
       }
       
       gameState.currentPlayer = 'bot';
+      updateActivePlayer();
       setTimeout(() => {
-        document.getElementById('botResponseControls').classList.add('hidden');
-        if (!gameState.activeAbility) {
+        hideElement('botResponseControls');
+        if (!gameState.playerActiveAbility || gameState.playerActiveAbility !== 'peekAtOpponent') {
           setTimeout(botAnnounce, 1000);
         }
       }, 2000);
     } else {
       // Bot nem hiszi el, ellenőrizzük
-      document.getElementById('gameStatus').innerHTML += 
-        `<p>A gép nem hiszi el a bejelentésedet. Felfedi a kockákat!</p>`;
-      document.getElementById('botDiceArea').classList.remove('hidden');
+      updateGameStatus(`A gép nem hiszi el a bejelentésedet. Felfedi a kockákat!`);
+      addHistoryEntry('A gép nem hitte el a bejelentést');
+      
+      showElement('botDiceArea');
       renderDice(gameState.botDice, 'botDice');
       
       // Ellenőrizzük a bejelentett kombinációt
@@ -493,34 +946,32 @@ function announcePlayerCombination() {
       setTimeout(() => {
         if (playerHasAnnouncement) {
           // Játékos igazat mondott, bot veszít egy szikrát
-          document.getElementById('gameStatus').innerHTML += 
-            `<p>Igazat mondtál! A gép veszít egy isteni szikrát.</p>`;
+          updateGameStatus(`Igazat mondtál! A gép veszít egy isteni szikrát.`);
           gameState.botSparks--;
           gameState.lastLoser = 'bot';
+          addHistoryEntry('Játékos igazat mondott, gép veszített egy szikrát');
           
           // Double damage képesség ellenőrzése Full House esetén
           if (gameState.lastAnnouncement.type === 'fullhouse') {
-            document.getElementById('gameStatus').innerHTML += 
-              `<p class="highlight">Full House képesség aktiválva! A gép két szikrát veszít egy helyett!</p>`;
+            updateGameStatus(`<span class="highlight">Full House képesség aktiválva!</span> A gép két szikrát veszít egy helyett!`);
             gameState.botSparks--;
+            addHistoryEntry('Full House képesség: gép veszített még egy szikrát');
           }
           
           updateSparksUI();
           
           // Ha volt valódi kombináció, aktiváljuk a képességet
-          if (playerHasAnnouncement) {
-            offerAbility(gameState.lastAnnouncement.type);
-          }
+          offerAbility(gameState.lastAnnouncement.type);
         } else {
           // Játékos hazudott, veszít egy szikrát
-          document.getElementById('gameStatus').innerHTML += 
-            `<p>Blöfföltél! Elvesztesz egy isteni szikrát.</p>`;
+          updateGameStatus(`Blöfföltél! Elvesztesz egy isteni szikrát.`);
+          addHistoryEntry('Játékos blöffölt, veszített egy szikrát');
           
           // Védelem képesség ellenőrzése
-          if (gameState.activeAbility === 'protection') {
-            document.getElementById('gameStatus').innerHTML += 
-              `<p class="highlight">Védelem képesség aktiválva! Nem veszítesz isteni szikrát!</p>`;
-            gameState.activeAbility = null;
+          if (gameState.playerActiveAbility === 'protection') {
+            updateGameStatus(`<span class="highlight">Védelem képesség aktiválva!</span> Nem veszítesz isteni szikrát!`);
+            gameState.playerActiveAbility = null;
+            addHistoryEntry('Védelem képesség megvédte a játékost');
           } else {
             gameState.playerSparks--;
           }
@@ -533,10 +984,10 @@ function announcePlayerCombination() {
         if (gameState.playerSparks <= 0 || gameState.botSparks <= 0) {
           setTimeout(endGame, 2000);
         } else {
-          document.getElementById('nextRoundControls').classList.remove('hidden');
+          showElement('nextRoundControls');
         }
         
-        document.getElementById('botResponseControls').classList.add('hidden');
+        hideElement('botResponseControls');
       }, 2000);
     }
   }, 2000);
@@ -544,22 +995,101 @@ function announcePlayerCombination() {
 
 // Bot kombináció bejelentése
 function botAnnounce() {
-  // Bot stratégia: Elég gyakran blöfföl
-  // Ha van jó lapja, általában elmondja
+  // Bot stratégia fejlesztése
+  const botStrategy = determineBotStrategy();
+  const announcement = botStrategy.announcement;
   
+  gameState.lastAnnouncement = announcement;
+  document.getElementById('botAnnouncement').textContent = 
+    `${combinations[announcement.type].name} ${announcement.value}-ös értékkel`;
+  
+  showElement('responseControls');
+  updateGameStatus(`A gép bejelentette: <span class="highlight">${combinations[announcement.type].name} ${announcement.value}-ös értékkel</span>. Elhiszed?`);
+  
+  // Tároljuk, hogy blöfföl-e a bot
+  const isBluff = !checkCombination(gameState.botDice, announcement);
+  gameState.botBluffHistory.push(isBluff);
+  if (gameState.botBluffHistory.length > 5) {
+    gameState.botBluffHistory.shift();
+  }
+  
+  addHistoryEntry(`Gép bejelentett: ${combinations[announcement.type].name} ${announcement.value}-ös értékkel${isBluff ? ' (blöff)' : ''}`);
+}
+
+// Bot stratégia meghatározása
+function determineBotStrategy() {
   // Bot kockák elemzése, milyen kombinációi vannak
   const botCombinations = analyzeCombinations(gameState.botDice);
-  let announcement;
   
-  // Bot döntése
-  const bluffChance = 0.4; // 40% esély a blöffre
+  // Játékos blöffölési hajlandóságának vizsgálata
+  const playerBluffRate = gameState.playerBluffHistory.length > 0 
+    ? gameState.playerBluffHistory.filter(bluff => bluff).length / gameState.playerBluffHistory.length 
+    : 0.5;
+  
+  // Játék állásának figyelembevétele
+  const botIsLosing = gameState.botSparks < gameState.playerSparks;
+  const botIsWinningByLot = gameState.botSparks > gameState.playerSparks + 2;
+  
+  // Kombinációk értékeinek meghatározása
+  const bluffChanceBase = 0.4; // Alap blöffölési esély
+  
+  // Módosítók a játék állása alapján
+  let bluffChance = bluffChanceBase;
+  
+  if (botIsLosing) {
+    bluffChance += 0.2; // Nagyobb eséllyel blöfföl, ha vesztésre áll
+  } else if (botIsWinningByLot) {
+    bluffChance -= 0.2; // Kisebb eséllyel blöfföl, ha nagyon vezet
+  }
+  
+  // Módosító a játékos viselkedése alapján
+  if (playerBluffRate > 0.7) {
+    // Ha a játékos sokat blöfföl, a bot kevesebbet blöfföl és többet kihív
+    bluffChance -= 0.1;
+  } else if (playerBluffRate < 0.3) {
+    // Ha a játékos ritkán blöfföl, a bot többet blöfföl
+    bluffChance += 0.1;
+  }
+  
+  // Biztosítsuk, hogy a végső esély 0.1 és 0.9 között maradjon
+  bluffChance = Math.min(0.9, Math.max(0.1, bluffChance));
+  
   const willBluff = Math.random() < bluffChance;
   
+  let announcement;
   if (willBluff || botCombinations.length === 0) {
-    // Blöff - véletlenszerű kombináció
-    const combinationTypes = Object.keys(combinations);
-    const randomType = combinationTypes[Math.floor(Math.random() * combinationTypes.length)];
-    const randomValue = Math.floor(Math.random() * 6) + 1;
+    // Blöff - intelligensebb választás
+    // Nagyon valószínűtlen kombinációkat (ötös) ritkábban jelent be
+    const availableCombinations = ['three', 'fullhouse', 'four'];
+    if (Math.random() < 0.2) {
+      availableCombinations.push('five'); // Ritkán ötöst is bejelenhet
+    }
+    
+    const randomType = availableCombinations[Math.floor(Math.random() * availableCombinations.length)];
+    
+    // Intelligensebb értékválasztás - figyelembe veszi a kockákon látható értékeket
+    let possibleValues = [1, 2, 3, 4, 5, 6];
+    
+    // Ha van a kockáin gyakori érték, nagyobb eséllyel azt választja
+    const valueCounts = {};
+    gameState.botDice.forEach(value => {
+      valueCounts[value] = (valueCounts[value] || 0) + 1;
+    });
+    
+    let mostFrequentValue = 1;
+    let maxCount = 0;
+    
+    for (let value in valueCounts) {
+      if (valueCounts[value] > maxCount) {
+        maxCount = valueCounts[value];
+        mostFrequentValue = parseInt(value);
+      }
+    }
+    
+    // 60% eséllyel a leggyakoribb értéket választja
+    const randomValue = Math.random() < 0.6 && maxCount >= 2 ? 
+      mostFrequentValue : 
+      possibleValues[Math.floor(Math.random() * possibleValues.length)];
     
     announcement = {
       type: randomType,
@@ -579,34 +1109,32 @@ function botAnnounce() {
     };
   }
   
-  gameState.lastAnnouncement = announcement;
-  document.getElementById('botAnnouncement').textContent = 
-    `${combinations[announcement.type].name} ${announcement.value}-ös értékkel`;
-  
-  document.getElementById('responseControls').classList.remove('hidden');
-  document.getElementById('gameStatus').innerHTML = 
-    `<p>A gép bejelentette: <span class="highlight">${combinations[announcement.type].name} ${announcement.value}-ös értékkel</span>. Elhiszed?</p>`;
+  return { 
+    announcement: announcement,
+    bluffChance: bluffChance,
+    playerBluffRate: playerBluffRate
+  };
 }
 
 // Kombinációk elemzése
 function analyzeCombinations(dice) {
-  const counts = {};
+  const valueCounts = {};
   dice.forEach(value => {
-    counts[value] = (counts[value] || 0) + 1;
+    valueCounts[value] = (valueCounts[value] || 0) + 1;
   });
   
   const results = [];
   
   // Öt egyforma
-  for (let value in counts) {
-    if (counts[value] === 5) {
+  for (let value in valueCounts) {
+    if (valueCounts[value] === 5) {
       results.push({ type: 'five', value: parseInt(value), rank: combinations['five'].rank });
     }
   }
   
   // Négy egyforma
-  for (let value in counts) {
-    if (counts[value] === 4) {
+  for (let value in valueCounts) {
+    if (valueCounts[value] === 4) {
       results.push({ type: 'four', value: parseInt(value), rank: combinations['four'].rank });
     }
   }
@@ -616,11 +1144,11 @@ function analyzeCombinations(dice) {
   let threeValue = 0;
   let hasTwo = false;
   
-  for (let value in counts) {
-    if (counts[value] === 3) {
+  for (let value in valueCounts) {
+    if (valueCounts[value] === 3) {
       hasThree = true;
       threeValue = parseInt(value);
-    } else if (counts[value] === 2) {
+    } else if (valueCounts[value] === 2) {
       hasTwo = true;
     }
   }
@@ -630,8 +1158,8 @@ function analyzeCombinations(dice) {
   }
   
   // Három egyforma
-  for (let value in counts) {
-    if (counts[value] === 3 && !hasTwo) { // Csak ha nem volt Full House
+  for (let value in valueCounts) {
+    if (valueCounts[value] === 3 && !hasTwo) { // Csak ha nem volt Full House
       results.push({ type: 'three', value: parseInt(value), rank: combinations['three'].rank });
     }
   }
@@ -659,8 +1187,7 @@ function checkCombination(dice, announcement) {
 
 // Bot döntése a kihívásról
 function botDecideToChallenge() {
-  // Bot stratégia a kihívásra
-  // Megnézi a saját kockáit, és a bejelentett kombináció típusát
+  // Intelligensebb bot stratégia a kihívásra
   const botCombinations = analyzeCombinations(gameState.botDice);
   const announcement = gameState.lastAnnouncement;
   
@@ -669,33 +1196,63 @@ function botDecideToChallenge() {
   // Alapértelmezett kihívási esély
   let challengeChance = 0.5; // 50% esély
   
+  // Játékos blöffölési története befolyásolja a döntést
+  const playerBluffRate = gameState.playerBluffHistory.length > 0 
+    ? gameState.playerBluffHistory.filter(bluff => bluff).length / gameState.playerBluffHistory.length 
+    : 0.5;
+  
+  if (playerBluffRate > 0.6) {
+    // Ha a játékos gyakran blöfföl, növeljük a kihívás esélyét
+    challengeChance += 0.3;
+  } else if (playerBluffRate < 0.3) {
+    // Ha a játékos ritkán blöfföl, csökkentjük a kihívás esélyét
+    challengeChance -= 0.2;
+  }
+  
   // Erős kombinációk esetén nagyobb eséllyel kihív
-  if (announcement.type === 'five' || announcement.type === 'four') {
-    challengeChance = 0.7; // 70% esély
+  if (announcement.type === 'five') {
+    challengeChance += 0.3; // Nagyon ritka, gyakran blöff
+  } else if (announcement.type === 'four') {
+    challengeChance += 0.2; // Szintén ritka
+  } else if (announcement.type === 'fullhouse') {
+    challengeChance += 0.1; // Közepesen ritka
   }
   
   // Ha a bot kockái között van olyan érték, ami a bejelentett értékkel egyezik
   // kevésbé valószínű, hogy kihív
-  let hasMatchingValue = false;
+  let matchingDiceCount = 0;
   gameState.botDice.forEach(value => {
     if (value === announcement.value) {
-      hasMatchingValue = true;
+      matchingDiceCount++;
     }
   });
   
-  if (hasMatchingValue) {
-    challengeChance -= 0.2; // 20%-kal csökken a kihívás esélye
+  if (matchingDiceCount > 0) {
+    // Minél több egyező érték, annál kevésbé valószínű a kihívás
+    challengeChance -= 0.1 * matchingDiceCount;
   }
+  
+  // Játék állása is befolyásolja
+  if (gameState.botSparks < gameState.playerSparks) {
+    // Ha vesztésre áll, nagyobb kockázatot vállal
+    challengeChance += 0.1;
+  } else if (gameState.botSparks > gameState.playerSparks + 2) {
+    // Ha erősen vezet, óvatosabb
+    challengeChance -= 0.1;
+  }
+  
+  // Biztosítsuk, hogy a végső esély 0.1 és 0.9 között maradjon
+  challengeChance = Math.min(0.9, Math.max(0.1, challengeChance));
   
   return Math.random() >= challengeChance; // true = elhiszi, false = kihívja
 }
 
 // Játékos elhiszi a bot bejelentését
 function believeBotAnnouncement() {
-  document.getElementById('responseControls').classList.add('hidden');
+  hideElement('responseControls');
   
-  document.getElementById('gameStatus').innerHTML = 
-    `<p>Elhiszed a gép bejelentését. Most te következel!</p>`;
+  updateGameStatus(`Elhiszed a gép bejelentését. Most te következel!`);
+  addHistoryEntry('Játékos elhitte a gép bejelentését');
   
   // Ellenőrizzük, volt-e valódi kombináció
   const botHasAnnouncement = checkCombination(gameState.botDice, gameState.lastAnnouncement);
@@ -706,17 +1263,20 @@ function believeBotAnnouncement() {
   }
   
   gameState.currentPlayer = 'player';
-  document.getElementById('announceControls').classList.remove('hidden');
+  updateActivePlayer();
+  showElement('announceControls');
+  document.getElementById('rerollBtn').disabled = false;
+  gameState.playerRerolledThisRound = false;
 }
 
 // Játékos nem hiszi el a bot bejelentését
 function challengeBotAnnouncement() {
-  document.getElementById('responseControls').classList.add('hidden');
-  document.getElementById('botDiceArea').classList.remove('hidden');
+  hideElement('responseControls');
+  showElement('botDiceArea');
   renderDice(gameState.botDice, 'botDice');
   
-  document.getElementById('gameStatus').innerHTML = 
-    `<p>Nem hiszed el a gép bejelentését. A kockák felfedve!</p>`;
+  updateGameStatus(`Nem hiszed el a gép bejelentését. A kockák felfedve!`);
+  addHistoryEntry('Játékos nem hitte el a gép bejelentését');
   
   // Ellenőrizzük a bejelentett kombinációt
   const botHasAnnouncement = checkCombination(gameState.botDice, gameState.lastAnnouncement);
@@ -724,14 +1284,14 @@ function challengeBotAnnouncement() {
   setTimeout(() => {
     if (botHasAnnouncement) {
       // Bot igazat mondott, játékos veszít egy szikrát
-      document.getElementById('gameStatus').innerHTML += 
-        `<p>A gép igazat mondott! Elvesztesz egy isteni szikrát.</p>`;
+      updateGameStatus(`A gép igazat mondott! Elvesztesz egy isteni szikrát.`);
+      addHistoryEntry('Gép igazat mondott, játékos veszített egy szikrát');
       
       // Védelem képesség ellenőrzése
-      if (gameState.activeAbility === 'protection') {
-        document.getElementById('gameStatus').innerHTML += 
-          `<p class="highlight">Védelem képesség aktiválva! Nem veszítesz isteni szikrát!</p>`;
-        gameState.activeAbility = null;
+      if (gameState.playerActiveAbility === 'protection') {
+        updateGameStatus(`<span class="highlight">Védelem képesség aktiválva!</span> Nem veszítesz isteni szikrát!`);
+        gameState.playerActiveAbility = null;
+        addHistoryEntry('Védelem képesség megvédte a játékost');
       } else {
         gameState.playerSparks--;
       }
@@ -744,9 +1304,18 @@ function challengeBotAnnouncement() {
       }
     } else {
       // Bot hazudott, veszít egy szikrát
-      document.getElementById('gameStatus').innerHTML += 
-        `<p>A gép blöffölt! Elveszít egy isteni szikrát.</p>`;
-      gameState.botSparks--;
+      updateGameStatus(`A gép blöffölt! Elveszít egy isteni szikrát.`);
+      addHistoryEntry('Gép blöffölt, veszített egy szikrát');
+      
+      // Védelem képesség ellenőrzése a botnál
+      if (gameState.botActiveAbility === 'protection') {
+        updateGameStatus(`<span class="highlight">A gép aktiválta védelem képességét!</span> Nem veszít isteni szikrát!`);
+        gameState.botActiveAbility = null;
+        addHistoryEntry('Védelem képesség megvédte a gépet');
+      } else {
+        gameState.botSparks--;
+      }
+      
       gameState.lastLoser = 'bot';
     }
     
@@ -756,7 +1325,7 @@ function challengeBotAnnouncement() {
     if (gameState.playerSparks <= 0 || gameState.botSparks <= 0) {
       setTimeout(endGame, 2000);
     } else {
-      document.getElementById('nextRoundControls').classList.remove('hidden');
+      showElement('nextRoundControls');
     }
   }, 2000);
 }
@@ -767,75 +1336,88 @@ function activateBotAbility(combinationType) {
   
   // Bot Full House double damage speciális eset
   if (combinationType === 'fullhouse' && gameState.lastLoser === 'player') {
-    document.getElementById('gameStatus').innerHTML += 
-      `<p class="highlight">A gép Full House képessége aktiválva! Még egy szikrát veszítesz!</p>`;
+    updateGameStatus(`<span class="highlight">A gép Full House képessége aktiválva!</span> Még egy szikrát veszítesz!`);
     gameState.playerSparks--;
     updateSparksUI();
+    addHistoryEntry('Gép Full House képessége: játékos veszített még egy szikrát');
     return;
   }
   
   // Bot képesség végrehajtása
   switch (ability) {
+    case 'peekAtOpponent':
+      // Nincs hatása a játékmenetre közvetlenül
+      addHistoryEntry('Gép megleste a játékos kockáit');
+      break;
     case 'restoreSpark':
       if (gameState.botSparks < 5) {
-        document.getElementById('gameStatus').innerHTML += 
-          `<p class="highlight">A gép visszaszerez egy isteni szikrát!</p>`;
+        updateGameStatus(`<span class="highlight">A gép visszaszerez egy isteni szikrát!</span>`);
         gameState.botSparks++;
         updateSparksUI();
+        addHistoryEntry('Gép visszaszerzett egy isteni szikrát');
       }
       break;
     case 'protection':
-      document.getElementById('gameStatus').innerHTML += 
-        `<p class="highlight">A gép védettséget kap a következő isteni szikra vesztés ellen!</p>`;
-      // Ez a bot következő köre előtt fog aktiválódni
+      updateGameStatus(`<span class="highlight">A gép védettséget kap a következő isteni szikra vesztés ellen!</span>`);
+      gameState.botActiveAbility = 'protection';
+      updateSparksUI();
+      addHistoryEntry('Gép védelem képességet kapott');
       break;
-    // Egyéb képességek megvalósítása
   }
 }
 
 // Képesség felajánlása a játékosnak
 function offerAbility(combinationType) {
   const ability = combinations[combinationType].ability;
-  gameState.activeAbility = ability;
+  
+  // Ha már van aktív képesség, ne ajánljunk újat
+  if (gameState.playerActiveAbility === 'protection') {
+    updateGameStatus(`<span class="highlight">Már van aktív védelmi képességed!</span> Az új képesség nem aktiválódik.`);
+    return;
+  }
   
   const abilitiesContainer = document.getElementById('abilities');
   abilitiesContainer.innerHTML = '';
-  abilitiesContainer.classList.remove('hidden');
+  showElement('abilities');
   
   const button = document.createElement('button');
   button.className = 'ability-button';
-  button.textContent = `${abilities[ability].name} - ${abilities[ability].description}`;
+  button.textContent = `${abilities[ability].name} aktiválása - ${abilities[ability].description}`;
   button.onclick = () => useAbility(ability);
   
   abilitiesContainer.appendChild(button);
   
-  document.getElementById('gameStatus').innerHTML += 
-    `<p class="highlight">Képesség aktiválva: ${abilities[ability].name}! Kattints a gombra a használatához.</p>`;
+  updateGameStatus(`<span class="highlight">Képesség elérhető: ${abilities[ability].name}!</span> Kattints a gombra a használatához.`);
+  addHistoryEntry(`Játékos képessége elérhető: ${abilities[ability].name}`);
 }
 
 // Képesség használata
 function useAbility(ability) {
-  document.getElementById('abilities').classList.add('hidden');
+  hideElement('abilities');
   
   switch (ability) {
     case 'peekAtOpponent':
       // Ellenfél kockáinak megtekintése
-      document.getElementById('botDiceArea').classList.remove('hidden');
+      showElement('botDiceArea');
       renderDice(gameState.botDice, 'botDice');
-      document.getElementById('gameStatus').innerHTML += 
-        `<p class="highlight">Megtekintheted a gép kockáit!</p>`;
+      updateGameStatus(`<span class="highlight">Megtekintheted a gép kockáit!</span>`);
+      gameState.playerActiveAbility = ability;
+      addHistoryEntry('Játékos megleste a gép kockáit');
       break;
     
     case 'doubleDamage':
       // Full House double damage - későbbi körben lesz hatása
-      document.getElementById('gameStatus').innerHTML += 
-        `<p class="highlight">Full House képesség aktiválva! Ha nem hiszik el a következő Full House bejelentésedet, két szikrát veszít az ellenfél!</p>`;
+      updateGameStatus(`<span class="highlight">Full House képesség aktiválva!</span> Ha nem hiszik el a következő Full House bejelentésedet, két szikrát veszít az ellenfél!`);
+      gameState.playerActiveAbility = ability;
+      addHistoryEntry('Játékos aktiválta a Full House képességet');
       break;
     
     case 'protection':
       // Védelem a következő isteni szikra vesztés ellen
-      document.getElementById('gameStatus').innerHTML += 
-        `<p class="highlight">Védelem képesség aktiválva! A következő isteni szikra vesztés ellen védettséget kapsz.</p>`;
+      updateGameStatus(`<span class="highlight">Védelem képesség aktiválva!</span> A következő isteni szikra vesztés ellen védettséget kapsz.`);
+      gameState.playerActiveAbility = ability;
+      updateSparksUI();
+      addHistoryEntry('Játékos védelem képességet kapott');
       break;
     
     case 'restoreSpark':
@@ -843,30 +1425,31 @@ function useAbility(ability) {
       if (gameState.playerSparks < 5) {
         gameState.playerSparks++;
         updateSparksUI();
-        document.getElementById('gameStatus').innerHTML += 
-          `<p class="highlight">Visszaszereztél egy isteni szikrát!</p>`;
+        updateGameStatus(`<span class="highlight">Visszaszereztél egy isteni szikrát!</span>`);
+        addHistoryEntry('Játékos visszaszerzett egy isteni szikrát');
       } else {
-        document.getElementById('gameStatus').innerHTML += 
-          `<p class="highlight">Már maximális az isteni szikrák száma, a képesség hatástalan.</p>`;
+        updateGameStatus(`<span class="highlight">Már maximális az isteni szikrák száma, a képesség hatástalan.</span>`);
       }
       break;
   }
   
   // Ha a bot a soron következő és nincs aktív képesség, a bot lép
-  if (gameState.currentPlayer === 'bot') {
-    gameState.activeAbility = null;
+  if (gameState.currentPlayer === 'bot' && 
+      (gameState.playerActiveAbility !== 'peekAtOpponent' || ability !== 'peekAtOpponent')) {
     setTimeout(botAnnounce, 2000);
   }
 }
 
 // Folytatás a válasz után
 function continueAfterResponse() {
-  document.getElementById('botResponseControls').classList.add('hidden');
+  hideElement('botResponseControls');
   
   if (gameState.currentPlayer === 'bot') {
     setTimeout(botAnnounce, 1000);
   } else {
-    document.getElementById('announceControls').classList.remove('hidden');
+    showElement('announceControls');
+    document.getElementById('rerollBtn').disabled = false;
+    gameState.playerRerolledThisRound = false;
   }
 }
 
