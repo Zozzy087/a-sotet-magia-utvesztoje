@@ -467,6 +467,16 @@
       box-shadow: 0 15px 20px rgba(0, 0, 0, 0.4);
       z-index: -1;
     }
+    .countdown {
+      color: #ff6400;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-top: 10px;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 5px 10px;
+      border-radius: 5px;
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
@@ -593,9 +603,9 @@
   <div class="status" id="gameStatus">
     <p>A játék kezdődik. Te következel!</p>
   </div>
-
-  <div class="controls hidden" id="nextRoundControls">
-    <button id="nextRoundBtn" onclick="startNextRound()">Következő kör</button>
+  
+  <div id="countdownContainer" class="hidden">
+    <div id="countdown" class="countdown"></div>
   </div>
 
   <div class="controls hidden" id="newGameControls">
@@ -622,7 +632,8 @@ let gameState = {
   usedAbilities: {
     player: [],  // A játékos által már használt képességek
     bot: []      // A bot által már használt képességek
-  }
+  },
+  countdownTimer: null   // A visszaszámlálás időzítő
 };
 
 // Kombinációk és értékeik
@@ -673,6 +684,12 @@ function toggleRules() {
 
 // Játék indítása
 function startNewGame() {
+  // Előző időzítők törlése
+  if (gameState.countdownTimer) {
+    clearInterval(gameState.countdownTimer);
+    gameState.countdownTimer = null;
+  }
+  
   // Eredeti állapot visszaállítása
   gameState = {
     playerSparks: 5,
@@ -691,7 +708,8 @@ function startNewGame() {
     usedAbilities: {
       player: [],
       bot: []
-    }
+    },
+    countdownTimer: null
   };
   
   // Aktív képesség megjelenítés törlése
@@ -701,6 +719,9 @@ function startNewGame() {
   // Használt képességek törlése
   document.getElementById('playerUsedAbilities').innerHTML = '';
   document.getElementById('botUsedAbilities').innerHTML = '';
+  
+  // Visszaszámlálás elrejtése
+  document.getElementById('countdownContainer').classList.add('hidden');
   
   updateSparksUI();
   startNewRound();
@@ -717,6 +738,12 @@ function startNewGame() {
 
 // Új kör indítása
 function startNewRound() {
+  // Előző időzítők törlése
+  if (gameState.countdownTimer) {
+    clearInterval(gameState.countdownTimer);
+    gameState.countdownTimer = null;
+  }
+  
   // Előző kör takarítása
   hideAllControls();
   
@@ -826,11 +853,11 @@ function hideAllControls() {
   document.getElementById('announceControls').classList.add('hidden');
   document.getElementById('responseControls').classList.add('hidden');
   document.getElementById('botResponseControls').classList.add('hidden');
-  document.getElementById('nextRoundControls').classList.add('hidden');
   document.getElementById('abilities').classList.add('hidden');
   document.getElementById('botDiceArea').classList.add('hidden');
   document.getElementById('playerCombinationDisplay').classList.add('hidden');
   document.getElementById('botCombinationDisplay').classList.add('hidden');
+  document.getElementById('countdownContainer').classList.add('hidden');
 }
 
 // Aktív játékos kiemelése
@@ -903,6 +930,33 @@ function displayPlayerCombinations() {
   }
 }
 
+// Visszaszámlálás indítása a következő körhöz
+function startCountdownToNextRound(seconds) {
+  // Előző időzítők törlése
+  if (gameState.countdownTimer) {
+    clearInterval(gameState.countdownTimer);
+  }
+  
+  const countdownEl = document.getElementById('countdown');
+  const container = document.getElementById('countdownContainer');
+  container.classList.remove('hidden');
+  
+  let timeLeft = seconds;
+  countdownEl.textContent = `Következő kör: ${timeLeft} másodperc`;
+  
+  gameState.countdownTimer = setInterval(() => {
+    timeLeft--;
+    countdownEl.textContent = `Következő kör: ${timeLeft} másodperc`;
+    
+    if (timeLeft <= 0) {
+      clearInterval(gameState.countdownTimer);
+      gameState.countdownTimer = null;
+      container.classList.add('hidden');
+      startNextRound();
+    }
+  }, 1000);
+}
+
 // Következő kör indítása
 function startNextRound() {
   if (gameState.playerSparks <= 0 || gameState.botSparks <= 0) {
@@ -957,7 +1011,6 @@ function endGame() {
   
   document.getElementById('gameStatus').innerHTML = `<p><span class="highlight win-animation">${message}</span></p>`;
   document.getElementById('newGameControls').classList.remove('hidden');
-  document.getElementById('nextRoundControls').classList.add('hidden');
   
   // Győzelmi jelzés
   showRoundChange(winner === 'player' ? 'GYŐZELEM!' : 'VERESÉG!');
@@ -1102,6 +1155,10 @@ function loseSpark(player, count = 1) {
       updateActiveAbilityDisplay();
       updateUsedAbilitiesDisplay();
       showAnnouncement("Védelem képesség aktiválva!");
+      
+      // Automatikus folytatás 5 másodperc múlva
+      startCountdownToNextRound(5);
+      
       return false; // Nem vesztett szikrát
     } else {
       gameState.playerSparks = Math.max(0, gameState.playerSparks - count);
@@ -1113,6 +1170,12 @@ function loseSpark(player, count = 1) {
   }
   
   updateSparksUI();
+  
+  // Automatikus folytatás 5 másodperc múlva
+  if (gameState.playerSparks > 0 && gameState.botSparks > 0) {
+    startCountdownToNextRound(5);
+  }
+  
   return true; // Vesztett szikrát
 }
 
@@ -1236,8 +1299,6 @@ function announcePlayerCombination() {
         if (gameState.playerSparks <= 0 || gameState.botSparks <= 0) {
           setTimeout(endGame, 2000);
         } else {
-          document.getElementById('nextRoundControls').classList.remove('hidden');
-          
           // Megjelenítjük, hogy ki fog kezdeni a következő körben
           const nextStarter = gameState.lastLoser === 'player' ? 'Te fogsz' : 'A Sötét Nagyúr fog';
           document.getElementById('gameStatus').innerHTML += 
@@ -1252,17 +1313,26 @@ function announcePlayerCombination() {
 
 // Bot kombináció bejelentése
 function botAnnounce() {
-  // Bot stratégia: Elég gyakran blöfföl
-  // Ha van jó lapja, általában elmondja
+  // Bot stratégia módosítása: 
+  // Ha van valós kombinációja, mindig azt jelentse be (ne blöfföljön)
   
   // Bot kockák elemzése, milyen kombinációi vannak
   const botCombinations = analyzeCombinations(gameState.botDice);
   let announcement;
   
-  // Bot döntése
-  const willBluff = Math.random() < gameState.botBluffStrategy;
-  
-  if (willBluff || botCombinations.length === 0) {
+  // Prioritás a valós kombinációknak
+  if (botCombinations.length > 0) {
+    // Bot valós kombinációt jelent be, a legjobbat
+    const bestCombination = botCombinations[0]; // A legmagasabb értékű
+    
+    announcement = {
+      type: bestCombination.type,
+      value: bestCombination.value,
+      player: 'bot',
+      isBluff: false
+    };
+  } else {
+    // Nincs valós kombináció, blöffölnie kell
     // Blöff - okos, taktikai blöff
     let bestBluffType, bestBluffValue;
     
@@ -1308,16 +1378,6 @@ function botAnnounce() {
       value: bestBluffValue,
       player: 'bot',
       isBluff: true
-    };
-  } else {
-    // Legjobb valós kombináció
-    const bestCombination = botCombinations[0]; // A legmagasabb értékű
-    
-    announcement = {
-      type: bestCombination.type,
-      value: bestCombination.value,
-      player: 'bot',
-      isBluff: false
     };
   }
   
@@ -1592,8 +1652,6 @@ function challengeBotAnnouncement() {
     // Következő lépések
     if (gameState.playerSparks <= 0 || gameState.botSparks <= 0) {
       setTimeout(endGame, 2000);
-    } else {
-      document.getElementById('nextRoundControls').classList.remove('hidden');
     }
   }, 2000);
 }
