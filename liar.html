@@ -43,10 +43,37 @@
       min-width: 200px;
       text-align: center;
       transition: all 0.3s ease;
+      position: relative;
     }
     .active-player {
-      border: 2px solid #ff6400;
-      box-shadow: 0 0 15px rgba(255, 100, 0, 0.7);
+      border: 3px solid #ff6400;
+      box-shadow: 0 0 20px rgba(255, 100, 0, 0.7);
+      transform: scale(1.05);
+    }
+    .active-player::before {
+      content: "»";
+      position: absolute;
+      left: -25px;
+      top: 45%;
+      font-size: 2rem;
+      color: #ff6400;
+      text-shadow: 0 0 10px #ff6400;
+      animation: pulse 1.2s infinite;
+    }
+    .active-player::after {
+      content: "«";
+      position: absolute;
+      right: -25px;
+      top: 45%;
+      font-size: 2rem;
+      color: #ff6400;
+      text-shadow: 0 0 10px #ff6400;
+      animation: pulse 1.2s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.7; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
     }
     .spark-icon {
       color: #ff6400;
@@ -83,6 +110,10 @@
       border: 1px solid #482c17;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
       transition: all 0.3s ease;
+    }
+    .active-dice-area {
+      border: 2px solid #ff6400;
+      box-shadow: 0 0 15px rgba(255, 100, 0, 0.4);
     }
     .dice-title {
       font-size: 1.4rem;
@@ -305,6 +336,57 @@
       50% { transform: scale(1.1); }
       100% { transform: scale(1); }
     }
+    .round-change {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.9);
+      color: #ff6400;
+      padding: 20px 40px;
+      border-radius: 10px;
+      font-size: 1.8rem;
+      font-weight: bold;
+      z-index: 1000;
+      border: 2px solid #ff6400;
+      opacity: 0;
+      animation: round-change-anim 2.5s ease-in-out;
+    }
+    @keyframes round-change-anim {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
+    }
+    .game-rules {
+      background-color: rgba(20, 14, 10, 0.7);
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      font-size: 0.9rem;
+      text-align: left;
+      border-left: 3px solid #ff6400;
+    }
+    .game-rules-toggle {
+      cursor: pointer;
+      color: #ff6400;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .game-rules-toggle:hover {
+      text-decoration: underline;
+    }
+    .turn-indicator {
+      font-size: 1.2rem;
+      padding: 8px 15px;
+      margin-bottom: 10px;
+      background-color: rgba(0, 0, 0, 0.6);
+      border-radius: 5px;
+      display: inline-block;
+      color: #ff6400;
+      font-weight: bold;
+      border: 1px solid #ff6400;
+    }
   </style>
 </head>
 <body>
@@ -321,10 +403,25 @@
     <p>• <strong><span class="tooltip">Négy egyforma<span class="tooltiptext">Négy azonos értékű kocka</span></span>:</strong> Védelmet kapsz egy isteni szikra elvesztése ellen</p>
     <p>• <strong><span class="tooltip">Öt egyforma<span class="tooltiptext">Öt azonos értékű kocka</span></span>:</strong> Visszaszerezhetsz egy elvesztett isteni szikrát</p>
   </div>
+  
+  <div class="game-rules">
+    <p class="game-rules-toggle" onclick="toggleRules()">▼ Játékszabályok</p>
+    <div id="rulesContent" class="hidden">
+      <p><strong>Körök menete:</strong></p>
+      <p>1. Az új kört mindig a <span class="highlight">legutóbbi vesztes</span> kezdi (aki utoljára vesztett egy isteni szikrát)</p>
+      <p>2. Egy kör elején mindkét játékos újradobja az összes kockáját</p>
+      <p>3. Csak a soron lévő játékos jelenthet be kombinációt</p>
+      <p>4. A bejelentést a másik játékos elhiheti vagy kihívhatja (blöffölhetsz is!)</p>
+      <p>5. Ha a kihívás sikeres (hazudott a bejelentő), a bejelentő veszít egy szikrát és ő kezdi a következő kört</p>
+      <p>6. Ha a kihívás sikertelen (igazat mondott a bejelentő), a kihívó veszít egy szikrát és ő kezdi a következő kört</p>
+    </div>
+  </div>
+
+  <div id="turnIndicator" class="turn-indicator"></div>
 
   <div class="sparks-container">
     <div class="sparks" id="playerSparks">
-      <h3>Játékos Isteni Szikrái</h3>
+      <h3>Kalandor Isteni Szikrái</h3>
       <div id="playerSparksIcons">
         <i class="fas fa-fire spark-icon"></i>
         <i class="fas fa-fire spark-icon"></i>
@@ -334,7 +431,7 @@
       </div>
     </div>
     <div class="sparks" id="botSparks">
-      <h3>Gép Isteni Szikrái</h3>
+      <h3>Sötét Nagyúr Isteni Szikrái</h3>
       <div id="botSparksIcons">
         <i class="fas fa-fire spark-icon"></i>
         <i class="fas fa-fire spark-icon"></i>
@@ -348,13 +445,13 @@
   <div id="active-ability-display" class="hidden"></div>
 
   <div class="dice-area" id="playerDiceArea">
-    <h3 class="dice-title">Játékos Kockái</h3>
+    <h3 class="dice-title">Kalandor Kockái</h3>
     <div class="dice-container" id="playerDice"></div>
     <div id="playerCombinationDisplay" class="hidden"></div>
   </div>
 
   <div class="dice-area hidden" id="botDiceArea">
-    <h3 class="dice-title">Gép Kockái</h3>
+    <h3 class="dice-title">Sötét Nagyúr Kockái</h3>
     <div class="dice-container" id="botDice"></div>
     <div id="botCombinationDisplay" class="hidden"></div>
   </div>
@@ -386,7 +483,7 @@
 
   <div class="controls hidden" id="responseControls">
     <div class="announcement">
-      <p>A gép bejelentése: <span id="botAnnouncement" class="highlight"></span></p>
+      <p>A Sötét Nagyúr bejelentése: <span id="botAnnouncement" class="highlight"></span></p>
       <button id="believeBtn" onclick="believeBotAnnouncement()">Elhiszem</button>
       <button id="challengeBtn" onclick="challengeBotAnnouncement()">Nem hiszem el!</button>
     </div>
@@ -394,8 +491,8 @@
 
   <div class="controls hidden" id="botResponseControls">
     <div class="announcement">
-      <p>A játékos bejelentése: <span id="playerAnnouncement" class="highlight"></span></p>
-      <p>A gép döntése: <span id="botDecision" class="highlight"></span></p>
+      <p>A Kalandor bejelentése: <span id="playerAnnouncement" class="highlight"></span></p>
+      <p>A Sötét Nagyúr döntése: <span id="botDecision" class="highlight"></span></p>
       <button id="continueBtn" onclick="continueAfterResponse()">Folytatás</button>
     </div>
   </div>
@@ -431,7 +528,8 @@ let gameState = {
   playerRollCount: 0,
   botBluffStrategy: 0.4, // Bot blöffölésének alapvető esélye
   botRiskTolerance: 0.5, // Bot kockázatvállalása
-  gameHistory: [] // Játékmenet követése
+  gameHistory: [], // Játékmenet követése
+  currentRound: 1 // Aktuális kör száma
 };
 
 // Kombinációk és értékeik
@@ -466,6 +564,20 @@ const abilities = {
   }
 };
 
+// Játékszabályok megjelenítése/elrejtése
+function toggleRules() {
+  const rulesContent = document.getElementById('rulesContent');
+  const rulesToggle = document.querySelector('.game-rules-toggle');
+  
+  if (rulesContent.classList.contains('hidden')) {
+    rulesContent.classList.remove('hidden');
+    rulesToggle.innerHTML = '▲ Játékszabályok';
+  } else {
+    rulesContent.classList.add('hidden');
+    rulesToggle.innerHTML = '▼ Játékszabályok';
+  }
+}
+
 // Játék indítása
 function startNewGame() {
   // Eredeti állapot visszaállítása
@@ -481,7 +593,8 @@ function startNewGame() {
     playerRollCount: 0,
     botBluffStrategy: 0.4,
     botRiskTolerance: 0.5,
-    gameHistory: []
+    gameHistory: [],
+    currentRound: 1
   };
   
   // Aktív képesség megjelenítés törlése
@@ -497,7 +610,8 @@ function startNewGame() {
   document.getElementById('gameStatus').innerHTML = '<p>A játék kezdődik. Te következel!</p>';
   
   // Bejelentés a játék kezdetéről
-  showAnnouncement("Új játék kezdődik!");
+  showRoundChange('Új játék kezdődik!');
+  showAnnouncement("1. kör - Te kezdesz!");
 }
 
 // Új kör indítása
@@ -515,29 +629,92 @@ function startNewRound() {
   // Dobások számláló alaphelyzetbe
   gameState.playerRollCount = 0;
   
+  // Kör számláló növelése
+  gameState.currentRound++;
+  
+  // Új kör jelzése
+  const roundMessage = `${gameState.currentRound}. kör - ${gameState.currentPlayer === 'player' ? 'Te kezdesz' : 'A Sötét Nagyúr kezd'}`;
+  showRoundChange(roundMessage);
+  
   // Kockák dobása
   rollAllDice();
   
-  // Aktív játékos kiemelése
+  // Aktív játékos kiemelése és forduló jelzés frissítése
   updateActivePlayerHighlight();
+  updateTurnIndicator();
+  updateActiveDiceArea();
   
   // UI frissítése
   renderDice(gameState.playerDice, 'playerDice');
   document.getElementById('botDice').innerHTML = '';
   
+  // Játékos kombinációinak megjelenítése, függetlenül attól, ki következik
+  displayPlayerCombinations();
+  
+  // Pontosabb magyarázat, hogy ki következik és miért
+  let statusMessage = '';
+  if (gameState.lastLoser) {
+    const loserName = gameState.lastLoser === 'player' ? 'Te vesztettél' : 'A Sötét Nagyúr vesztett';
+    statusMessage = `<p>Új kör kezdődik. ${loserName} az előző körben, így most ${gameState.lastLoser === 'player' ? 'Te kezdesz' : 'Ő kezd'}.</p>`;
+  } else {
+    statusMessage = '<p>Az első kör kezdődik. Te indítasz!</p>';
+  }
+  
   if (gameState.currentPlayer === 'player') {
     document.getElementById('announceControls').classList.remove('hidden');
-    document.getElementById('gameStatus').innerHTML = '<p><span class="current-player">Te következel!</span> Válassz egy kombinációt, amit bejelentesz, vagy dobj újra.</p>';
-    
-    // Játékos kombinációinak megjelenítése
-    displayPlayerCombinations();
+    document.getElementById('gameStatus').innerHTML = statusMessage + 
+      '<p><span class="current-player">Te következel!</span> Válassz egy kombinációt, amit bejelentesz, vagy dobj újra a kockákkal.</p>';
   } else {
-    document.getElementById('gameStatus').innerHTML = '<p><span class="current-player">A gép következik...</span> Gondolkozik a bejelentésen.</p>';
+    document.getElementById('gameStatus').innerHTML = statusMessage + 
+      '<p><span class="current-player">A Sötét Nagyúr következik...</span> Gondolkozik a bejelentésen.</p>';
     setTimeout(botAnnounce, 2000);
   }
   
   updateSparksUI();
   gameState.lastAnnouncement = null;
+}
+
+// Kör váltás animáció
+function showRoundChange(message) {
+  // Létrehozunk egy ideiglenes elemet az animációhoz
+  const roundChange = document.createElement('div');
+  roundChange.className = 'round-change';
+  roundChange.textContent = message;
+  document.body.appendChild(roundChange);
+  
+  // Az animáció végén eltávolítjuk
+  setTimeout(() => {
+    document.body.removeChild(roundChange);
+  }, 2500);
+}
+
+// Forduló jelzés frissítése
+function updateTurnIndicator() {
+  const indicator = document.getElementById('turnIndicator');
+  
+  if (gameState.currentPlayer === 'player') {
+    indicator.innerHTML = '<i class="fas fa-user"></i> A TE KÖRÖD';
+    indicator.style.backgroundColor = 'rgba(127, 0, 255, 0.3)';
+  } else {
+    indicator.innerHTML = '<i class="fas fa-skull"></i> A SÖTÉT NAGYÚR KÖRE';
+    indicator.style.backgroundColor = 'rgba(255, 100, 0, 0.3)';
+  }
+}
+
+// Aktív kocka terület kiemelése
+function updateActiveDiceArea() {
+  const playerDiceArea = document.getElementById('playerDiceArea');
+  const botDiceArea = document.getElementById('botDiceArea');
+  
+  if (gameState.currentPlayer === 'player') {
+    playerDiceArea.classList.add('active-dice-area');
+    botDiceArea.classList.remove('active-dice-area');
+  } else {
+    playerDiceArea.classList.remove('active-dice-area');
+    if (!botDiceArea.classList.contains('hidden')) {
+      botDiceArea.classList.add('active-dice-area');
+    }
+  }
 }
 
 // Összes kezelőfelület elrejtése
@@ -641,7 +818,6 @@ function startNextRound() {
   updateBotStrategy();
   
   startNewRound();
-  showAnnouncement("Új kör kezdődik!");
 }
 
 // Bot stratégia frissítése
@@ -670,12 +846,14 @@ function endGame() {
   let winner = gameState.playerSparks > 0 ? 'player' : 'bot';
   let message = winner === 'player' ? 
     'Gratulálunk! Te nyerted a játékot!' : 
-    'Sajnáljuk, a gép nyerte a játékot!';
+    'Sajnáljuk, a Sötét Nagyúr nyerte a játékot!';
   
   document.getElementById('gameStatus').innerHTML = `<p><span class="highlight win-animation">${message}</span></p>`;
   document.getElementById('newGameControls').classList.remove('hidden');
   document.getElementById('nextRoundControls').classList.add('hidden');
   
+  // Győzelmi jelzés
+  showRoundChange(winner === 'player' ? 'GYŐZELEM!' : 'VERESÉG!');
   showAnnouncement(message);
 }
 
@@ -770,11 +948,11 @@ function loseSpark(player, count = 1) {
       return false; // Nem vesztett szikrát
     } else {
       gameState.playerSparks = Math.max(0, gameState.playerSparks - count);
-      showAnnouncement(`Játékos ${count} szikrát veszített!`);
+      showAnnouncement(`Kalandor ${count} szikrát veszített!`);
     }
   } else {
     gameState.botSparks = Math.max(0, gameState.botSparks - count);
-    showAnnouncement(`Gép ${count} szikrát veszített!`);
+    showAnnouncement(`Sötét Nagyúr ${count} szikrát veszített!`);
   }
   
   updateSparksUI();
@@ -785,10 +963,10 @@ function loseSpark(player, count = 1) {
 function gainSpark(player) {
   if (player === 'player' && gameState.playerSparks < 5) {
     gameState.playerSparks++;
-    showAnnouncement("Játékos visszaszerzett egy szikrát!");
+    showAnnouncement("Kalandor visszaszerzett egy szikrát!");
   } else if (player === 'bot' && gameState.botSparks < 5) {
     gameState.botSparks++;
-    showAnnouncement("Gép visszaszerzett egy szikrát!");
+    showAnnouncement("Sötét Nagyúr visszaszerzett egy szikrát!");
   } else {
     return false; // Nem szerzett szikrát
   }
@@ -821,7 +999,9 @@ function announcePlayerCombination() {
   document.getElementById('botResponseControls').classList.remove('hidden');
   
   document.getElementById('gameStatus').innerHTML = 
-    `<p>Bejelentetted: <span class="highlight">${combination.name} ${valueType}-es értékkel</span>. A gép dönt, hogy elhiszi-e...</p>`;
+    `<p>Bejelentetted: <span class="highlight">${combination.name} ${valueType}-es értékkel</span>. A Sötét Nagyúr dönt, hogy elhiszi-e...</p>`;
+  
+  showAnnouncement("Kombináció bejelentve! A Sötét Nagyúr dönt...");
   
   // Bot döntése
   setTimeout(() => {
@@ -830,7 +1010,7 @@ function announcePlayerCombination() {
     
     if (botBelieves) {
       document.getElementById('gameStatus').innerHTML += 
-        `<p>A gép elhiszi a bejelentésedet. Most ő következik!</p>`;
+        `<p>A Sötét Nagyúr elhiszi a bejelentésedet. Most ő következik!</p>`;
       
       // Ellenőrizzük, volt-e valódi kombináció
       const playerHasAnnouncement = checkCombination(gameState.playerDice, gameState.lastAnnouncement);
@@ -842,6 +1022,8 @@ function announcePlayerCombination() {
       
       gameState.currentPlayer = 'bot';
       updateActivePlayerHighlight();
+      updateTurnIndicator();
+      updateActiveDiceArea();
       
       setTimeout(() => {
         document.getElementById('botResponseControls').classList.add('hidden');
@@ -852,7 +1034,7 @@ function announcePlayerCombination() {
     } else {
       // Bot nem hiszi el, ellenőrizzük
       document.getElementById('gameStatus').innerHTML += 
-        `<p>A gép nem hiszi el a bejelentésedet. Felfedi a kockákat!</p>`;
+        `<p>A Sötét Nagyúr nem hiszi el a bejelentésedet. Felfedi a kockákat!</p>`;
       document.getElementById('botDiceArea').classList.remove('hidden');
       renderDice(gameState.botDice, 'botDice');
       
@@ -863,14 +1045,14 @@ function announcePlayerCombination() {
         if (playerHasAnnouncement) {
           // Játékos igazat mondott, bot veszít egy szikrát
           document.getElementById('gameStatus').innerHTML += 
-            `<p>Igazat mondtál! A gép veszít egy isteni szikrát.</p>`;
+            `<p>Igazat mondtál! A Sötét Nagyúr veszít egy isteni szikrát.</p>`;
           loseSpark('bot');
           gameState.lastLoser = 'bot';
           
           // Double damage képesség ellenőrzése Full House esetén
           if (gameState.lastAnnouncement.type === 'fullhouse') {
             document.getElementById('gameStatus').innerHTML += 
-              `<p class="highlight">Full House képesség aktiválva! A gép két szikrát veszít egy helyett!</p>`;
+              `<p class="highlight">Full House képesség aktiválva! A Sötét Nagyúr két szikrát veszít egy helyett!</p>`;
             loseSpark('bot');
             showAnnouncement("Full House képesség! Dupla sebzés!");
           }
@@ -893,6 +1075,11 @@ function announcePlayerCombination() {
           setTimeout(endGame, 2000);
         } else {
           document.getElementById('nextRoundControls').classList.remove('hidden');
+          
+          // Megjelenítjük, hogy ki fog kezdeni a következő körben
+          const nextStarter = gameState.lastLoser === 'player' ? 'Te fogsz' : 'A Sötét Nagyúr fog';
+          document.getElementById('gameStatus').innerHTML += 
+            `<p>A következő kört ${nextStarter} kezdeni, mivel most vesztettél isteni szikrát.</p>`;
         }
         
         document.getElementById('botResponseControls').classList.add('hidden');
@@ -980,9 +1167,9 @@ function botAnnounce() {
   document.getElementById('responseControls').classList.add('controls-fade-in');
   
   document.getElementById('gameStatus').innerHTML = 
-    `<p>A gép bejelentette: <span class="highlight">${combinations[announcement.type].name} ${announcement.value}-ös értékkel</span>. Elhiszed?</p>`;
+    `<p>A Sötét Nagyúr bejelentette: <span class="highlight">${combinations[announcement.type].name} ${announcement.value}-ös értékkel</span>. Elhiszed?</p>`;
   
-  showAnnouncement("A gép bejelentett egy kombinációt!");
+  showAnnouncement("A Sötét Nagyúr bejelentett egy kombinációt!");
 }
 
 // Súlyozott véletlenszerű választás
@@ -1151,9 +1338,6 @@ function botDecideToChallenge() {
   // Korlátozzuk 0.2 - 0.9 közé a kihívási esélyt
   challengeChance = Math.min(0.9, Math.max(0.2, challengeChance));
   
-  // Log a döntésről (csak fejlesztéshez)
-  console.log(`Bot kihívási esélye: ${challengeChance.toFixed(2)}, Kombináció: ${announcement.type}`);
-  
   return Math.random() >= challengeChance; // true = elhiszi, false = kihívja
 }
 
@@ -1162,7 +1346,7 @@ function believeBotAnnouncement() {
   document.getElementById('responseControls').classList.add('hidden');
   
   document.getElementById('gameStatus').innerHTML = 
-    `<p>Elhitted a gép bejelentését. Most te következel!</p>`;
+    `<p>Elhitted a Sötét Nagyúr bejelentését. Most te következel!</p>`;
   
   // Ellenőrizzük, volt-e valódi kombináció
   const botHasAnnouncement = checkCombination(gameState.botDice, gameState.lastAnnouncement);
@@ -1174,6 +1358,9 @@ function believeBotAnnouncement() {
   
   gameState.currentPlayer = 'player';
   updateActivePlayerHighlight();
+  updateTurnIndicator();
+  updateActiveDiceArea();
+  
   document.getElementById('announceControls').classList.remove('hidden');
   document.getElementById('announceControls').classList.add('controls-fade-in');
   
@@ -1183,6 +1370,8 @@ function believeBotAnnouncement() {
   // Újradobás gomb alaphelyzetbe
   gameState.playerRollCount = 0;
   document.getElementById('rollAgainBtn').disabled = false;
+  
+  showAnnouncement("Most te következel!");
 }
 
 // Játékos nem hiszi el a bot bejelentését
@@ -1192,7 +1381,7 @@ function challengeBotAnnouncement() {
   renderDice(gameState.botDice, 'botDice');
   
   document.getElementById('gameStatus').innerHTML = 
-    `<p>Nem hiszed el a gép bejelentését. A kockák felfedve!</p>`;
+    `<p>Nem hiszed el a Sötét Nagyúr bejelentését. A kockák felfedve!</p>`;
   
   // Ellenőrizzük a bejelentett kombinációt
   const botHasAnnouncement = checkCombination(gameState.botDice, gameState.lastAnnouncement);
@@ -1201,7 +1390,7 @@ function challengeBotAnnouncement() {
   const botCombinations = analyzeCombinations(gameState.botDice);
   if (botCombinations.length > 0) {
     let html = '<div class="combination-alert">';
-    html += '<p><span class="highlight">Bot kombinációi:</span></p>';
+    html += '<p><span class="highlight">Sötét Nagyúr kombinációi:</span></p>';
     
     botCombinations.forEach(combo => {
       html += `<p>• ${combinations[combo.type].name} (${combo.value}-es értékkel)</p>`;
@@ -1216,7 +1405,7 @@ function challengeBotAnnouncement() {
     if (botHasAnnouncement) {
       // Bot igazat mondott, játékos veszít egy szikrát
       document.getElementById('gameStatus').innerHTML += 
-        `<p>A gép igazat mondott! Elvesztesz egy isteni szikrát.</p>`;
+        `<p>A Sötét Nagyúr igazat mondott! Elvesztesz egy isteni szikrát.</p>`;
       
       loseSpark('player');
       gameState.lastLoser = 'player';
@@ -1228,10 +1417,15 @@ function challengeBotAnnouncement() {
     } else {
       // Bot hazudott, veszít egy szikrát
       document.getElementById('gameStatus').innerHTML += 
-        `<p>A gép blöffölt! Elveszít egy isteni szikrát.</p>`;
+        `<p>A Sötét Nagyúr blöffölt! Elveszít egy isteni szikrát.</p>`;
       loseSpark('bot');
       gameState.lastLoser = 'bot';
     }
+    
+    // Megjelenítjük, hogy ki fog kezdeni a következő körben
+    const nextStarter = gameState.lastLoser === 'player' ? 'Te fogsz' : 'A Sötét Nagyúr fog';
+    document.getElementById('gameStatus').innerHTML += 
+      `<p>A következő kört ${nextStarter} kezdeni, mivel most vesztettél isteni szikrát.</p>`;
     
     // Következő lépések
     if (gameState.playerSparks <= 0 || gameState.botSparks <= 0) {
@@ -1249,9 +1443,9 @@ function activateBotAbility(combinationType) {
   // Bot Full House double damage speciális eset
   if (combinationType === 'fullhouse' && gameState.lastLoser === 'player') {
     document.getElementById('gameStatus').innerHTML += 
-      `<p class="highlight">A gép Full House képessége aktiválva! Még egy szikrát veszítesz!</p>`;
+      `<p class="highlight">A Sötét Nagyúr Full House képessége aktiválva! Még egy szikrát veszítesz!</p>`;
     loseSpark('player');
-    showAnnouncement("Bot Full House képessége! Dupla sebzés!");
+    showAnnouncement("Sötét Nagyúr Full House képessége! Dupla sebzés!");
     return;
   }
   
@@ -1260,22 +1454,22 @@ function activateBotAbility(combinationType) {
     case 'restoreSpark':
       if (gameState.botSparks < 5) {
         document.getElementById('gameStatus').innerHTML += 
-          `<p class="highlight">A gép visszaszerez egy isteni szikrát!</p>`;
+          `<p class="highlight">A Sötét Nagyúr visszaszerez egy isteni szikrát!</p>`;
         gainSpark('bot');
       }
       break;
     case 'protection':
       document.getElementById('gameStatus').innerHTML += 
-        `<p class="highlight">A gép védettséget kap a következő isteni szikra vesztés ellen!</p>`;
+        `<p class="highlight">A Sötét Nagyúr védettséget kap a következő isteni szikra vesztés ellen!</p>`;
       // Következő körben a bot védve lesz egy szikra vesztés ellen
       botProtectionActive = true;
-      showAnnouncement("Bot védelem képesség aktiválva!");
+      showAnnouncement("Sötét Nagyúr védelem képesség aktiválva!");
       break;
     case 'peekAtOpponent':
       // Bot látja a játékos kockáit, ez már alapból megvan
       document.getElementById('gameStatus').innerHTML += 
-        `<p class="highlight">A gép megnézte a kockáidat!</p>`;
-      showAnnouncement("Bot megtekintette a kockáidat!");
+        `<p class="highlight">A Sötét Nagyúr megnézte a kockáidat!</p>`;
+      showAnnouncement("Sötét Nagyúr megtekintette a kockáidat!");
       break;
   }
 }
@@ -1336,8 +1530,8 @@ function useAbility(ability) {
       document.getElementById('botDiceArea').classList.remove('hidden');
       renderDice(gameState.botDice, 'botDice');
       document.getElementById('gameStatus').innerHTML += 
-        `<p class="highlight">Megtekintheted a gép kockáit!</p>`;
-      showAnnouncement("Megtekintheted a gép kockáit!");
+        `<p class="highlight">Megtekintheted a Sötét Nagyúr kockáit!</p>`;
+      showAnnouncement("Megtekintheted a Sötét Nagyúr kockáit!");
       break;
     
     case 'doubleDamage':
@@ -1408,7 +1602,9 @@ function showAnnouncement(message) {
 }
 
 // Játék indítása
-startNewGame();
+document.addEventListener('DOMContentLoaded', () => {
+  startNewGame();
+});
 </script>
 
 </body>
