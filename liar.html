@@ -414,6 +414,9 @@
       <p>4. A bejelentést a másik játékos elhiheti vagy kihívhatja (blöffölhetsz is!)</p>
       <p>5. Ha a kihívás sikeres (hazudott a bejelentő), a bejelentő veszít egy szikrát és ő kezdi a következő kört</p>
       <p>6. Ha a kihívás sikertelen (igazat mondott a bejelentő), a kihívó veszít egy szikrát és ő kezdi a következő kört</p>
+      <p><strong>Képességek:</strong></p>
+      <p>• Minden képesség <span class="highlight">csak egyszer használható</span> aktiválás után</p>
+      <p>• A Védelem és a Kétszeres sebzés a következő körre is érvényes marad</p>
     </div>
   </div>
 
@@ -524,6 +527,10 @@ let gameState = {
   currentPlayer: 'player', // 'player' vagy 'bot'
   lastAnnouncement: null,
   activeAbility: null,
+  persistentAbilities: {  // Tartós képességek, amelyek később aktiválódhatnak
+    player: null,
+    bot: null
+  },
   lastLoser: null,
   playerRollCount: 0,
   botBluffStrategy: 0.4, // Bot blöffölésének alapvető esélye
@@ -544,23 +551,27 @@ const combinations = {
 const abilities = {
   'peekAtOpponent': { 
     name: 'Ellenfél megtekintése', 
-    description: 'Meglesheted az ellenfél következő dobását',
-    icon: 'fas fa-eye'
+    description: 'Meglesheted az ellenfél következő dobását (egyszeri)',
+    icon: 'fas fa-eye',
+    isPersistent: false
   },
   'doubleDamage': { 
     name: 'Kétszeres sebzés', 
-    description: 'Ha nem hiszik el a Full House-t, de igazad van, 2 szikrát veszít',
-    icon: 'fas fa-bolt'
+    description: 'Ha nem hiszik el a következő Full House bejelentésedet, 2 szikrát veszít',
+    icon: 'fas fa-bolt',
+    isPersistent: true
   },
   'protection': { 
     name: 'Védelem', 
-    description: 'Megvéd egy isteni szikra elvesztésétől',
-    icon: 'fas fa-shield-alt'
+    description: 'Megvéd egy isteni szikra elvesztésétől (következő alkalommal)',
+    icon: 'fas fa-shield-alt',
+    isPersistent: true
   },
   'restoreSpark': { 
     name: 'Helyreállítás', 
-    description: 'Visszaszerzel egy elvesztett isteni szikrát',
-    icon: 'fas fa-heart'
+    description: 'Visszaszerzel egy elvesztett isteni szikrát (egyszeri)',
+    icon: 'fas fa-heart',
+    isPersistent: false
   }
 };
 
@@ -589,6 +600,10 @@ function startNewGame() {
     currentPlayer: 'player',
     lastAnnouncement: null,
     activeAbility: null,
+    persistentAbilities: {
+      player: null,
+      bot: null
+    },
     lastLoser: null,
     playerRollCount: 0,
     botBluffStrategy: 0.4,
@@ -672,6 +687,9 @@ function startNewRound() {
   
   updateSparksUI();
   gameState.lastAnnouncement = null;
+  
+  // Aktív képesség kijelző frissítése
+  updateActiveAbilityDisplay();
 }
 
 // Kör váltás animáció
@@ -937,19 +955,26 @@ function updateSparkIcons(containerId, count) {
 
 // Isteni szikra elvesztése
 function loseSpark(player, count = 1) {
+  // Védelem képesség ellenőrzése
+  if (player === 'player' && gameState.persistentAbilities.player === 'protection') {
+    document.getElementById('gameStatus').innerHTML += 
+      `<p class="highlight">Védelem képesség aktiválva! Nem veszítesz isteni szikrát!</p>`;
+    gameState.persistentAbilities.player = null; // Egyszeri védelem
+    updateActiveAbilityDisplay();
+    showAnnouncement("Védelem képesség aktiválva!");
+    return false; // Nem vesztett szikrát
+  } else if (player === 'bot' && gameState.persistentAbilities.bot === 'protection') {
+    document.getElementById('gameStatus').innerHTML += 
+      `<p class="highlight">A Sötét Nagyúr védelme aktiválva! Nem veszít isteni szikrát!</p>`;
+    gameState.persistentAbilities.bot = null; // Egyszeri védelem
+    showAnnouncement("Sötét Nagyúr védelme aktiválva!");
+    return false; // Nem vesztett szikrát
+  }
+  
+  // Nincs védelem, szikra elvesztése
   if (player === 'player') {
-    // Védelem képesség ellenőrzése
-    if (gameState.activeAbility === 'protection') {
-      document.getElementById('gameStatus').innerHTML += 
-        `<p class="highlight">Védelem képesség aktiválva! Nem veszítesz isteni szikrát!</p>`;
-      gameState.activeAbility = null;
-      updateActiveAbilityDisplay();
-      showAnnouncement("Védelem képesség aktiválva!");
-      return false; // Nem vesztett szikrát
-    } else {
-      gameState.playerSparks = Math.max(0, gameState.playerSparks - count);
-      showAnnouncement(`Kalandor ${count} szikrát veszített!`);
-    }
+    gameState.playerSparks = Math.max(0, gameState.playerSparks - count);
+    showAnnouncement(`Kalandor ${count} szikrát veszített!`);
   } else {
     gameState.botSparks = Math.max(0, gameState.botSparks - count);
     showAnnouncement(`Sötét Nagyúr ${count} szikrát veszített!`);
@@ -1046,16 +1071,19 @@ function announcePlayerCombination() {
           // Játékos igazat mondott, bot veszít egy szikrát
           document.getElementById('gameStatus').innerHTML += 
             `<p>Igazat mondtál! A Sötét Nagyúr veszít egy isteni szikrát.</p>`;
-          loseSpark('bot');
-          gameState.lastLoser = 'bot';
           
           // Double damage képesség ellenőrzése Full House esetén
-          if (gameState.lastAnnouncement.type === 'fullhouse') {
+          if (gameState.lastAnnouncement.type === 'fullhouse' && gameState.persistentAbilities.player === 'doubleDamage') {
             document.getElementById('gameStatus').innerHTML += 
               `<p class="highlight">Full House képesség aktiválva! A Sötét Nagyúr két szikrát veszít egy helyett!</p>`;
-            loseSpark('bot');
+            loseSpark('bot', 2);
+            gameState.persistentAbilities.player = null; // Képesség felhasználva
             showAnnouncement("Full House képesség! Dupla sebzés!");
+          } else {
+            loseSpark('bot');
           }
+          
+          gameState.lastLoser = 'bot';
           
           // Ha volt valódi kombináció, aktiváljuk a képességet
           if (playerHasAnnouncement) {
@@ -1407,7 +1435,17 @@ function challengeBotAnnouncement() {
       document.getElementById('gameStatus').innerHTML += 
         `<p>A Sötét Nagyúr igazat mondott! Elvesztesz egy isteni szikrát.</p>`;
       
-      loseSpark('player');
+      // Double damage képesség ellenőrzése Full House esetén
+      if (gameState.lastAnnouncement.type === 'fullhouse' && gameState.persistentAbilities.bot === 'doubleDamage') {
+        document.getElementById('gameStatus').innerHTML += 
+          `<p class="highlight">A Sötét Nagyúr Full House képessége aktiválva! Még egy szikrát veszítesz!</p>`;
+        loseSpark('player', 2);
+        gameState.persistentAbilities.bot = null; // Képesség felhasználva
+        showAnnouncement("Sötét Nagyúr Full House képessége! Dupla sebzés!");
+      } else {
+        loseSpark('player');
+      }
+      
       gameState.lastLoser = 'player';
       
       // Bot képesség aktiválása
@@ -1440,15 +1478,6 @@ function challengeBotAnnouncement() {
 function activateBotAbility(combinationType) {
   const ability = combinations[combinationType].ability;
   
-  // Bot Full House double damage speciális eset
-  if (combinationType === 'fullhouse' && gameState.lastLoser === 'player') {
-    document.getElementById('gameStatus').innerHTML += 
-      `<p class="highlight">A Sötét Nagyúr Full House képessége aktiválva! Még egy szikrát veszítesz!</p>`;
-    loseSpark('player');
-    showAnnouncement("Sötét Nagyúr Full House képessége! Dupla sebzés!");
-    return;
-  }
-  
   // Bot képesség végrehajtása
   switch (ability) {
     case 'restoreSpark':
@@ -1462,8 +1491,14 @@ function activateBotAbility(combinationType) {
       document.getElementById('gameStatus').innerHTML += 
         `<p class="highlight">A Sötét Nagyúr védettséget kap a következő isteni szikra vesztés ellen!</p>`;
       // Következő körben a bot védve lesz egy szikra vesztés ellen
-      botProtectionActive = true;
-      showAnnouncement("Sötét Nagyúr védelem képesség aktiválva!");
+      gameState.persistentAbilities.bot = 'protection';
+      showAnnouncement("Sötét Nagyúr védelem képessége aktiválva!");
+      break;
+    case 'doubleDamage':
+      document.getElementById('gameStatus').innerHTML += 
+        `<p class="highlight">A Sötét Nagyúr Full House képessége aktiválva! Ha nem hiszed el a következő Full House bejelentését, két szikrát veszítesz!</p>`;
+      gameState.persistentAbilities.bot = 'doubleDamage';
+      showAnnouncement("Sötét Nagyúr kétszeres sebzés képessége aktiválva!");
       break;
     case 'peekAtOpponent':
       // Bot látja a játékos kockáit, ez már alapból megvan
@@ -1505,14 +1540,51 @@ function offerAbility(combinationType) {
 function updateActiveAbilityDisplay() {
   const display = document.getElementById('active-ability-display');
   
+  // Játékos és bot tartós képességeinek összegyűjtése
+  let activeAbilities = [];
+  
   if (gameState.activeAbility) {
-    const ability = abilities[gameState.activeAbility];
-    display.innerHTML = `
-      <div class="active-ability">
-        <i class="${ability.icon}"></i> Aktív képesség: <span class="highlight">${ability.name}</span>
-        <div class="ability-description">${ability.description}</div>
-      </div>
-    `;
+    activeAbilities.push({
+      name: abilities[gameState.activeAbility].name,
+      description: abilities[gameState.activeAbility].description,
+      icon: abilities[gameState.activeAbility].icon,
+      owner: 'Te'
+    });
+  }
+  
+  if (gameState.persistentAbilities.player) {
+    const abilityType = gameState.persistentAbilities.player;
+    activeAbilities.push({
+      name: abilities[abilityType].name,
+      description: abilities[abilityType].description,
+      icon: abilities[abilityType].icon,
+      owner: 'Te'
+    });
+  }
+  
+  if (gameState.persistentAbilities.bot) {
+    const abilityType = gameState.persistentAbilities.bot;
+    activeAbilities.push({
+      name: abilities[abilityType].name,
+      description: abilities[abilityType].description,
+      icon: abilities[abilityType].icon,
+      owner: 'Sötét Nagyúr'
+    });
+  }
+  
+  // Képességek megjelenítése
+  if (activeAbilities.length > 0) {
+    let html = '';
+    activeAbilities.forEach(ability => {
+      html += `
+        <div class="active-ability">
+          <i class="${ability.icon}"></i> ${ability.owner}: <span class="highlight">${ability.name}</span>
+          <div class="ability-description">${ability.description}</div>
+        </div>
+      `;
+    });
+    
+    display.innerHTML = html;
     display.classList.remove('hidden');
   } else {
     display.innerHTML = '';
@@ -1524,6 +1596,7 @@ function updateActiveAbilityDisplay() {
 function useAbility(ability) {
   document.getElementById('abilities').classList.add('hidden');
   
+  // Képesség használata
   switch (ability) {
     case 'peekAtOpponent':
       // Ellenfél kockáinak megtekintése
@@ -1532,6 +1605,9 @@ function useAbility(ability) {
       document.getElementById('gameStatus').innerHTML += 
         `<p class="highlight">Megtekintheted a Sötét Nagyúr kockáit!</p>`;
       showAnnouncement("Megtekintheted a Sötét Nagyúr kockáit!");
+      
+      // Nem tartós képesség, azonnal törlődik
+      gameState.activeAbility = null;
       break;
     
     case 'doubleDamage':
@@ -1539,6 +1615,10 @@ function useAbility(ability) {
       document.getElementById('gameStatus').innerHTML += 
         `<p class="highlight">Full House képesség aktiválva! Ha nem hiszik el a következő Full House bejelentésedet, két szikrát veszít az ellenfél!</p>`;
       showAnnouncement("Full House képesség aktiválva!");
+      
+      // Tartós képesség, átkerül a persistentAbilities közé
+      gameState.persistentAbilities.player = 'doubleDamage';
+      gameState.activeAbility = null;
       break;
     
     case 'protection':
@@ -1546,6 +1626,10 @@ function useAbility(ability) {
       document.getElementById('gameStatus').innerHTML += 
         `<p class="highlight">Védelem képesség aktiválva! A következő isteni szikra vesztés ellen védettséget kapsz.</p>`;
       showAnnouncement("Védelem képesség aktiválva!");
+      
+      // Tartós képesség, átkerül a persistentAbilities közé
+      gameState.persistentAbilities.player = 'protection';
+      gameState.activeAbility = null;
       break;
     
     case 'restoreSpark':
@@ -1560,13 +1644,17 @@ function useAbility(ability) {
           `<p class="highlight">Már maximális az isteni szikrák száma, a képesség hatástalan.</p>`;
         showAnnouncement("Már maximális a szikrák száma!");
       }
+      
+      // Nem tartós képesség, azonnal törlődik
+      gameState.activeAbility = null;
       break;
   }
   
-  // Ha a bot a soron következő és nincs aktív képesség, a bot lép
-  if (gameState.currentPlayer === 'bot' && ability !== 'protection' && ability !== 'doubleDamage') {
-    gameState.activeAbility = null;
-    updateActiveAbilityDisplay();
+  // Frissítjük a képesség megjelenítését
+  updateActiveAbilityDisplay();
+  
+  // Ha a bot a soron következő, a bot lép
+  if (gameState.currentPlayer === 'bot') {
     setTimeout(botAnnounce, 2000);
   }
 }
