@@ -2,30 +2,29 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Loki Blöff - Rúnakocka Játék</title>
+  <title>Futhark Rúnakocka Játék</title>
   <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400..800&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Germania+One&display=swap" rel="stylesheet">
   <style>
     :root {
-      --main-bg-color: #0c0c0c;
-      --panel-bg-color: rgba(20, 14, 10, 0.85);
-      --border-color: #482c17;
-      --highlight-color: #ff6400;
-      --text-color: #d1c3af;
-      --secondary-bg: rgba(72, 44, 23, 0.6);
-      --dice-bg: #291d14;
+      --main-bg-color: #0e1116;
+      --rune-color: #d1c3af;
+      --accent-color: #9e2b25;
+      --player-color: #4a6b8a;
+      --bot-color: #734046;
+      --panel-bg: rgba(32, 28, 26, 0.85);
+      --rune-glow: rgba(158, 43, 37, 0.7);
     }
     
     body {
       font-family: "Eczar", serif;
+      background-color: var(--main-bg-color);
       background-image: url('images/background.jpg.jpg');
       background-size: cover;
       background-position: center;
-      color: var(--text-color);
+      color: var(--rune-color);
       margin: 0;
       padding: 20px;
       text-align: center;
-      background-color: var(--main-bg-color);
     }
     
     h1 {
@@ -35,9 +34,8 @@
       padding: 15px;
       border-radius: 5px;
       display: inline-block;
-      text-shadow: 0 0 10px var(--highlight-color);
+      text-shadow: 0 0 10px var(--accent-color);
       letter-spacing: 2px;
-      font-family: 'Germania One', cursive;
     }
     
     #gameArea {
@@ -49,18 +47,26 @@
     }
     
     .player-section {
-      background-color: var(--panel-bg-color);
+      background-color: var(--panel-bg);
       padding: 20px;
       border-radius: 5px;
-      min-width: 300px;
-      border: 1px solid var(--border-color);
+      min-width: 260px;
+      border: 1px solid #482c17;
       transition: all 0.3s ease;
       position: relative;
     }
     
+    #playerSection {
+      border-top: 3px solid var(--player-color);
+    }
+    
+    #botSection {
+      border-top: 3px solid var(--bot-color);
+    }
+    
     .active-player {
-      border: 3px solid var(--highlight-color);
-      box-shadow: 0 0 25px rgba(255, 100, 0, 0.7);
+      border: 3px solid var(--accent-color);
+      box-shadow: 0 0 25px rgba(158, 43, 37, 0.7);
       transform: scale(1.05);
       z-index: 2;
     }
@@ -72,8 +78,8 @@
       top: 50%;
       transform: translateY(-50%);
       font-size: 2.5rem;
-      color: var(--highlight-color);
-      text-shadow: 0 0 10px var(--highlight-color);
+      color: var(--accent-color);
+      text-shadow: 0 0 10px var(--accent-color);
       animation: pulse 1.5s infinite;
     }
     
@@ -84,8 +90,8 @@
       top: 50%;
       transform: translateY(-50%);
       font-size: 2.5rem;
-      color: var(--highlight-color);
-      text-shadow: 0 0 10px var(--highlight-color);
+      color: var(--accent-color);
+      text-shadow: 0 0 10px var(--accent-color);
       animation: pulse 1.5s infinite;
     }
     
@@ -98,203 +104,179 @@
     h2 {
       margin-top: 0;
       font-size: 1.8rem;
-      color: var(--text-color);
-      font-family: 'Germania One', cursive;
+      color: var(--rune-color);
     }
     
-    .health {
-      font-size: 2rem;
+    .healthbar {
+      display: flex;
+      justify-content: center;
       margin: 15px 0;
-      color: var(--highlight-color);
+      gap: 5px;
     }
     
-    .health-bar {
-      background-color: rgba(0,0,0,0.5);
-      height: 20px;
-      width: 100%;
-      border-radius: 10px;
-      margin: 10px 0;
-      overflow: hidden;
+    .health-point {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: var(--accent-color);
+      box-shadow: 0 0 8px var(--rune-glow);
+      display: inline-block;
+      transition: all 0.3s ease;
     }
     
-    .health-fill {
-      background-color: var(--highlight-color);
-      height: 100%;
-      border-radius: 10px;
-      transition: width 0.5s;
+    .health-lost {
+      background-color: rgba(158, 43, 37, 0.3);
+      box-shadow: none;
     }
     
     .dice-container {
       display: flex;
       justify-content: center;
-      gap: 10px;
       flex-wrap: wrap;
+      gap: 15px;
       margin: 20px 0;
     }
     
     .dice {
       width: 60px;
       height: 60px;
-      background-color: var(--dice-bg);
+      background-color: rgba(32, 28, 26, 0.9);
+      border: 2px solid var(--rune-color);
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
       font-size: 2rem;
       position: relative;
-      transition: transform 0.3s;
-    }
-    
-    .dice.highlight {
-      border: 2px solid var(--highlight-color);
-      box-shadow: 0 0 15px var(--highlight-color);
-      transform: scale(1.1);
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(209, 195, 175, 0.3);
     }
     
     .dice.hidden {
-      background-color: #392418;
+      background-color: rgba(32, 28, 26, 0.9);
+      border-color: var(--bot-color);
+      color: transparent;
+      box-shadow: 0 0 10px rgba(115, 64, 70, 0.4);
     }
     
     .dice.hidden::after {
       content: "?";
       position: absolute;
-      font-size: 2rem;
-      color: rgba(255,255,255,0.3);
+      font-size: 2.5rem;
+      color: rgba(115, 64, 70, 0.8);
     }
     
     .rune {
-      font-family: 'Germania One', cursive;
       font-size: 2.5rem;
-      line-height: 1;
+      display: inline-block;
+      transition: all 0.2s ease;
     }
     
-    .claim-container {
-      background-color: var(--secondary-bg);
+    .dice.loki {
+      border-color: var(--accent-color);
+      background-color: rgba(158, 43, 37, 0.3);
+      box-shadow: 0 0 15px var(--accent-color);
+      transform: scale(1.1);
+    }
+    
+    #claimControls {
+      background-color: var(--panel-bg);
       padding: 15px;
-      border-radius: 8px;
-      margin: 15px 0;
+      border-radius: 5px;
+      margin: 20px auto;
+      max-width: 500px;
     }
     
-    .controls {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin: 20px 0;
+    #claimControls h3 {
+      margin-top: 0;
     }
     
-    .action-row {
+    .claim-inputs {
       display: flex;
       justify-content: center;
-      gap: 15px;
+      align-items: center;
+      gap: 10px;
+      margin: 15px 0;
       flex-wrap: wrap;
     }
     
+    select, input {
+      background-color: rgba(32, 28, 26, 0.9);
+      border: 1px solid var(--rune-color);
+      color: var(--rune-color);
+      padding: 8px 12px;
+      font-size: 1rem;
+      border-radius: 5px;
+      font-family: "Eczar", serif;
+    }
+    
+    #controls {
+      margin-top: 30px;
+    }
+    
     button {
-      font-family: 'Germania One', cursive;
+      font-family: "Eczar", serif;
       font-size: 1.2rem;
       padding: 12px 25px;
+      margin: 10px;
       border-radius: 5px;
       border: none;
       cursor: pointer;
-      background-color: var(--border-color);
-      color: var(--text-color);
-      box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
+      background-color: #482c17;
+      color: var(--rune-color);
+      box-shadow: 0 0 10px rgba(158, 43, 37, 0.3);
       transition: all 0.3s;
       letter-spacing: 1px;
-      min-width: 120px;
     }
     
-    button:hover:not(:disabled) {
-      background-color: #5a381f;
+    button:hover {
+      background-color: #583a25;
       transform: scale(1.05);
-      box-shadow: 0 0 15px rgba(255, 100, 0, 0.5);
+      box-shadow: 0 0 15px rgba(158, 43, 37, 0.5);
     }
     
     button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
     
-    .rune-selector {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-    
-    .rune-btn {
-      width: 50px;
-      height: 50px;
-      font-size: 1.8rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      min-width: 0;
-    }
-    
-    .count-selector {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-    
-    .count-btn {
-      width: 40px;
-      min-width: 40px;
-      height: 40px;
-      font-size: 1.4rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-    }
-    
-    #message {
+    #result {
       font-size: 1.3rem;
-      background-color: var(--panel-bg-color);
+      background-color: var(--panel-bg);
       padding: 15px;
       border-radius: 5px;
       display: inline-block;
-      margin: 20px 0;
+      margin-top: 20px;
       max-width: 80%;
       letter-spacing: 1px;
       line-height: 1.4;
     }
     
-    .result-highlight {
-      color: var(--highlight-color);
+    #resetContainer {
+      display: none;
+      margin-top: 30px;
+    }
+    
+    .winner {
+      color: var(--accent-color);
       font-weight: bold;
-      text-shadow: 0 0 10px rgba(255, 100, 0, 0.7);
+      text-shadow: 0 0 10px rgba(158, 43, 37, 0.7);
     }
     
-    .loki-text {
-      font-size: 2rem;
-      font-family: 'Germania One', cursive;
-      color: var(--highlight-color);
-      text-shadow: 0 0 15px var(--highlight-color);
-      letter-spacing: 3px;
-      animation: pulseLoki 2s infinite;
-    }
-    
-    @keyframes pulseLoki {
-      0% { text-shadow: 0 0 10px var(--highlight-color); }
-      50% { text-shadow: 0 0 25px var(--highlight-color), 0 0 40px var(--highlight-color); }
-      100% { text-shadow: 0 0 10px var(--highlight-color); }
-    }
-    
-    .rune-guide {
+    .rune-legend {
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
       gap: 15px;
-      margin: 20px auto;
-      background-color: var(--panel-bg-color);
+      margin: 20px 0;
+      background-color: var(--panel-bg);
       padding: 10px;
       border-radius: 5px;
       max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
     }
     
     .rune-item {
@@ -304,17 +286,16 @@
     }
     
     .rune-symbol {
-      font-size: 2rem;
-      font-family: 'Germania One', cursive;
+      font-size: 1.5rem;
       margin-right: 10px;
       width: 40px;
       height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: var(--dice-bg);
+      background-color: rgba(32, 28, 26, 0.9);
       border-radius: 5px;
-      box-shadow: 0 0 8px rgba(255, 100, 0, 0.2);
+      box-shadow: 0 0 8px rgba(158, 43, 37, 0.2);
     }
     
     .rune-name {
@@ -322,630 +303,604 @@
       text-align: left;
     }
     
-    #resetContainer {
+    .action-buttons {
       display: none;
-      margin-top: 30px;
+      margin-top: 20px;
+    }
+    
+    .loki-info {
+      text-align: center;
+      color: var(--accent-color);
+      font-style: italic;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
-<h1>Loki Blöff - Rúnakocka Játék</h1>
+<h1>Futhark Rúnakocka Játék</h1>
 
-<div class="rune-guide">
+<div class="rune-legend">
   <div class="rune-item">
     <div class="rune-symbol">ᛚ</div>
-    <div class="rune-name">Laguz - Víz</div>
+    <div class="rune-name">Laguz (L)</div>
   </div>
   <div class="rune-item">
-    <div class="rune-symbol">ᛜ</div>
-    <div class="rune-name">Ingwaz - Termékenység</div>
+    <div class="rune-symbol">ᛁ</div>
+    <div class="rune-name">Isa (I)</div>
   </div>
   <div class="rune-item">
     <div class="rune-symbol">ᛟ</div>
-    <div class="rune-name">Othala - Örökség</div>
+    <div class="rune-name">Othala (O)</div>
   </div>
   <div class="rune-item">
     <div class="rune-symbol">ᚲ</div>
-    <div class="rune-name">Kenaz - Fáklya</div>
-  </div>
-  <div class="rune-item">
-    <div class="rune-symbol">L O K I</div>
-    <div class="rune-name">Mind a 4 rúna = Azonnali győzelem!</div>
+    <div class="rune-name">Kenaz (K)</div>
   </div>
 </div>
 
+<div class="loki-info">Rátalálsz LOKI-ra? (ᛚᛟᚲᛁ) A kockák sorrendje nem számít, de győzelmet hoz!</div>
+
 <div id="gameArea">
-  <div id="playerSection" class="player-section active-player">
+  <div id="playerSection" class="player-section">
     <h2>Kalandor</h2>
-    
-    <div class="health-bar">
-      <div id="playerHealthFill" class="health-fill" style="width: 100%;"></div>
-    </div>
-    <div class="health">Életerő: <span id="playerHealth">5</span></div>
-    
-    <div class="dice-container" id="playerDice">
-      <!-- Játékos kockái ide kerülnek -->
-    </div>
-    
-    <div class="claim-container" id="playerClaimUI">
-      <p>Válassz egy rúnát és mondj egy számot!</p>
-      
-      <div class="rune-selector">
-        <button class="rune-btn" data-rune="ᛚ" onclick="selectRune('ᛚ')">ᛚ</button>
-        <button class="rune-btn" data-rune="ᛜ" onclick="selectRune('ᛜ')">ᛜ</button>
-        <button class="rune-btn" data-rune="ᛟ" onclick="selectRune('ᛟ')">ᛟ</button>
-        <button class="rune-btn" data-rune="ᚲ" onclick="selectRune('ᚲ')">ᚲ</button>
-      </div>
-      
-      <div class="count-selector">
-        <button class="count-btn" onclick="selectCount(1)">1</button>
-        <button class="count-btn" onclick="selectCount(2)">2</button>
-        <button class="count-btn" onclick="selectCount(3)">3</button>
-        <button class="count-btn" onclick="selectCount(4)">4</button>
-      </div>
-      
-      <div class="action-row">
-        <button id="claimBtn" onclick="makeClaim()" disabled>Állítás</button>
-      </div>
-    </div>
-    
-    <div class="claim-container" id="playerResponseUI" style="display: none;">
-      <p>A Sötét Nagyúr állítása: <span id="botClaimText"></span></p>
-      <div class="action-row">
-        <button onclick="respondToClaim(true)">Igazat mond</button>
-        <button onclick="respondToClaim(false)">Blöfföl</button>
-      </div>
-    </div>
+    <div class="healthbar" id="playerHealth"></div>
+    <div class="dice-container" id="playerDice"></div>
   </div>
   
   <div id="botSection" class="player-section">
-    <h2>Sötét Nagyúr</h2>
-    
-    <div class="health-bar">
-      <div id="botHealthFill" class="health-fill" style="width: 100%;"></div>
-    </div>
-    <div class="health">Életerő: <span id="botHealth">5</span></div>
-    
-    <div class="dice-container" id="botDice">
-      <!-- Bot kockái ide kerülnek -->
-    </div>
-    
-    <div class="claim-container">
-      <p id="botClaimDisplay">Várakozás az állításodra...</p>
-      <div class="action-row" id="botResponseUI" style="display: none;">
-        <button id="botThinkingBtn" disabled>Gondolkodik...</button>
-      </div>
-    </div>
+    <h2>Sötét Jós</h2>
+    <div class="healthbar" id="botHealth"></div>
+    <div class="dice-container" id="botDice"></div>
   </div>
 </div>
 
-<div id="message">Dobj a rúnakockákkal a kezdéshez!</div>
-
-<div class="controls" id="mainControls">
-  <div class="action-row">
-    <button id="rollBtn" onclick="playerRoll()">Kockadobás</button>
-    <button id="newGameBtn" onclick="startGame()" style="display: none;">Új játék</button>
+<div id="claimControls">
+  <h3 id="turnInfo">A játék kezdődik...</h3>
+  <div class="claim-inputs">
+    <span>Bejelentem, hogy dobtam</span>
+    <select id="claimCount">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+    </select>
+    <span>darab</span>
+    <select id="claimRune">
+      <option value="ᛚ">Laguz (ᛚ)</option>
+      <option value="ᛁ">Isa (ᛁ)</option>
+      <option value="ᛟ">Othala (ᛟ)</option>
+      <option value="ᚲ">Kenaz (ᚲ)</option>
+    </select>
+    <span>rúnát!</span>
   </div>
+  <button id="makeClaim" onclick="makeClaim()">Bejelentem!</button>
+  
+  <div id="actionButtons" class="action-buttons">
+    <button id="believeBtn" onclick="decideClaim(true)">Elhiszem</button>
+    <button id="doubtBtn" onclick="decideClaim(false)">Kétlem (Blöff!)</button>
+  </div>
+</div>
+
+<div id="result">Dobj a kockákkal és kezdődhet a játék! Tegyél egy bejelentést, vagy kérdőjelezd meg az ellenfél állítását!</div>
+
+<div id="controls">
+  <button id="rollBtn" onclick="rollDice()">Kockák Dobása</button>
+</div>
+
+<div id="resetContainer">
+  <button onclick="startGame()">Új Játék</button>
 </div>
 
 <script>
 // Játék változók
-let playerHealth = 5;
-let botHealth = 5;
+const RUNES = ['ᛚ', 'ᛁ', 'ᛟ', 'ᚲ']; // Laguz, Isa, Othala, Kenaz
+const HEALTH_POINTS = 5; // Kezdeti életerő
+let playerHealth = HEALTH_POINTS;
+let botHealth = HEALTH_POINTS;
 let playerDice = [];
 let botDice = [];
-let gameState = 'start'; // 'start', 'playerClaim', 'botResponse', 'botClaim', 'playerResponse', 'gameOver'
-let selectedRune = null;
-let selectedCount = null;
+let activePlayer = 'player'; // 'player' vagy 'bot'
+let gameActive = true;
 let currentClaim = null;
+let roundInProgress = false;
+let playerBluffs = 0; // Játékos blöffölési statisztika
+let botChecks = 0; // Bot ellenőrzési statisztika
 
-// Rúna szimbólumok és nevek
-const runes = [
-  { symbol: 'ᛚ', name: 'Laguz' },   // L
-  { symbol: 'ᛜ', name: 'Ingwaz' },  // I
-  { symbol: 'ᛟ', name: 'Othala' },  // O
-  { symbol: 'ᚲ', name: 'Kenaz' }    // K
-];
+// LOKI kombináció (L, O, K, I) - győzelmi feltétel
+const LOKI = ['ᛚ', 'ᛟ', 'ᚲ', 'ᛁ']; // Sorrendben: Laguz, Othala, Kenaz, Isa
 
 // DOM elemek
-const playerDiceContainer = document.getElementById('playerDice');
-const botDiceContainer = document.getElementById('botDice');
-const playerSection = document.getElementById('playerSection');
-const botSection = document.getElementById('botSection');
-const messageEl = document.getElementById('message');
+const playerDiceEl = document.getElementById('playerDice');
+const botDiceEl = document.getElementById('botDice');
+const playerHealthEl = document.getElementById('playerHealth');
+const botHealthEl = document.getElementById('botHealth');
+const resultEl = document.getElementById('result');
+const playerSectionEl = document.getElementById('playerSection');
+const botSectionEl = document.getElementById('botSection');
+const claimControlsEl = document.getElementById('claimControls');
+const turnInfoEl = document.getElementById('turnInfo');
+const actionButtonsEl = document.getElementById('actionButtons');
+const makeClaimBtn = document.getElementById('makeClaim');
 const rollBtn = document.getElementById('rollBtn');
-const claimBtn = document.getElementById('claimBtn');
-const playerClaimUI = document.getElementById('playerClaimUI');
-const playerResponseUI = document.getElementById('playerResponseUI');
-const botResponseUI = document.getElementById('botResponseUI');
 
 // Játék indítása
 function startGame() {
-  playerHealth = 5;
-  botHealth = 5;
+  playerHealth = HEALTH_POINTS;
+  botHealth = HEALTH_POINTS;
   playerDice = [];
   botDice = [];
-  gameState = 'start';
-  selectedRune = null;
-  selectedCount = null;
+  activePlayer = 'player';
+  gameActive = true;
   currentClaim = null;
+  roundInProgress = false;
+  playerBluffs = 0;
+  botChecks = 0;
   
   // UI visszaállítása
   updateHealthDisplay();
-  playerDiceContainer.innerHTML = '';
-  botDiceContainer.innerHTML = '';
-  messageEl.textContent = 'Dobj a rúnakockákkal a kezdéshez!';
+  playerDiceEl.innerHTML = '';
+  botDiceEl.innerHTML = '';
+  resultEl.textContent = 'Dobj a kockákkal és kezdődhet a játék! Tegyél egy bejelentést, vagy kérdőjelezd meg az ellenfél állítását!';
+  document.getElementById('resetContainer').style.display = 'none';
   
-  // Gombok visszaállítása
-  rollBtn.style.display = 'inline-block';
+  // Gombok beállítása
   rollBtn.disabled = false;
-  document.getElementById('newGameBtn').style.display = 'none';
-  playerClaimUI.style.display = 'block';
-  playerResponseUI.style.display = 'none';
-  botResponseUI.style.display = 'none';
+  makeClaimBtn.disabled = true;
+  actionButtonsEl.style.display = 'none';
   
-  // Aktív játékos jelölése
-  playerSection.classList.add('active-player');
-  botSection.classList.remove('active-player');
-  
-  clearSelection();
+  // Aktív játékos kijelölése
+  updateActivePlayer();
 }
 
-// Játékos kockadobása
-function playerRoll() {
-  if (gameState !== 'start' && gameState !== 'playerTurn') return;
-  
-  // Kockadobás animáció és eredmény
-  playerDice = rollDice();
-  renderPlayerDice();
-  
-  // LOKI kombináció ellenőrzése
-  if (checkForLoki(playerDice)) {
-    showLokiVictory('player');
-    return;
-  }
-  
-  // Játékállapot frissítése
-  gameState = 'playerClaim';
-  messageEl.textContent = 'Mit állítasz a dobásodról?';
-  rollBtn.disabled = true;
-  
-  // UI frissítése
-  playerClaimUI.style.display = 'block';
-  clearSelection();
-}
-
-// Rúna kiválasztása
-function selectRune(rune) {
-  if (gameState !== 'playerClaim') return;
-  
-  selectedRune = rune;
-  updateSelectionUI();
-}
-
-// Darabszám kiválasztása
-function selectCount(count) {
-  if (gameState !== 'playerClaim') return;
-  
-  selectedCount = count;
-  updateSelectionUI();
-}
-
-// Kiválasztás UI frissítése
-function updateSelectionUI() {
-  // Rúna gombok
-  document.querySelectorAll('.rune-btn').forEach(btn => {
-    btn.classList.remove('highlight');
-    if (btn.dataset.rune === selectedRune) {
-      btn.classList.add('highlight');
-    }
-  });
-  
-  // Darabszám gombok
-  document.querySelectorAll('.count-btn').forEach((btn, index) => {
-    btn.classList.remove('highlight');
-    if (parseInt(btn.textContent) === selectedCount) {
-      btn.classList.add('highlight');
-    }
-  });
-  
-  // Állítás gomb engedélyezése
-  claimBtn.disabled = !(selectedRune && selectedCount);
-}
-
-// Kiválasztás törlése
-function clearSelection() {
-  selectedRune = null;
-  selectedCount = null;
-  updateSelectionUI();
-}
-
-// Állítás tétele
-function makeClaim() {
-  if (gameState !== 'playerClaim' || !selectedRune || !selectedCount) return;
-  
-  // Állítás rögzítése
-  currentClaim = { rune: selectedRune, count: selectedCount };
-  
-  // UI frissítése
-  messageEl.textContent = `Azt állítod, hogy ${selectedCount} db ${selectedRune} rúnát dobtál.`;
-  playerClaimUI.style.display = 'none';
-  botResponseUI.style.display = 'block';
-  document.getElementById('botThinkingBtn').disabled = true;
-  
-  // Játékállapot frissítése
-  gameState = 'botResponse';
-  
-  // Bot válasza késleltetéssel
-  setTimeout(botResponse, 2000);
-}
-
-// Bot válasza a játékos állítására
-function botResponse() {
-  if (gameState !== 'botResponse') return;
-  
-  // A bot eldönti, hogy elhiszi-e az állítást
-  const actualCount = countRune(playerDice, currentClaim.rune);
-  const believesPlayer = botDecideToTrust(currentClaim, actualCount);
-  
-  // Eredmény kiértékelése
-  const isPlayerHonest = actualCount >= currentClaim.count;
-  
-  // UI frissítése - bot állítása
-  document.getElementById('botThinkingBtn').textContent = 
-    believesPlayer ? "Elhiszem!" : "Blöffölsz!";
-  document.getElementById('botThinkingBtn').disabled = false;
-  
-  // Teljes játékoskockák felfedése
-  revealDice(playerDiceContainer, playerDice);
-  
-  setTimeout(() => {
-    // Eredmény kiértékelése
-    if (believesPlayer === isPlayerHonest) {
-      // Bot helyesen döntött
-      if (isPlayerHonest) {
-        messageEl.innerHTML = `<span class="result-highlight">A Sötét Nagyúr elhitte az igazat!</span> Valóban ${actualCount} db ${currentClaim.rune} rúnát dobtál.`;
-      } else {
-        messageEl.innerHTML = `<span class="result-highlight">A Sötét Nagyúr leleplezte a blöffödet!</span> Csak ${actualCount} db ${currentClaim.rune} rúnát dobtál, nem ${currentClaim.count}-et.`;
-        decreaseHealth('player');
-      }
-    } else {
-      // Bot tévesen döntött
-      if (isPlayerHonest) {
-        messageEl.innerHTML = `<span class="result-highlight">A Sötét Nagyúr nem hitt neked, pedig igazat mondtál!</span> Valóban ${actualCount} db ${currentClaim.rune} rúnát dobtál.`;
-        decreaseHealth('bot');
-      } else {
-        messageEl.innerHTML = `<span class="result-highlight">A Sötét Nagyúr bedőlt a blöffödnek!</span> Csak ${actualCount} db ${currentClaim.rune} rúnát dobtál, nem ${currentClaim.count}-et.`;
-        decreaseHealth('bot');
-      }
-    }
-    
-    // Játék folytatása, ha még van élet
-    if (playerHealth > 0 && botHealth > 0) {
-      setTimeout(botTurn, 3000);
-    }
-  }, 2000);
-}
-
-// Bot köre
-function botTurn() {
-  // Aktív játékos váltása
-  playerSection.classList.remove('active-player');
-  botSection.classList.add('active-player');
-  
-  // Bot dob
-  botDice = rollDice();
-  renderBotDice(true); // Rejtett kockák
-  
-  // LOKI kombináció ellenőrzése
-  if (checkForLoki(botDice)) {
-    // Kis késleltetéssel felfedi a kockákat
-    setTimeout(() => {
-      revealDice(botDiceContainer, botDice);
-      showLokiVictory('bot');
-    }, 1000);
-    return;
-  }
-  
-  // Játékállapot frissítése
-  gameState = 'botClaim';
-  
-  // Bot állítása
-  setTimeout(() => {
-    const botClaim = generateBotClaim(botDice);
-    currentClaim = botClaim;
-    
-    // UI frissítése
-    document.getElementById('botClaimText').textContent = `${botClaim.count} db ${botClaim.rune} rúna`;
-    document.getElementById('botClaimDisplay').textContent = `Állításom: ${botClaim.count} db ${botClaim.rune} rúna`;
-    
-    messageEl.textContent = `A Sötét Nagyúr azt állítja, hogy ${botClaim.count} db ${botClaim.rune} rúnát dobott. Mit gondolsz?`;
-    playerResponseUI.style.display = 'block';
-    botResponseUI.style.display = 'none';
-    
-    // Játékállapot frissítése
-    gameState = 'playerResponse';
-    
-    // Aktív játékos visszaváltása
-    playerSection.classList.add('active-player');
-    botSection.classList.remove('active-player');
-  }, 2000);
-}
-
-// Játékos válasza a bot állítására
-function respondToClaim(believesBot) {
-  if (gameState !== 'playerResponse') return;
-  
-  // Teljes bot kockák felfedése
-  revealDice(botDiceContainer, botDice);
-  
-  // Eredmény kiértékelése
-  const actualCount = countRune(botDice, currentClaim.rune);
-  const isBotHonest = actualCount >= currentClaim.count;
-  
-  setTimeout(() => {
-    // Eredmény kiértékelése
-    if (believesBot === isBotHonest) {
-      // Játékos helyesen döntött
-      if (isBotHonest) {
-        messageEl.innerHTML = `<span class="result-highlight">Helyesen bíztál a Sötét Nagyúrban!</span> Valóban ${actualCount} db ${currentClaim.rune} rúnát dobott.`;
-      } else {
-        messageEl.innerHTML = `<span class="result-highlight">Helyesen lebuktattad a Sötét Nagyúr blöffjét!</span> Csak ${actualCount} db ${currentClaim.rune} rúnát dobott, nem ${currentClaim.count}-et.`;
-        decreaseHealth('bot');
-      }
-    } else {
-      // Játékos tévesen döntött
-      if (isBotHonest) {
-        messageEl.innerHTML = `<span class="result-highlight">Tévesen vádoltad blöfföléssel a Sötét Nagyurat!</span> Valóban ${actualCount} db ${currentClaim.rune} rúnát dobott.`;
-        decreaseHealth('player');
-      } else {
-        messageEl.innerHTML = `<span class="result-highlight">Bedőltél a Sötét Nagyúr blöffjének!</span> Csak ${actualCount} db ${currentClaim.rune} rúnát dobott, nem ${currentClaim.count}-et.`;
-        decreaseHealth('player');
-      }
-    }
-    
-    // Játék folytatása, ha még van élet
-    if (playerHealth > 0 && botHealth > 0) {
-      setTimeout(() => {
-        // UI visszaállítása
-        playerDiceContainer.innerHTML = '';
-        botDiceContainer.innerHTML = '';
-        messageEl.textContent = 'Új kör kezdődik. Dobj a kockákkal!';
-        
-        // Gombok visszaállítása
-        rollBtn.disabled = false;
-        playerResponseUI.style.display = 'none';
-        document.getElementById('botClaimDisplay').textContent = 'Várakozás az állításodra...';
-        
-        // Játékállapot frissítése
-        gameState = 'playerTurn';
-      }, 3000);
-    }
-  }, 1500);
-}
-
-// Életerő csökkentése
-function decreaseHealth(player) {
-  if (player === 'player') {
-    playerHealth--;
-    document.getElementById('playerHealth').textContent = playerHealth;
-    document.getElementById('playerHealthFill').style.width = `${(playerHealth / 5) * 100}%`;
-  } else {
-    botHealth--;
-    document.getElementById('botHealth').textContent = botHealth;
-    document.getElementById('botHealthFill').style.width = `${(botHealth / 5) * 100}%`;
-  }
-  
-  // Ellenőrizzük, hogy vége van-e a játéknak
-  if (playerHealth <= 0 || botHealth <= 0) {
-    gameState = 'gameOver';
-    setTimeout(showGameOver, 2000);
-  }
-}
-
-// Életerő kijelző frissítése
+// Életerő megjelenítése
 function updateHealthDisplay() {
-  document.getElementById('playerHealth').textContent = playerHealth;
-  document.getElementById('botHealth').textContent = botHealth;
-  document.getElementById('playerHealthFill').style.width = `${(playerHealth / 5) * 100}%`;
-  document.getElementById('botHealthFill').style.width = `${(botHealth / 5) * 100}%`;
-}
-
-// Játék vége képernyő
-function showGameOver() {
-  if (playerHealth <= 0) {
-    messageEl.innerHTML = `<span class="result-highlight">A Sötét Nagyúr legyőzött!</span> A világ sötétségbe borul...`;
-  } else {
-    messageEl.innerHTML = `<span class="result-highlight">Győztél!</span> Legyőzted a Sötét Nagyurat a blöff játékban!`;
+  playerHealthEl.innerHTML = '';
+  botHealthEl.innerHTML = '';
+  
+  for (let i = 0; i < HEALTH_POINTS; i++) {
+    const playerPoint = document.createElement('div');
+    playerPoint.className = 'health-point';
+    if (i >= playerHealth) playerPoint.classList.add('health-lost');
+    playerHealthEl.appendChild(playerPoint);
+    
+    const botPoint = document.createElement('div');
+    botPoint.className = 'health-point';
+    if (i >= botHealth) botPoint.classList.add('health-lost');
+    botHealthEl.appendChild(botPoint);
   }
-  
-  // UI frissítése
-  rollBtn.style.display = 'none';
-  playerClaimUI.style.display = 'none';
-  playerResponseUI.style.display = 'none';
-  document.getElementById('newGameBtn').style.display = 'inline-block';
 }
 
-// LOKI kombináció győzelem
-function showLokiVictory(winner) {
-  gameState = 'gameOver';
+// Aktív játékos frissítése
+function updateActivePlayer() {
+  playerSectionEl.classList.toggle('active-player', activePlayer === 'player');
+  botSectionEl.classList.toggle('active-player', activePlayer === 'bot');
   
-  // Tényleges LOKI sorrendbe rendezett kockák
-  const lokiOrder = rearrangeToLoki(winner === 'player' ? playerDice : botDice);
-  
-  if (winner === 'player') {
-    revealDice(playerDiceContainer, lokiOrder);
-    messageEl.innerHTML = `<span class="loki-text">LOKI!</span><br><span class="result-highlight">Micsoda szerencse! Megidézted Lokit!</span> Azonnal győztél!`;
+  if (activePlayer === 'player') {
+    turnInfoEl.textContent = 'Te következel! Tegyél egy bejelentést!';
+    makeClaimBtn.disabled = !playerDice.length;
+    actionButtonsEl.style.display = 'none';
   } else {
-    revealDice(botDiceContainer, lokiOrder);
-    messageEl.innerHTML = `<span class="loki-text">LOKI!</span><br><span class="result-highlight">A Sötét Nagyúr megidézte Lokit!</span> Azonnal vesztettél!`;
+    turnInfoEl.textContent = 'A Sötét Jós gondolkodik...';
+    makeClaimBtn.disabled = true;
+    actionButtonsEl.style.display = 'none';
+    
+    if (playerDice.length && botDice.length) {
+      setTimeout(botMakeClaim, 2000);
+    }
   }
-  
-  // UI frissítése
-  rollBtn.style.display = 'none';
-  playerClaimUI.style.display = 'none';
-  playerResponseUI.style.display = 'none';
-  document.getElementById('newGameBtn').style.display = 'inline-block';
 }
 
-// 4 db D4 kocka dobása (minden kockán ugyanaz a 4 rúna)
+// Kockadobás
 function rollDice() {
-  const dice = [];
-  for (let i = 0; i < 4; i++) {
-    // 0-3 index a runes tömbben
-    const runeIndex = Math.floor(Math.random() * 4);
-    dice.push(runes[runeIndex].symbol);
-  }
-  return dice;
+  if (roundInProgress) return;
+  roundInProgress = true;
+  
+  // Kockák dobása
+  playerDice = Array.from({length: 4}, () => RUNES[Math.floor(Math.random() * RUNES.length)]);
+  botDice = Array.from({length: 4}, () => RUNES[Math.floor(Math.random() * RUNES.length)]);
+  
+  // Megjelenítés
+  renderDice();
+  
+  // LOKI ellenőrzése
+  checkForLoki();
+  
+  // Gombok állapota
+  rollBtn.disabled = true;
+  makeClaimBtn.disabled = false;
+  
+  resultEl.textContent = 'Kockák dobva! Tegyél bejelentést a látott rúnáidról, vagy blöffölj!';
 }
 
-// Játékos kockáinak megjelenítése
-function renderPlayerDice() {
-  playerDiceContainer.innerHTML = '';
+// Kockák megjelenítése
+function renderDice() {
+  playerDiceEl.innerHTML = '';
+  botDiceEl.innerHTML = '';
   
-  playerDice.forEach(runeSymbol => {
+  // Játékos kockái
+  playerDice.forEach(rune => {
     const diceEl = document.createElement('div');
     diceEl.className = 'dice';
-    diceEl.innerHTML = `<span class="rune">${runeSymbol}</span>`;
-    playerDiceContainer.appendChild(diceEl);
+    diceEl.innerHTML = `<span class="rune">${rune}</span>`;
+    playerDiceEl.appendChild(diceEl);
+  });
+  
+  // Bot kockái (rejtve)
+  botDice.forEach(() => {
+    const diceEl = document.createElement('div');
+    diceEl.className = 'dice hidden';
+    botDiceEl.appendChild(diceEl);
   });
 }
 
-// Bot kockáinak megjelenítése
-function renderBotDice(hidden = false) {
-  botDiceContainer.innerHTML = '';
+// LOKI kombináció ellenőrzése
+function checkForLoki() {
+  // Játékos LOKI-ja
+  const playerHasLoki = hasLokiCombination(playerDice);
+  if (playerHasLoki) {
+    revealDice();
+    highlightLokiDice('player');
+    endGame('player', 'loki');
+    return true;
+  }
   
-  if (hidden) {
-    // Rejtett kockák, csak a hátlapot mutatjuk
-    for (let i = 0; i < 4; i++) {
-      const diceEl = document.createElement('div');
-      diceEl.className = 'dice hidden';
-      botDiceContainer.appendChild(diceEl);
+  // Bot LOKI-ja
+  const botHasLoki = hasLokiCombination(botDice);
+  if (botHasLoki) {
+    revealDice();
+    highlightLokiDice('bot');
+    endGame('bot', 'loki');
+    return true;
+  }
+  
+  return false;
+}
+
+// Megnézi, van-e LOKI kombináció
+function hasLokiCombination(dice) {
+  // Másolatot készítünk, hogy ne módosítsuk az eredetit
+  const diceCount = {};
+  LOKI.forEach(rune => {
+    diceCount[rune] = 0;
+  });
+  
+  // Megszámoljuk a rúnákat
+  dice.forEach(rune => {
+    if (diceCount[rune] !== undefined) {
+      diceCount[rune]++;
+    }
+  });
+  
+  // Ellenőrizzük, megvan-e minden LOKI rúna
+  return LOKI.every(rune => diceCount[rune] > 0);
+}
+
+// LOKI kockák kiemelése
+function highlightLokiDice(player) {
+  const dice = player === 'player' ? playerDice : botDice;
+  const diceContainer = player === 'player' ? playerDiceEl : botDiceEl;
+  
+  // LOKI rúnák indexei
+  const lokiIndices = [];
+  LOKI.forEach(runeToFind => {
+    const index = dice.findIndex((rune, idx) => rune === runeToFind && !lokiIndices.includes(idx));
+    if (index !== -1) {
+      lokiIndices.push(index);
+    }
+  });
+  
+  // Kockák kiemelése
+  const diceElements = diceContainer.querySelectorAll('.dice');
+  lokiIndices.forEach(index => {
+    diceElements[index].classList.add('loki');
+  });
+}
+
+// Bejelentés tétele
+function makeClaim() {
+  if (activePlayer !== 'player' || !playerDice.length) return;
+  
+  const claimCount = parseInt(document.getElementById('claimCount').value);
+  const claimRune = document.getElementById('claimRune').value;
+  
+  // Bejelentés rögzítése
+  currentClaim = {
+    player: 'player',
+    count: claimCount,
+    rune: claimRune
+  };
+  
+  resultEl.textContent = `Bejelentetted: ${claimCount} darab ${claimRune} rúna!`;
+  
+  // Játékos váltás
+  activePlayer = 'bot';
+  updateActivePlayer();
+  
+  // Bot dönt
+  setTimeout(() => {
+    const botDecision = botDecideClaim();
+    decideClaim(botDecision);
+  }, 2000);
+}
+
+// Bot bejelentést tesz
+function botMakeClaim() {
+  if (activePlayer !== 'bot' || !botDice.length) return;
+  
+  // Megszámoljuk a bot kockáit
+  const runeCounts = countRunes(botDice);
+  
+  // Stratégia kiválasztása
+  let strategy;
+  const randomStrategy = Math.random();
+  
+  if (randomStrategy < 0.6) {
+    // Valós vagy közel valós bejelentés (60% esély)
+    strategy = 'truth';
+  } else if (randomStrategy < 0.9) {
+    // Kis blöff (30% esély)
+    strategy = 'small_bluff';
+  } else {
+    // Nagy blöff (10% esély)
+    strategy = 'big_bluff';
+  }
+  
+  // Bejelentés létrehozása
+  let claimRune;
+  let claimCount;
+  
+  if (strategy === 'truth') {
+    // Valós bejelentés - a legtöbb kockából választ
+    const mostCommonRune = Object.entries(runeCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 2)[Math.floor(Math.random() * 2)][0];
+    claimRune = mostCommonRune;
+    claimCount = runeCounts[mostCommonRune];
+  } else if (strategy === 'small_bluff') {
+    // Kis blöff - valós +/- 1
+    const mostCommonRune = Object.entries(runeCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 2)[Math.floor(Math.random() * 2)][0];
+    claimRune = mostCommonRune;
+    
+    // 50-50% esély +1 vagy -1 blöffre (ha lehetséges)
+    if (Math.random() < 0.5 && runeCounts[mostCommonRune] < 4) {
+      claimCount = runeCounts[mostCommonRune] + 1;
+    } else if (runeCounts[mostCommonRune] > 1) {
+      claimCount = runeCounts[mostCommonRune] - 1;
+    } else {
+      claimCount = 1;
     }
   } else {
-    // Tényleges kockák megjelenítése
-    botDice.forEach(runeSymbol => {
-      const diceEl = document.createElement('div');
-      diceEl.className = 'dice';
-      diceEl.innerHTML = `<span class="rune">${runeSymbol}</span>`;
-      botDiceContainer.appendChild(diceEl);
-    });
+    // Nagy blöff - random rúna, nagy szám
+    const runes = Object.keys(runeCounts);
+    claimRune = runes[Math.floor(Math.random() * runes.length)];
+    claimCount = Math.min(4, runeCounts[claimRune] + 1 + Math.floor(Math.random() * 2));
+  }
+  
+  // Bejelentés rögzítése
+  currentClaim = {
+    player: 'bot',
+    count: claimCount,
+    rune: claimRune
+  };
+  
+  resultEl.textContent = `A Sötét Jós bejelentette: ${claimCount} darab ${claimRune} rúna!`;
+  
+  // Játékos dönthet
+  activePlayer = 'player';
+  updateActivePlayer();
+  actionButtonsEl.style.display = 'block';
+}
+
+// Rúnák számolása
+function countRunes(dice) {
+  const counts = {};
+  RUNES.forEach(rune => {
+    counts[rune] = 0;
+  });
+  
+  dice.forEach(rune => {
+    counts[rune]++;
+  });
+  
+  return counts;
+}
+
+// Bot eldönti, elhiszi-e a bejelentést
+function botDecideClaim() {
+  // A bot kockáinak számlálása
+  const botRuneCounts = countRunes(botDice);
+  const claimedRune = currentClaim.rune;
+  const claimedCount = currentClaim.count;
+  
+  // Valós kockák a bot oldalán
+  const botActualCount = botRuneCounts[claimedRune] || 0;
+  
+  // Valószínűségszámítás a játékos kockáira
+  const maxPossiblePlayerCount = 4 - botActualCount;
+  
+  // Bot stratégia a játékos blöffölési szokásaihoz igazodva
+  let threshold;
+  
+  // Bot intelligencia
+  if (playerBluffs > 2) {
+    // Ha a játékos sokat blöfföl, a bot gyakrabban kételkedik
+    threshold = 0.5;
+  } else if (botChecks > 3) {
+    // Ha a bot túl gyakran ellenőriz, kevesebbet fog
+    threshold = 0.2;
+  } else {
+    // Alap stratégia
+    threshold = 0.35;
+  }
+  
+  // Kockázatértékelés
+  let believeChance;
+  
+  if (claimedCount > maxPossiblePlayerCount + 1) {
+    // Lehetetlen bejelentés, biztos blöff
+    believeChance = 0;
+  } else if (claimedCount > maxPossiblePlayerCount) {
+    // Kicsi esély, de lehet
+    believeChance = 0.1;
+  } else if (claimedCount === maxPossiblePlayerCount) {
+    // Lehetséges, de kockázatos
+    believeChance = 0.4;
+  } else {
+    // Valószínű
+    believeChance = 0.8;
+  }
+  
+  // Döntés
+  botChecks++;
+  return Math.random() < believeChance;
+}
+
+// Bejelentés ellenőrzése
+function decideClaim(believe) {
+  if (!currentClaim) return;
+  
+  // Kockák felfedése
+  revealDice();
+  
+  // Aktuális bejelentés
+  const claimingPlayer = currentClaim.player;
+  const challengingPlayer = claimingPlayer === 'player' ? 'bot' : 'player';
+  const claimedRune = currentClaim.rune;
+  const claimedCount = currentClaim.count;
+  
+  // Valódi kockaállás ellenőrzése
+  const claimingDice = claimingPlayer === 'player' ? playerDice : botDice;
+  const actualCount = claimingDice.filter(rune => rune === claimedRune).length;
+  
+  // Eredmény meghatározása
+  const isTruthful = actualCount >= claimedCount;
+  
+  // Blöffölési statisztika
+  if (claimingPlayer === 'player' && !isTruthful) {
+    playerBluffs++;
+  }
+  
+  let resultMessage = '';
+  if (believe) {
+    resultMessage = `${challengingPlayer === 'player' ? 'Te' : 'A Sötét Jós'} elhitte a bejelentést. `;
+    
+    if (isTruthful) {
+      resultMessage += `Valóban ${actualCount} darab ${claimedRune} rúna volt! ${challengingPlayer === 'player' ? 'Vesztettél' : 'Vesztett'} 1 életerőt.`;
+      if (challengingPlayer === 'player') {
+        playerHealth--;
+      } else {
+        botHealth--;
+      }
+    } else {
+      resultMessage += `Valójában csak ${actualCount} darab ${claimedRune} rúna volt! ${claimingPlayer === 'player' ? 'Sikeresen blöfföltél! A Sötét Jós' : 'A Sötét Jós sikeresen blöffölt! Te'} veszítesz 1 életerőt.`;
+      if (challengingPlayer === 'player') {
+        playerHealth--;
+      } else {
+        botHealth--;
+      }
+    }
+  } else {
+    resultMessage = `${challengingPlayer === 'player' ? 'Te nem hitted el' : 'A Sötét Jós nem hitte el'} a bejelentést! `;
+    
+    if (isTruthful) {
+      resultMessage += `Valóban ${actualCount} darab ${claimedRune} rúna volt! ${challengingPlayer === 'player' ? 'Te veszítesz' : 'A Sötét Jós veszít'} 1 életerőt.`;
+      if (challengingPlayer === 'player') {
+        playerHealth--;
+      } else {
+        botHealth--;
+      }
+    } else {
+      resultMessage += `Valójában csak ${actualCount} darab ${claimedRune} rúna volt! ${claimingPlayer === 'player' ? 'Lebuktál a blöfföléssel! Te veszítesz' : 'Lebuktattad a blöfföt! A Sötét Jós veszít'} 1 életerőt.`;
+      if (claimingPlayer === 'player') {
+        playerHealth--;
+      } else {
+        botHealth--;
+      }
+    }
+  }
+  
+  // Eredmény megjelenítése
+  resultEl.textContent = resultMessage;
+  
+  // Életerő frissítése
+  updateHealthDisplay();
+  
+  // Ellenőrzés a játék végére
+  if (playerHealth <= 0 || botHealth <= 0) {
+    const winner = playerHealth <= 0 ? 'bot' : 'player';
+    endGame(winner, 'health');
+  } else {
+    // Következő kör előkészítése
+    setTimeout(() => {
+      resetRound();
+    }, 3000);
   }
 }
 
 // Kockák felfedése
-function revealDice(container, dice) {
-  container.innerHTML = '';
-  
-  dice.forEach(runeSymbol => {
+function revealDice() {
+  // Bot kockáinak megjelenítése
+  botDiceEl.innerHTML = '';
+  botDice.forEach(rune => {
     const diceEl = document.createElement('div');
     diceEl.className = 'dice';
-    diceEl.innerHTML = `<span class="rune">${runeSymbol}</span>`;
-    container.appendChild(diceEl);
+    diceEl.innerHTML = `<span class="rune">${rune}</span>`;
+    botDiceEl.appendChild(diceEl);
   });
 }
 
-// Egy adott rúna számának megszámolása a kockákon
-function countRune(dice, rune) {
-  return dice.filter(die => die === rune).length;
-}
-
-// LOKI kombináció ellenőrzése (minden rúnából pontosan 1-1)
-function checkForLoki(dice) {
-  // Minden rúnából kell lennie 1-nek
-  return runes.every(rune => dice.includes(rune.symbol));
-}
-
-// Kockák átrendezése LOKI sorrendbe (csak vizuálisan)
-function rearrangeToLoki(dice) {
-  const lokiOrder = [];
+// Kör visszaállítása
+function resetRound() {
+  playerDice = [];
+  botDice = [];
+  currentClaim = null;
+  roundInProgress = false;
   
-  // LOKI sorrend: Laguz, Othala, Kenaz, Ingwaz
-  runes.forEach(rune => {
-    if (dice.includes(rune.symbol)) {
-      lokiOrder.push(rune.symbol);
+  // UI visszaállítása
+  playerDiceEl.innerHTML = '';
+  botDiceEl.innerHTML = '';
+  
+  // Gombok beállítása
+  rollBtn.disabled = false;
+  makeClaimBtn.disabled = true;
+  actionButtonsEl.style.display = 'none';
+  
+  // Kezdőjátékos váltása (az veszít, aki kezd)
+  activePlayer = 'player';
+  updateActivePlayer();
+  
+  // Eredmény törlése
+  resultEl.textContent = 'Új kör kezdődik! Dobj a kockákkal!';
+}
+
+// Játék vége
+function endGame(winner, reason) {
+  gameActive = false;
+  
+  if (reason === 'loki') {
+    if (winner === 'player') {
+      resultEl.innerHTML = `<span class="winner">MEGTALÁLTAD LOKI-t! A rúnák kirajzolják a LOKI szót (ᛚᛟᚲᛁ)! Győztél!</span>`;
+    } else {
+      resultEl.innerHTML = `<span class="winner">A Sötét Jós megtalálta LOKI-t! A rúnák kirajzolják a LOKI szót (ᛚᛟᚲᛁ)! Vesztettél!</span>`;
     }
-  });
-  
-  // Kiegészítés, ha nem volt mind a 4 különböző rúna
-  while (lokiOrder.length < 4) {
-    lokiOrder.push(dice[lokiOrder.length % dice.length]);
-  }
-  
-  return lokiOrder;
-}
-
-// Bot állításának generálása
-function generateBotClaim(dice) {
-  const actualCounts = {};
-  runes.forEach(rune => {
-    actualCounts[rune.symbol] = countRune(dice, rune.symbol);
-  });
-  
-  // Bot stratégia: 70% eséllyel igazat mond, 30% eséllyel blöfföl
-  const willBluff = Math.random() < 0.3;
-  
-  if (willBluff) {
-    // Blöffölés: véletlenszerű rúna és a valósnál magasabb szám
-    const bluffOptions = [];
-    
-    runes.forEach(rune => {
-      const actualCount = actualCounts[rune.symbol];
-      // Csak akkor hazudhatunk többet, ha nem 4 van belőle
-      if (actualCount < 4) {
-        bluffOptions.push({
-          rune: rune.symbol,
-          actualCount,
-          bluffCount: Math.min(4, actualCount + 1 + Math.floor(Math.random() * 2))
-        });
-      }
-    });
-    
-    // Ha van blöffölési lehetőség, válasszunk egyet
-    if (bluffOptions.length > 0) {
-      const bluff = bluffOptions[Math.floor(Math.random() * bluffOptions.length)];
-      return { rune: bluff.rune, count: bluff.bluffCount };
+  } else {
+    if (winner === 'player') {
+      resultEl.innerHTML = `<span class="winner">Győzelem! A Sötét Jós életereje elfogyott!</span>`;
+    } else {
+      resultEl.innerHTML = `<span class="winner">Vereség! Az életerőd elfogyott!</span>`;
     }
   }
   
-  // Igazmondás vagy nincs blöffölési lehetőség
-  // Válasszuk a legnagyobb előfordulást
-  let bestRune = runes[0].symbol;
-  let bestCount = 0;
+  // Gombok letiltása
+  rollBtn.disabled = true;
+  makeClaimBtn.disabled = true;
+  actionButtonsEl.style.display = 'none';
   
-  runes.forEach(rune => {
-    const count = actualCounts[rune.symbol];
-    if (count > bestCount) {
-      bestCount = count;
-      bestRune = rune.symbol;
-    }
-  });
-  
-  return { rune: bestRune, count: bestCount };
-}
-
-// Bot döntése, hogy elhiszi-e a játékos állítását
-function botDecideToTrust(claim, actualCount) {
-  // Bot stratégia a játékos állításának ellenőrzésére:
-  
-  // 1. Ha a játékos túl merészet állít (4-et mond bármelyik rúnából), azt általában nem hisszük el
-  if (claim.count === 4 && Math.random() < 0.7) {
-    return false;
-  }
-  
-  // 2. Ha a játékos olyat állít, ami nagyon valószínűtlen (3 azonos rúna), azt is kritikusabban nézzük
-  if (claim.count === 3 && Math.random() < 0.5) {
-    return false;
-  }
-  
-  // 3. Ha a játékos 2-t vagy 1-et állít, azt általában elhisszük
-  if (claim.count <= 2) {
-    return Math.random() < 0.8;
-  }
-  
-  // 4. Véletlenszerű döntés, ha semmi speciális szabály nem érvényesül
-  return Math.random() < 0.5;
+  // Új játék gomb
+  document.getElementById('resetContainer').style.display = 'block';
 }
 
 // Játék indítása
