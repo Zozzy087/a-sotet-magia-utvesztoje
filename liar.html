@@ -715,15 +715,7 @@ function botAcceptClaim() {
   addToHistory(`Ellenfél: Elfogadom a bejelentésedet.`);
   gameStatusDisplay.textContent = `Az ellenfél elfogadta a bejelentésedet. Új kör kezdődik.`;
   
-  // Bot veszít 1 ÉP-t
-  botHealth--;
-  addToHistory(`Az ellenfél veszít 1 ÉP-t.`);
-  updateHealth();
-  
-  if (botHealth <= 0) {
-    gameWon('player');
-    return;
-  }
+  // Az elfogadásnál senki sem veszít életpontot - ez a szabály módosítása
   
   // Következő kör
   setTimeout(() => {
@@ -743,17 +735,9 @@ function respondToClaim(believesClaim) {
     // Elfogadja az állítást
     addToHistory(`Te: Elfogadom az ellenfél bejelentését.`);
     
-    // Játékos veszít 1 ÉP-t
-    playerHealth--;
-    addToHistory(`Vesztesz 1 ÉP-t.`);
-    updateHealth();
+    // Az elfogadásnál senki sem veszít életpontot - ez a szabály módosítása
     
-    if (playerHealth <= 0) {
-      gameWon('bot');
-      return;
-    }
-    
-    gameStatusDisplay.textContent = `Elfogadtad a bejelentést. Vesztesz 1 ÉP-t. Új kör kezdődik.`;
+    gameStatusDisplay.textContent = `Elfogadtad a bejelentést. Új kör kezdődik.`;
   } else {
     // Blöfföt kiált
     addToHistory(`Te: Blöfföt kiáltok!`);
