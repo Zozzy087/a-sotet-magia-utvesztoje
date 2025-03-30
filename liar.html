@@ -1,3 +1,324 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Futhark Rúna Kockajáték</title>
+  <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: "Eczar", serif;
+      background-image: url('images/norse_background.jpg'); /* Skandináv háttérkép */
+      background-size: cover;
+      background-position: center;
+      background-color: #0a0a0a;
+      color: #f0e6d2;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      border-radius: 8px;
+      text-shadow: 0 0 15px #ff6400;
+      letter-spacing: 2px;
+      display: inline-block;
+    }
+
+    .loki-instruction {
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 12px 20px;
+      border: 2px solid #ff6400;
+      border-radius: 8px;
+      margin: 15px auto 25px;
+      max-width: 800px;
+      font-size: 1.2rem;
+      color: #f0e6d2;
+      font-weight: 500;
+      box-shadow: 0 0 15px rgba(255, 100, 0, 0.3);
+    }
+
+    .loki-text-inline {
+      color: #ff6400;
+      letter-spacing: 10px;
+      font-size: 1.4rem;
+    }
+
+    .rune-legend {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 15px 0 30px;
+      background-color: rgba(20, 14, 10, 0.7);
+      padding: 10px;
+      border-radius: 5px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .rune-item {
+      display: flex;
+      align-items: center;
+      margin: 5px 10px;
+    }
+
+    .rune-symbol {
+      font-size: 2rem;
+      margin-right: 10px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #291d14;
+      border-radius: 5px;
+      box-shadow: 0 0 8px rgba(255, 100, 0, 0.2);
+    }
+
+    .rune-name {
+      font-size: 1rem;
+      text-align: left;
+    }
+
+    .winner {
+      color: #ff6400;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 100, 0, 0.7);
+    }
+
+       #gameArea {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin: 10px 0 30px;
+    }
+
+    .player-section {
+      background-color: rgba(20, 14, 10, 0.85);
+      padding: 20px;
+      border-radius: 5px;
+      min-width: 260px;
+      border: 2px solid #3b2415;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .active-player {
+      border: 3px double #ff6400;
+      box-shadow: 0 0 25px rgba(255, 100, 0, 0.7);
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      margin-top: 0;
+    }
+
+    .health {
+      font-size: 2.6rem;
+      margin: 10px 0;
+      text-shadow: 0 0 10px rgba(255, 100, 0, 0.6);
+    }
+
+    .dice-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+      min-height: 80px;
+    }
+
+    .dice {
+      width: 60px;
+      height: 60px;
+      background-color: #291d14;
+      border-radius: 5px;
+      box-shadow: 0 0 15px rgba(255, 100, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      transition: transform 0.3s ease;
+      position: relative;
+    }
+
+    .dice-roll {
+      animation: shakeDice 0.8s ease-out;
+    }
+
+    .dice.hidden {
+      background-color: #1a100a;
+      color: rgba(209, 195, 175, 0.15);
+    }
+
+    @keyframes shakeDice {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      20% { transform: translate(-8px, 0) rotate(-15deg); }
+      40% { transform: translate(8px, 0) rotate(15deg); }
+      60% { transform: translate(-6px, 0) rotate(-10deg); }
+      80% { transform: translate(6px, 0) rotate(10deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+
+    .controls-section {
+      background-color: rgba(20, 14, 10, 0.85);
+      padding: 20px;
+      border-radius: 5px;
+      max-width: 700px;
+      margin: 0 auto 20px;
+    }
+
+    .claim-controls, .response-controls {
+      margin: 10px 0;
+      display: none;
+    }
+
+    .claim-form {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-size: 1.2rem;
+      margin-right: 5px;
+    }
+
+    select {
+      background-color: #291d14;
+      color: #d1c3af;
+      border: 1px solid #482c17;
+      padding: 8px;
+      border-radius: 5px;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+
+    button {
+      font-family: "Eczar", serif;
+      font-size: 1.2rem;
+      padding: 10px 20px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      background-color: #5a381f;
+      color: #f0e6d2;
+      box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
+      transition: all 0.3s;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: #6a4022;
+      transform: scale(1.05);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #result {
+      font-size: 1.4rem;
+      background-color: rgba(0, 0, 0, 0.4);
+      padding: 15px;
+      border-radius: 5px;
+      max-width: 700px;
+      margin: 0 auto 20px;
+    }
+
+    .game-status {
+      font-size: 1.2rem;
+      margin: 10px 0;
+    }
+
+    .current-claim {
+      padding: 10px;
+      margin: 10px 0;
+      background-color: rgba(72, 44, 23, 0.6);
+      border-radius: 5px;
+      display: inline-block;
+    }
+
+    #resetContainer {
+      display: none;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Futhark Rúna Kockajáték</h1>
+
+<div class="loki-instruction">
+  <strong>Dobással kezdd a játékot.</strong> Ha valaki kidobja a <strong>LOKI kombinációt</strong> (Laguz, Othala, Kenaz, Isa – 
+  <span class="loki-text-inline">ᛚ ᛟ ᚲ ᛁ</span>), azonnal nyer!
+</div>
+
+<div class="rune-legend">
+  <div class="rune-item"><div class="rune-symbol">ᛚ</div><div class="rune-name">Laguz</div></div>
+  <div class="rune-item"><div class="rune-symbol">ᛟ</div><div class="rune-name">Othala</div></div>
+  <div class="rune-item"><div class="rune-symbol">ᚲ</div><div class="rune-name">Kenaz</div></div>
+  <div class="rune-item"><div class="rune-symbol">ᛁ</div><div class="rune-name">Isa</div></div>
+</div>
+
+<div id="gameArea">
+  <div id="playerSection" class="player-section">
+    <h2>Te</h2>
+    <div class="health" id="playerHealth">5 ❤️</div>
+    <div class="dice-container" id="playerDice"></div>
+  </div>
+
+  <div id="botSection" class="player-section">
+    <h2>Ellenfél</h2>
+    <div class="health" id="botHealth">5 ❤️</div>
+    <div class="dice-container" id="botDice"></div>
+  </div>
+</div>
+
+<div class="controls-section">
+  <div class="game-status" id="gameStatus">Kezdjük a játékot! Nyomj a "Dobás" gombra.</div>
+
+  <div class="current-claim" id="currentClaim" style="display: none;">
+    Aktuális bejelentés: <span id="claimText"></span>
+  </div>
+
+  <button id="rollButton" onclick="startRound()">Dobás</button>
+
+  <div class="claim-controls" id="claimControls">
+    <div class="claim-form">
+      <label for="runeType">Rúna:</label>
+      <select id="runeType">
+        <option value="ᛚ">Laguz (ᛚ)</option>
+        <option value="ᛁ">Isa (ᛁ)</option>
+        <option value="ᛟ">Othala (ᛟ)</option>
+        <option value="ᚲ">Kenaz (ᚲ)</option>
+      </select>
+
+      <label for="runeCount">Darab:</label>
+      <select id="runeCount">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+    </div>
+    <button onclick="makeClaim()">Bejelentés</button>
+  </div>
+
+  <div class="response-controls" id="responseControls">
+    <button onclick="respondToClaim(true)">Igaz</button>
+    <button onclick="respondToClaim(false)">Blöff</button>
+  </div>
+</div>
+
+<div id="result">Dobással kezdd a játékot. Ha valaki kidobja a LOKI kombinációt (Laguz, Othala, Kenaz, Isa), azonnal nyer!</div>
+
 <script>
 // --- Állandók és változók ---
 const RUNES = ['ᛚ', 'ᛁ', 'ᛟ', 'ᚲ'];
