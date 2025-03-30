@@ -3,28 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <title>Futhark Rúna Kockajáték</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Norse&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --nordic-dark: #1e2329;
-      --nordic-medium: #2c3440;
-      --nordic-light: #3c4754;
-      --nordic-accent: #67748a;
-      --nordic-text: #e9eaed;
-      --rune-color: #d4a758;
-      --rune-glow: rgba(212, 167, 88, 0.6);
-      --loki-red: #ca3737;
+      --nordic-dark: #1e3040;
+      --nordic-medium: #2c4452;
+      --nordic-light: #3c5a6f;
+      --nordic-blue: #5f8ca7;
+      --nordic-white: #e9eaed;
+      --rune-color: #c6a367;
+      --rune-glow: rgba(198, 163, 103, 0.6);
+      --loki-red: #a93f3f;
     }
     
     body {
       font-family: 'Cinzel', serif;
       background-color: var(--nordic-dark);
-      background-image: url('https://images.unsplash.com/photo-1559183731-4f9a33317d9e?q=80&w=1200');
+      background-image: url('https://images.unsplash.com/photo-1520769503572-dba9ceeca2fc?w=1200&auto=format&fit=crop&q=80');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
       background-blend-mode: overlay;
-      color: var(--nordic-text);
+      color: var(--nordic-white);
       margin: 0;
       padding: 20px;
       text-align: center;
@@ -38,8 +38,15 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(30, 35, 41, 0.85);
+      background: rgba(30, 48, 64, 0.85);
       z-index: -1;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
     }
     
     h1, h2, h3 {
@@ -54,24 +61,8 @@
       text-transform: uppercase;
       position: relative;
       display: inline-block;
-      padding: 0 30px;
-    }
-    
-    h1::before, h1::after {
-      content: "⟡";
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--rune-color);
-      font-size: 2rem;
-    }
-    
-    h1::before {
-      left: 0;
-    }
-    
-    h1::after {
-      right: 0;
+      padding: 0 30px 10px;
+      border-bottom: 2px solid var(--rune-color);
     }
     
     #gameArea {
@@ -79,15 +70,15 @@
       justify-content: center;
       flex-wrap: wrap;
       gap: 30px;
-      margin: 20px 0;
+      margin: 30px 0;
     }
     
     .player-section {
       background-color: var(--nordic-medium);
-      padding: 20px;
+      padding: 25px;
       border-radius: 8px;
       min-width: 280px;
-      border: 1px solid var(--nordic-accent);
+      border: 1px solid var(--nordic-blue);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
       transition: all 0.3s ease;
       position: relative;
@@ -101,42 +92,47 @@
     }
     
     .active-player::before, .active-player::after {
-      content: "ᛉ";
+      content: "";
       position: absolute;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24' fill='none' stroke='%23c6a367' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-size: contain;
+      width: 30px;
+      height: 30px;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--rune-color);
-      font-size: 2.5rem;
-      text-shadow: 0 0 10px var(--rune-glow);
+      opacity: 0.8;
       animation: pulse 1.5s infinite;
     }
     
     .active-player::before {
-      left: -30px;
+      left: -40px;
+      transform: translateY(-50%) rotate(180deg);
     }
     
     .active-player::after {
-      right: -30px;
+      right: -40px;
     }
     
     @keyframes pulse {
-      0% { opacity: 0.7; }
+      0% { opacity: 0.6; }
       50% { opacity: 1; }
-      100% { opacity: 0.7; }
+      100% { opacity: 0.6; }
     }
     
     h2 {
       margin-top: 0;
       font-size: 1.8rem;
-      color: var(--nordic-text);
-      border-bottom: 1px solid var(--nordic-accent);
+      color: var(--nordic-white);
+      border-bottom: 1px solid var(--nordic-blue);
       padding-bottom: 10px;
+      margin-bottom: 20px;
     }
     
     .health {
       font-size: 2.4rem;
       margin: 15px 0;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
     }
     
     .dice-container {
@@ -148,16 +144,16 @@
     }
     
     .dice {
-      width: 60px;
-      height: 60px;
+      width: 65px;
+      height: 65px;
       background-color: var(--nordic-light);
-      border: 2px solid var(--nordic-accent);
-      border-radius: 5px;
+      border: 2px solid var(--nordic-blue);
+      border-radius: 6px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.2rem;
+      font-size: 2.5rem;
       transition: transform 0.3s ease;
       position: relative;
       color: var(--rune-color);
@@ -170,7 +166,7 @@
     
     .dice.hidden {
       background-color: var(--nordic-medium);
-      color: var(--nordic-accent);
+      color: var(--nordic-blue);
       text-shadow: none;
     }
     
@@ -187,13 +183,13 @@
       background-color: var(--nordic-medium);
       padding: 25px;
       border-radius: 8px;
-      margin: 20px auto;
+      margin: 30px auto;
       max-width: 700px;
       display: flex;
       flex-direction: column;
       align-items: center;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-      border: 1px solid var(--nordic-accent);
+      border: 1px solid var(--nordic-blue);
     }
     
     .claim-controls, .response-controls {
@@ -213,14 +209,14 @@
     label {
       font-size: 1.2rem;
       margin-right: 5px;
-      color: var(--nordic-text);
+      color: var(--nordic-white);
     }
     
     select, input {
       background-color: var(--nordic-light);
-      color: var(--nordic-text);
-      border: 1px solid var(--nordic-accent);
-      padding: 8px 12px;
+      color: var(--nordic-white);
+      border: 1px solid var(--nordic-blue);
+      padding: 10px 12px;
       border-radius: 5px;
       font-family: 'Cinzel', serif;
       font-size: 1rem;
@@ -242,7 +238,7 @@
       border: 2px solid var(--rune-color);
       cursor: pointer;
       background-color: var(--nordic-light);
-      color: var(--nordic-text);
+      color: var(--nordic-white);
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
       transition: all 0.3s;
       letter-spacing: 1px;
@@ -260,7 +256,7 @@
       background: linear-gradient(
         90deg,
         transparent,
-        rgba(212, 167, 88, 0.2),
+        rgba(198, 163, 103, 0.2),
         transparent
       );
       transition: 0.5s;
@@ -284,7 +280,7 @@
     #result {
       font-size: 1.3rem;
       background-color: var(--nordic-medium);
-      padding: 15px;
+      padding: 20px;
       border-radius: 8px;
       display: inline-block;
       margin-top: 20px;
@@ -292,7 +288,7 @@
       letter-spacing: 1px;
       line-height: 1.4;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      border: 1px solid var(--nordic-accent);
+      border: 1px solid var(--nordic-blue);
     }
     
     #resetContainer {
@@ -319,13 +315,13 @@
       margin-left: auto;
       margin-right: auto;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      border: 1px solid var(--nordic-accent);
+      border: 1px solid var(--nordic-blue);
     }
     
     .rune-item {
       display: flex;
       align-items: center;
-      margin: 5px 10px;
+      margin: 5px 15px;
     }
     
     .rune-symbol {
@@ -341,68 +337,46 @@
       box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
       color: var(--rune-color);
       text-shadow: 0 0 8px var(--rune-glow);
-      border: 1px solid var(--nordic-accent);
+      border: 1px solid var(--nordic-blue);
     }
     
     .rune-name {
       font-size: 1.1rem;
       text-align: left;
-      color: var(--nordic-text);
+      color: var(--nordic-white);
     }
     
     .loki-bonus {
-      background-color: rgba(202, 55, 55, 0.2);
+      background-color: rgba(169, 63, 63, 0.2);
       padding: 20px;
       border-radius: 8px;
-      margin: 20px auto;
+      margin: 25px auto;
       max-width: 500px;
       border: 2px solid var(--loki-red);
-      box-shadow: 0 0 20px rgba(202, 55, 55, 0.3);
+      box-shadow: 0 0 20px rgba(169, 63, 63, 0.3);
       position: relative;
     }
     
     .loki-bonus h3 {
       margin-top: 0;
       color: var(--loki-red);
-      text-shadow: 0 0 10px rgba(202, 55, 55, 0.5);
+      text-shadow: 0 0 10px rgba(169, 63, 63, 0.5);
+      font-size: 1.4rem;
     }
     
     .loki-text {
-      font-size: 2.2rem;
+      font-size: 2.5rem;
       letter-spacing: 15px;
       margin: 15px 0 5px;
       color: var(--loki-red);
-      text-shadow: 0 0 15px rgba(202, 55, 55, 0.6);
-    }
-    
-    .history-section {
-      background-color: var(--nordic-medium);
-      padding: 20px;
-      border-radius: 8px;
-      margin-top: 20px;
-      max-height: 180px;
-      overflow-y: auto;
-      text-align: left;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      border: 1px solid var(--nordic-accent);
-    }
-    
-    .history-section h3 {
-      margin-top: 0;
-      border-bottom: 1px solid var(--nordic-accent);
-      padding-bottom: 10px;
-    }
-    
-    .history-entry {
-      margin: 8px 0;
-      padding: 8px;
-      border-bottom: 1px solid rgba(212, 167, 88, 0.2);
+      text-shadow: 0 0 15px rgba(169, 63, 63, 0.6);
     }
     
     .game-status {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       margin: 10px 0;
-      color: var(--nordic-text);
+      color: var(--nordic-white);
+      font-weight: bold;
     }
     
     .current-claim {
@@ -411,36 +385,18 @@
       background-color: var(--nordic-light);
       border-radius: 5px;
       display: inline-block;
-      border: 1px solid var(--nordic-accent);
+      border: 1px solid var(--nordic-blue);
+      font-weight: bold;
     }
     
-    /* Norse decorative borders */
-    .nordic-border {
-      position: relative;
-      padding: 30px;
-    }
-    
-    .nordic-border::before,
-    .nordic-border::after {
-      content: "";
-      position: absolute;
-      width: 100px;
-      height: 100px;
-      background-size: contain;
-      background-repeat: no-repeat;
-      opacity: 0.6;
-    }
-    
-    .nordic-border::before {
-      top: 0;
-      left: 0;
-      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10,50 L50,10 L90,50 L50,90 Z' stroke='%23d4a758' stroke-width='2' fill='none'/%3E%3Cpath d='M25,50 L50,25 L75,50 L50,75 Z' stroke='%23d4a758' stroke-width='2' fill='none'/%3E%3C/svg%3E");
-    }
-    
-    .nordic-border::after {
-      bottom: 0;
-      right: 0;
-      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10,50 L50,10 L90,50 L50,90 Z' stroke='%23d4a758' stroke-width='2' fill='none'/%3E%3Cpath d='M25,50 L50,25 L75,50 L50,75 Z' stroke='%23d4a758' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+    /* Norse decorative elements */
+    .norse-border {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M20,50 L50,20 L80,50 L50,80 Z' stroke='%23c6a367' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+      background-repeat: repeat-x;
+      background-position: top;
+      background-size: 50px 50px;
+      padding-top: 50px;
+      margin-top: 20px;
     }
     
     /* Media queries for better responsiveness */
@@ -468,12 +424,16 @@
         font-size: 1.8rem;
         letter-spacing: 10px;
       }
+      
+      h1 {
+        font-size: 2rem;
+      }
     }
   </style>
 </head>
 <body>
 
-<div class="nordic-border">
+<div class="container">
   <h1>Futhark Rúna Játék</h1>
 
   <div class="rune-legend">
@@ -556,14 +516,11 @@
 
   <div id="result">Dobással kezdd a játékot. Ha valaki kidobja a LOKI kombinációt (Laguz, Othala, Kenaz, Isa), azonnal nyer!</div>
 
-  <div class="history-section" id="historySection">
-    <h3>Játékmenet</h3>
-    <div id="historyContent"></div>
-  </div>
-
   <div id="resetContainer">
     <button onclick="resetGame()">Új Játék</button>
   </div>
+
+  <div class="norse-border"></div>
 </div>
 
 <script>
@@ -600,7 +557,6 @@ const resultDisplay = document.getElementById('result');
 const gameStatusDisplay = document.getElementById('gameStatus');
 const currentClaimDisplay = document.getElementById('currentClaim');
 const claimTextDisplay = document.getElementById('claimText');
-const historyContent = document.getElementById('historyContent');
 const resetContainer = document.getElementById('resetContainer');
 
 // Játék inicializálása
@@ -625,8 +581,6 @@ function resetGame() {
   
   resultDisplay.textContent = 'Dobással kezdd a játékot. Ha valaki kidobja a LOKI kombinációt (Laguz, Othala, Kenaz, Isa), azonnal nyer!';
   gameStatusDisplay.textContent = 'Kezdjük a játékot! Nyomj a "Dobás" gombra.';
-  
-  historyContent.innerHTML = '';
   
   setActivePlayer('player');
 }
@@ -736,9 +690,6 @@ function makeClaim() {
   setActivePlayer('bot');
   gameStatusDisplay.textContent = 'Az ellenfél mérlegeli a bejelentésedet...';
   
-  // Történet rögzítése
-  addToHistory(`Te: Bejelentem, hogy ${runeCount} db ${RUNE_NAMES[runeType]} (${runeType}) van a kockákon.`);
-  
   setTimeout(botRespondToClaim, 2000);
 }
 
@@ -809,9 +760,6 @@ function botMakeClaim() {
   // Bejelentés megjelenítése
   displayClaim(currentClaim);
   
-  // Történet rögzítése
-  addToHistory(`Ellenfél: Bejelentem, hogy ${botCount} db ${RUNE_NAMES[botRune]} (${botRune}) van a kockákon.`);
-  
   // Játékos váltás
   setActivePlayer('player');
   
@@ -866,9 +814,6 @@ function botRespondToClaim() {
 
 // Bot blöfföt kiált
 function botCallBluff() {
-  // Történet rögzítése
-  addToHistory(`Ellenfél: Blöfföt kiáltok!`);
-  
   // Kockák felfedése
   revealDice();
   
@@ -884,7 +829,6 @@ function botCallBluff() {
   if (totalCount >= currentClaim.runeCount) {
     // Az állítás igaz volt, a bot veszít
     botHealth--;
-    addToHistory(`Igazad volt! Az ellenfél veszít 1 ÉP-t.`);
     updateHealth();
     
     if (botHealth <= 0) {
@@ -894,7 +838,6 @@ function botCallBluff() {
   } else {
     // Az állítás blöff volt, a játékos veszít
     playerHealth--;
-    addToHistory(`Blöfföltél! Vesztesz 1 ÉP-t.`);
     updateHealth();
     
     if (playerHealth <= 0) {
@@ -913,7 +856,6 @@ function botCallBluff() {
 
 // Bot elfogadja a bejelentést
 function botAcceptClaim() {
-  addToHistory(`Ellenfél: Elfogadom a bejelentésedet.`);
   gameStatusDisplay.textContent = `Az ellenfél elfogadta a bejelentésedet. Új kör kezdődik.`;
   
   // Az elfogadásnál senki sem veszít életpontot - ez a szabály
@@ -934,15 +876,9 @@ function respondToClaim(believesClaim) {
   
   if (believesClaim) {
     // Elfogadja az állítást
-    addToHistory(`Te: Elfogadom az ellenfél bejelentését.`);
-    
-    // Az elfogadásnál senki sem veszít életpontot - ez a szabály
-    
     gameStatusDisplay.textContent = `Elfogadtad a bejelentést. Új kör kezdődik.`;
   } else {
     // Blöfföt kiált
-    addToHistory(`Te: Blöfföt kiáltok!`);
-    
     // Kockák felfedése
     revealDice();
     
@@ -958,7 +894,6 @@ function respondToClaim(believesClaim) {
     if (totalCount >= currentClaim.runeCount) {
       // Az állítás igaz volt, a játékos veszít
       playerHealth--;
-      addToHistory(`Az ellenfél igazat mondott! Vesztesz 1 ÉP-t.`);
       updateHealth();
       
       if (playerHealth <= 0) {
@@ -968,7 +903,6 @@ function respondToClaim(believesClaim) {
     } else {
       // Az állítás blöff volt, a bot veszít
       botHealth--;
-      addToHistory(`Igazad volt, az ellenfél blöffölt! Az ellenfél veszít 1 ÉP-t.`);
       updateHealth();
       
       if (botHealth <= 0) {
@@ -1053,18 +987,14 @@ function gameWon(winner, lokiWin = false) {
   if (lokiWin) {
     if (winner === 'player') {
       resultDisplay.innerHTML = `<span class="winner">LOKI ÁLDÁSA! Kidobtad a LOKI kombinációt! Megnyerted a játékot!</span>`;
-      addToHistory(`Te kidobtad a LOKI kombinációt! Azonnali győzelem!`);
     } else {
       resultDisplay.innerHTML = `<span class="winner">LOKI ÁTKA! Az ellenfél kidobta a LOKI kombinációt! Elvesztetted a játékot!</span>`;
-      addToHistory(`Az ellenfél kidobta a LOKI kombinációt! Azonnali vereség!`);
     }
   } else {
     if (winner === 'player') {
       resultDisplay.innerHTML = `<span class="winner">GYŐZELEM! Legyőzted az ellenfeledet!</span>`;
-      addToHistory(`Megnyerted a játékot!`);
     } else {
       resultDisplay.innerHTML = `<span class="winner">VERESÉG! Az ellenfél legyőzött téged!</span>`;
-      addToHistory(`Az ellenfél megnyerte a játékot!`);
     }
   }
   
@@ -1074,17 +1004,6 @@ function gameWon(winner, lokiWin = false) {
   resetContainer.style.display = 'block';
   
   gameStatusDisplay.textContent = 'A játék véget ért. Nyomj az "Új Játék" gombra egy új játékhoz.';
-}
-
-// Játékmenet hozzáadása a történethez
-function addToHistory(text) {
-  const entry = document.createElement('div');
-  entry.className = 'history-entry';
-  entry.textContent = text;
-  historyContent.appendChild(entry);
-  
-  // Scroll to bottom
-  historyContent.scrollTop = historyContent.scrollHeight;
 }
 
 // Valószínűségszámítás a blöff megítéléséhez
