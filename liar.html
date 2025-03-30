@@ -2,229 +2,277 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Futhark Rúnacsata</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&display=swap" rel="stylesheet">
+  <title>Futhark Rúna Harc</title>
+  <link href="https://fonts.googleapis.com/css2?family=Skranji:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Cardo', serif;
-      background-image: url('images/background.jpg.jpg');
+      font-family: "Skranji", cursive;
+      background-image: url('images/bacground.jpg.jpg');
       background-size: cover;
       background-position: center;
-      color: #e0d6c3;
+      color: #e0e0e0;
       margin: 0;
       padding: 20px;
       text-align: center;
       min-height: 100vh;
     }
-    
-    /* Frissített fejléc stílus */
-    .header-container {
-      background: rgba(15, 25, 35, 0.9);
-      padding: 2rem;
-      border-bottom: 3px solid #6b5c4d;
-      margin-bottom: 2rem;
-    }
-    
     h1 {
-      font-size: 3.2rem;
-      margin: 0;
-      color: #e0d6c3;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-      letter-spacing: 1px;
+      font-size: 3rem;
+      margin: 20px 0;
+      background: linear-gradient(45deg, #2c3e50, #3498db);
+      padding: 15px 30px;
+      border-radius: 10px;
+      display: inline-block;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      border: 3px solid #2980b9;
     }
-    
-    .game-instruction {
-      font-size: 1.3rem;
-      margin-top: 1rem;
-      color: #a89b8c;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    /* Skandináv játékmező */
     #gameArea {
       display: flex;
       justify-content: center;
-      gap: 40px;
-      margin: 2rem auto;
-      max-width: 1200px;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin: 30px 0;
     }
-
     .player-section {
-      background: rgba(28, 34, 40, 0.95);
-      padding: 2rem;
-      border-radius: 12px;
-      width: 380px;
-      border: 2px solid #5d4d3e;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-      transition: transform 0.3s ease;
+      background: rgba(16, 22, 36, 0.9);
+      padding: 20px;
+      border-radius: 15px;
+      min-width: 280px;
+      border: 2px solid #3498db;
+      box-shadow: 0 0 20px rgba(52, 152, 219, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
     }
-
     .active-player {
-      border-color: #9e7e5d;
-      box-shadow: 0 0 35px rgba(158, 126, 93, 0.4);
-      transform: translateY(-10px);
+      border-color: #e74c3c;
+      box-shadow: 0 0 30px rgba(231, 76, 60, 0.5);
+      transform: scale(1.05);
     }
-
+    .active-player::before {
+      content: "⚔️";
+      position: absolute;
+      left: -40px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2rem;
+      filter: drop-shadow(0 0 5px #e74c3c);
+    }
+    .active-player::after {
+      content: "⚔️";
+      position: absolute;
+      right: -40px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2rem;
+      filter: drop-shadow(0 0 5px #e74c3c);
+    }
+    h2 {
+      margin: 10px 0;
+      font-size: 2rem;
+      color: #3498db;
+      text-shadow: 1px 1px 2px black;
+    }
     .health {
-      font-size: 2.4rem;
-      margin: 1.5rem 0;
-      color: #9e7e5d;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      font-size: 2.5rem;
+      margin: 15px 0;
+      color: #e74c3c;
+      text-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
     }
-
-    /* Kockák stílusai */
     .dice-container {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 15px;
-      margin: 2rem 0;
+      margin: 20px 0;
     }
-
     .dice {
       width: 70px;
       height: 70px;
-      background: #2b211b;
-      border: 2px solid #5d4d3e;
-      border-radius: 8px;
-      font-size: 2.4rem;
+      background: #2c3e50;
+      border-radius: 10px;
+      border: 2px solid #3498db;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 2.5rem;
       transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
     }
-
     .dice.hidden {
-      background: #1a1613;
+      background: #34495e;
       color: transparent;
-      position: relative;
-      overflow: hidden;
+      text-shadow: 0 0 8px rgba(255,255,255,0.3);
     }
-
-    .dice.hidden::after {
-      content: "᛫";
-      position: absolute;
-      color: #5d4d3e;
-      font-size: 2rem;
-    }
-
-    /* Kontroll elemek */
     .controls-section {
-      background: rgba(28, 34, 40, 0.95);
-      padding: 2rem;
-      border-radius: 12px;
-      max-width: 800px;
-      margin: 2rem auto;
-      border: 2px solid #5d4d3e;
+      background: rgba(16, 22, 36, 0.9);
+      padding: 20px;
+      border-radius: 15px;
+      margin: 20px auto;
+      max-width: 600px;
+      border: 2px solid #3498db;
     }
-
     button {
-      background: #5d4d3e;
-      color: #e0d6c3;
-      border: none;
+      font-family: "Skranji", cursive;
+      font-size: 1.3rem;
       padding: 12px 30px;
-      border-radius: 6px;
-      font-size: 1.2rem;
+      margin: 10px;
+      border-radius: 8px;
+      border: 2px solid #3498db;
+      background: #2c3e50;
+      color: #ecf0f1;
       cursor: pointer;
       transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 1px;
     }
-
-    button:hover {
-      background: #9e7e5d;
+    button:hover:not(:disabled) {
+      background: #34495e;
       transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
     }
-
-    /* Történet szekció */
+    #result {
+      font-size: 1.2rem;
+      margin: 20px auto;
+      max-width: 600px;
+      padding: 15px;
+      background: rgba(16, 22, 36, 0.8);
+      border-radius: 10px;
+      border: 2px solid #3498db;
+    }
     .history-section {
-      background: rgba(28, 34, 40, 0.95);
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 1.5rem;
-      border-radius: 12px;
+      background: rgba(16, 22, 36, 0.8);
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px auto;
+      max-width: 600px;
       max-height: 200px;
       overflow-y: auto;
-      text-align: left;
-      border: 2px solid #5d4d3e;
+      border: 2px solid #3498db;
     }
-
-    /* LOKI kombináció */
-    .loki-warning {
-      background: rgba(158, 126, 93, 0.2);
-      padding: 1.5rem;
-      border-radius: 12px;
-      margin: 2rem auto;
-      max-width: 600px;
-      border: 2px dashed #9e7e5d;
+    .rune-legend {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(16, 22, 36, 0.8);
+      border-radius: 10px;
+    }
+    .rune-item {
+      text-align: center;
+    }
+    .rune-symbol {
+      font-size: 2.5rem;
+      margin-bottom: 5px;
+      text-shadow: 0 0 8px #3498db;
+    }
+    .loki-combination {
+      margin: 20px auto;
+      padding: 15px;
+      background: rgba(231, 76, 60, 0.15);
+      border-radius: 10px;
+      border: 2px solid #e74c3c;
     }
   </style>
 </head>
 <body>
 
-<div class="header-container">
-  <h1>Futhark Rúnacsata</h1>
-  <div class="game-instruction">
-    Dobással kezdd a játékot! Ha valaki kidobja a LOKI kombinációt (ᛚ ᛟ ᚲ ᛁ), azonnal nyer!
+<h1>Futhark Rúnaharc</h1>
+
+<div class="loki-combination">
+  <h3>LOKI KOMBINÁCIÓ - Azonnali Győzelem!</h3>
+  <div class="rune-legend">
+    <div class="rune-item"><div class="rune-symbol">ᛚ</div>Laguz</div>
+    <div class="rune-item"><div class="rune-symbol">ᛟ</div>Othala</div>
+    <div class="rune-item"><div class="rune-symbol">ᚲ</div>Kenaz</div>
+    <div class="rune-item"><div class="rune-symbol">ᛁ</div>Isa</div>
   </div>
 </div>
 
 <div id="gameArea">
-  <!-- Játékos szekciók ugyanazok maradnak -->
+  <!-- Játékos és bot szekciók változatlanok -->
 </div>
 
+<!-- A többi HTML rész változatlan -->
+
 <script>
-// Frissített bot logika
+// Bot intelligencia fejlesztése
 function botMakeClaim() {
   const botDiceCounts = countRunes(botDice);
-  const playerDiceCounts = countRunes(playerDice);
-  const allCounts = countRunes([...botDice, ...playerDice]);
+  const playerDiceCounts = currentClaim ? countRunes(playerDice) : {};
+  const allDiceCounts = countRunes([...botDice, ...playerDice]);
 
-  // Stratégia: 60% valószínűséggel valós becslés, 40% blöff
-  const isHonest = Math.random() < 0.6;
+  let bestRune = '';
+  let maxCount = 0;
   
-  if(isHonest) {
-    // Valós becslés a saját kockák + valószínű játékos kockák alapján
-    let bestRune = Object.entries(botDiceCounts).reduce((a,b) => a[1] > b[1] ? a : b)[0];
-    let estimatedCount = botDiceCounts[bestRune] + Math.floor(Math.random() * 2);
-    estimatedCount = Math.min(estimatedCount, 4);
+  // Stratégia: Valódi adatok alapján licitálás
+  RUNES.forEach(rune => {
+    const total = (botDiceCounts[rune] || 0) + Math.floor(Math.random() * 2);
+    if(total > maxCount) {
+      maxCount = total;
+      bestRune = rune;
+    }
+  });
+
+  // Korábbi licittel összehasonlítás
+  if(currentClaim) {
+    const needed = currentClaim.runeCount + 1;
+    if(needed > 4) return botCallBluff();
     
-    currentClaim = {
-      player: 'bot',
-      runeType: bestRune,
-      runeCount: estimatedCount
-    };
-  } else {
-    // Kifinomult blöff: válassz egy ritka rúnát és adj hozzá 1-et
-    const rareRunes = RUNES.filter(r => botDiceCounts[r] < 1);
-    const bluffRune = rareRunes[Math.floor(Math.random() * rareRunes.length)] || RUNES[0];
-    currentClaim = {
-      player: 'bot',
-      runeType: bluffRune,
-      runeCount: Math.min((allCounts[bluffRune] || 0) + 2, 4)
-    };
+    const possibleRunes = RUNES.filter(rune => {
+      return allDiceCounts[rune] >= needed || 
+             (botDiceCounts[rune] || 0) >= needed - 2
+    });
+    
+    if(possibleRunes.length > 0) {
+      bestRune = possibleRunes[0];
+      maxCount = needed;
+    } else {
+      return botCallBluff();
+    }
+  }
+
+  currentClaim = {
+    player: 'bot',
+    runeType: bestRune,
+    runeCount: Math.min(maxCount, 4)
+  };
+
+  // Továbbra is használhat véletlenszerű blöfföt (10% esély)
+  if(Math.random() < 0.1) {
+    currentClaim.runeCount += Math.floor(Math.random() * 2);
+    currentClaim.runeCount = Math.min(currentClaim.runeCount, 4);
   }
 
   displayClaim(currentClaim);
-  addToHistory(`Ellenfél: Bejelentem, hogy ${currentClaim.runeCount} db ${RUNE_NAMES[currentClaim.runeType]} van`);
+  addToHistory(`Ellenfél: Bejelentem, hogy ${currentClaim.runeCount} db ${RUNE_NAMES[bestRune]} (${bestRune}) van!`);
+  
+  setActivePlayer('player');
+  gameStatusDisplay.textContent = 'Mit gondolsz, igazat mond az ellenfél?';
+  responseControls.style.display = 'block';
 }
 
 function botRespondToClaim() {
   const botKnowledge = countRunes(botDice);
   const needed = currentClaim.runeCount - (botKnowledge[currentClaim.runeType] || 0);
+  const probability = (4 - needed) / 4 * 100;
   
-  // Valószínűség számítás fejlett módon
-  const successChance = 1 - Math.pow(0.75, 4 - botDice.length) * (needed > 0 ? needed/4 : 1);
-  const willCallBluff = successChance < 0.35;
+  // Valós statisztikai alapú döntés
+  let decision;
+  if(probability < 30) {
+    decision = Math.random() < 0.8 ? 'bluff' : 'accept';
+  } else if(probability < 60) {
+    decision = Math.random() < 0.5 ? 'bluff' : 'accept';
+  } else {
+    decision = Math.random() < 0.2 ? 'bluff' : 'accept';
+  }
 
-  if(willCallBluff) {
+  if(decision === 'bluff') {
     botCallBluff();
   } else {
     botAcceptClaim();
   }
 }
+
+// A többi JavaScript funkcionalitás változatlan
 </script>
+
 </body>
 </html>
