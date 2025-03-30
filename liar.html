@@ -2,316 +2,277 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Futhark Rúna Kockajáték</title>
-  <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400..800&display=swap" rel="stylesheet">
+  <title>Futhark Rúna Játék</title>
+  <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: "Eczar", serif;
-      background-image: url('images/background.jpg.jpg');
-      background-size: cover;
-      background-position: center;
-      background-color: #0c0c0c;
-      color: #e8e4df;
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      font-family: "Eczar", serif;
+      background: url('scandinavian_background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #e2dfd2;
       text-align: center;
     }
 
     header {
-      background-color: rgba(12, 12, 12, 0.8);
+      background: rgba(0, 0, 0, 0.75);
       padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
     header h1 {
-      font-size: 2.5rem;
       margin: 0;
-      letter-spacing: 2px;
-      color: #ffcc80;
-      text-shadow: 0 0 8px #ff6400;
+      font-size: 2.5rem;
+      text-shadow: 0 0 10px #ff6400;
     }
 
-    header p {
+    .loki-rule {
+      background: rgba(255, 100, 0, 0.15);
       margin-top: 10px;
-      font-size: 1.1rem;
-      color: #f0e6d2;
-    }
-
-    .rune-legend {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      background-color: rgba(20, 14, 10, 0.75);
-      padding: 15px;
-      border-radius: 10px;
-      max-width: 600px;
-      margin: 0 auto 30px auto;
-    }
-
-    .rune-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 1.1rem;
-    }
-
-    .rune-symbol {
-      font-size: 2.2rem;
       padding: 10px;
-      background-color: #291d14;
       border-radius: 6px;
-      box-shadow: 0 0 8px rgba(255, 100, 0, 0.4);
-      margin-bottom: 5px;
+      font-size: 1.2rem;
     }
 
-    .loki-banner {
-      font-size: 1.3rem;
-      background-color: rgba(255, 100, 0, 0.15);
-      color: #ff944d;
-      padding: 12px 20px;
-      border-radius: 10px;
-      margin: 0 auto 20px auto;
-      max-width: 500px;
-      font-weight: bold;
-      box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
+    .loki-text {
+      font-size: 1.8rem;
+      letter-spacing: 12px;
+      margin-top: 8px;
+      color: #ff6400;
     }
 
-    .active-player {
-      border: 3px solid #66bb6a;
-      box-shadow: 0 0 15px #66bb6a;
-    }
-
-    .player-section h2::after {
-      content: ' – Jelenleg soron';
-      font-size: 1rem;
-      color: #a5d6a7;
-      display: inline-block;
-      margin-left: 10px;
-    }
-
-    .player-section:not(.active-player) h2::after {
-      content: '';
-    }
-
-    .game-container {
+    .game-area {
       display: flex;
       justify-content: center;
-      flex-wrap: wrap;
+      margin-top: 40px;
       gap: 40px;
+      flex-wrap: wrap;
     }
 
-    .player-section {
-      background-color: rgba(20, 14, 10, 0.85);
+    .player-panel {
+      background: rgba(0,0,0,0.65);
       padding: 20px;
       border-radius: 10px;
-      min-width: 260px;
-      transition: all 0.3s ease;
+      width: 280px;
+      transition: 0.3s;
+      position: relative;
+    }
+
+    .player-panel.active {
+      border: 3px solid #00ff88;
+      box-shadow: 0 0 25px #00ff88;
+      transform: scale(1.05);
+    }
+
+    .player-panel h2 {
+      margin: 0;
+      font-size: 1.6rem;
     }
 
     .health {
-      font-size: 2rem;
+      font-size: 1.4rem;
       margin: 10px 0;
     }
 
-    .dice-container {
+    .dice-row {
       display: flex;
       justify-content: center;
       gap: 10px;
-      margin: 15px 0;
+      margin-top: 15px;
     }
 
     .dice {
       width: 60px;
       height: 60px;
-      background-color: #291d14;
-      border-radius: 8px;
+      background: #1e1e1e;
+      border: 2px solid #ff6400;
+      font-size: 2rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
-      color: #fff;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
     }
 
-    .hidden {
-      color: transparent;
-      background-color: #1c1c1c;
+    .dice.hidden {
+      color: #444;
+      background: #111;
     }
 
     .controls {
       margin-top: 30px;
     }
 
-    button {
+    .controls button {
+      font-family: "Eczar", serif;
       font-size: 1.2rem;
-      font-family: inherit;
       padding: 10px 20px;
+      margin: 10px;
+      background-color: #5a381f;
+      color: #f0e8d8;
       border: none;
       border-radius: 5px;
-      background-color: #ff6400;
-      color: #fff;
       cursor: pointer;
-      box-shadow: 0 0 10px rgba(255, 100, 0, 0.5);
-      transition: all 0.3s ease;
+      transition: 0.2s;
     }
 
-    button:hover {
-      background-color: #e65c00;
+    .controls button:hover {
+      background-color: #7a4b2a;
       transform: scale(1.05);
     }
 
-    #gameStatus {
-      margin-top: 20px;
-      font-size: 1.1rem;
-    }
-
-    #result {
+    .result {
       margin-top: 20px;
       font-size: 1.3rem;
       font-weight: bold;
-      color: #ffcc80;
-      text-shadow: 0 0 10px #ff6400;
+      color: #ff6400;
+      text-shadow: 0 0 6px #000;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Futhark Rúna Kockajáték</h1>
-    <p>Dobással kezdd a játékot. Ha valaki kidobja a <strong>LOKI kombinációt</strong> (Laguz, Othala, Kenaz, Isa), <strong>azonnal nyer!</strong></p>
-  </header>
 
-  <div class="loki-banner">
-    LOKI Kombináció: ᛚ ᛟ ᚲ ᛁ — Azonnali Győzelem!
+<header>
+  <h1>Futhark Rúna Játék</h1>
+  <div class="loki-rule">
+    Dobással kezdd a játékot. Ha valaki kidobja a LOKI kombinációt (Laguz, Othala, Kenaz, Isa), azonnal nyer!
+    <div class="loki-text">ᛚ ᛟ ᚲ ᛁ</div>
+  </div>
+</header>
+
+<div class="game-area">
+  <div id="playerPanel" class="player-panel active">
+    <h2>Te</h2>
+    <div class="health" id="playerHealth">5 ❤️</div>
+    <div class="dice-row" id="playerDice"></div>
   </div>
 
-  <div class="rune-legend">
-    <div class="rune-item">
-      <div class="rune-symbol">ᛚ</div>
-      <div class="rune-name">Laguz</div>
-    </div>
-    <div class="rune-item">
-      <div class="rune-symbol">ᛟ</div>
-      <div class="rune-name">Othala</div>
-    </div>
-    <div class="rune-item">
-      <div class="rune-symbol">ᚲ</div>
-      <div class="rune-name">Kenaz</div>
-    </div>
-    <div class="rune-item">
-      <div class="rune-symbol">ᛁ</div>
-      <div class="rune-name">Isa</div>
-    </div>
+  <div id="botPanel" class="player-panel">
+    <h2>Ellenfél</h2>
+    <div class="health" id="botHealth">5 ❤️</div>
+    <div class="dice-row" id="botDice"></div>
   </div>
+</div>
 
-  <div class="game-container">
-    <div id="playerSection" class="player-section">
-      <h2>Játékos</h2>
-      <div class="health" id="playerHealth">Élet: 5</div>
-      <div class="dice-container" id="playerDice"></div>
-    </div>
-    <div id="botSection" class="player-section">
-      <h2>Bot</h2>
-      <div class="health" id="botHealth">Élet: 5</div>
-      <div class="dice-container" id="botDice"></div>
-    </div>
-  </div>
+<div class="controls">
+  <button onclick="rollDice()" id="rollBtn">Dobás</button>
+  <button onclick="resetGame()">Új játék</button>
+</div>
 
-  <div class="controls">
-    <button onclick="rollDice()">Dobás</button>
-    <div id="gameStatus"></div>
-    <div id="result"></div>
-  </div>
+<div class="result" id="resultMessage"></div>
 
-  <script>
-    const RUNES = ['ᛚ', 'ᛟ', 'ᚲ', 'ᛁ'];
-    const LOKI_COMBO = ['ᛚ', 'ᛟ', 'ᚲ', 'ᛁ'];
+<script>
+const RUNES = ['ᛚ', 'ᛁ', 'ᛟ', 'ᚲ'];
+const RUNE_NAMES = { 'ᛚ': 'Laguz', 'ᛁ': 'Isa', 'ᛟ': 'Othala', 'ᚲ': 'Kenaz' };
+const LOKI_COMBINATION = ['ᛚ', 'ᛟ', 'ᚲ', 'ᛁ'];
 
-    let playerHealth = 5;
-    let botHealth = 5;
+let playerHealth = 5;
+let botHealth = 5;
 
-    function shuffle(array) {
-      return array.sort(() => 0.5 - Math.random());
-    }
+function rollDice() {
+  const player = randomRunes(4);
+  const bot = randomRunes(4);
 
-    function rollPlayer() {
-      return shuffle([...Array(4)].map(() => RUNES[Math.floor(Math.random() * RUNES.length)]));
-    }
+  displayDice(player, document.getElementById("playerDice"), false);
+  displayDice(bot, document.getElementById("botDice"), true);
 
-    function displayDice(containerId, dice, hidden = false) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = '';
-      dice.forEach(r => {
-        const d = document.createElement('div');
-        d.className = 'dice' + (hidden ? ' hidden' : '');
-        d.textContent = hidden ? '?' : r;
-        container.appendChild(d);
-      });
-    }
+  const result = document.getElementById("resultMessage");
 
-    function checkLokiCombo(dice) {
-      return LOKI_COMBO.every(r => dice.includes(r));
-    }
+  if (hasLoki(player)) {
+    result.textContent = "LOKI ÁLDÁSA! Kidobtad a LOKI kombinációt! Győzelem!";
+    disableRoll();
+    return;
+  }
 
-    function updateHealth() {
-      document.getElementById('playerHealth').textContent = `Élet: ${playerHealth}`;
-      document.getElementById('botHealth').textContent = `Élet: ${botHealth}`;
-    }
+  if (hasLoki(bot)) {
+    result.textContent = "LOKI ÁTKA! Az ellenfél kidobta a LOKI kombinációt! Vereség!";
+    disableRoll();
+    return;
+  }
 
-    function setActive(player) {
-      document.getElementById('playerSection').classList.toggle('active-player', player === 'player');
-      document.getElementById('botSection').classList.toggle('active-player', player === 'bot');
-    }
+  const playerRuneCounts = countRunes(player);
+  const botRuneCounts = countRunes(bot);
 
-    function rollDice() {
-      if (playerHealth <= 0 || botHealth <= 0) return;
-      const playerDice = rollPlayer();
-      const botDice = rollPlayer();
+  const botDecision = intelligentBotDecision(botRuneCounts, playerRuneCounts);
 
-      displayDice('playerDice', playerDice);
-      displayDice('botDice', botDice, true);
+  if (botDecision.bluff && Math.random() < 0.5) {
+    playerHealth--;
+    result.textContent = "Blöfföltél, lebuktál! Vesztesz 1 ÉP-t.";
+  } else {
+    botHealth--;
+    result.textContent = "Igazad volt! Az ellenfél veszít 1 ÉP-t.";
+  }
 
-      setActive('player');
+  updateHealth();
+  checkGameOver();
+}
 
-      if (checkLokiCombo(playerDice)) {
-        document.getElementById('result').textContent = 'LOKI kombináció! Azonnali győzelem!';
-        return;
-      }
+function randomRunes(n) {
+  return Array.from({ length: n }, () => RUNES[Math.floor(Math.random() * RUNES.length)]);
+}
 
-      setTimeout(() => {
-        displayDice('botDice', botDice);
-        setActive('bot');
+function displayDice(runes, container, hide) {
+  container.innerHTML = "";
+  runes.forEach(r => {
+    const d = document.createElement("div");
+    d.className = "dice" + (hide ? " hidden" : "");
+    d.textContent = hide ? "?" : r;
+    container.appendChild(d);
+  });
+}
 
-        if (checkLokiCombo(botDice)) {
-          document.getElementById('result').textContent = 'A bot kidobta a LOKI kombinációt! Azonnali vereség!';
-          return;
-        }
+function countRunes(runes) {
+  const counts = {};
+  runes.forEach(r => counts[r] = (counts[r] || 0) + 1);
+  return counts;
+}
 
-        // Továbbfejlesztett bot logika
-        const runeCount = {};
-        botDice.forEach(r => runeCount[r] = (runeCount[r] || 0) + 1);
-        const likelyPlayerDice = shuffle([...Array(4)].map(() => RUNES[Math.floor(Math.random() * RUNES.length)]));
+function hasLoki(runes) {
+  const counts = countRunes(runes);
+  return LOKI_COMBINATION.every(r => counts[r] > 0);
+}
 
-        let bluff = Math.random() < 0.3;
-        let attackRune = bluff ? RUNES[Math.floor(Math.random() * 4)] : Object.keys(runeCount).sort((a, b) => runeCount[b] - runeCount[a])[0];
-        let botClaim = runeCount[attackRune] + (bluff ? 1 : 0);
+function updateHealth() {
+  document.getElementById("playerHealth").textContent = `${playerHealth} ❤️`;
+  document.getElementById("botHealth").textContent = `${botHealth} ❤️`;
+}
 
-        let total = botClaim + Math.floor(Math.random() * 2);
-        let truth = playerDice.filter(r => r === attackRune).length + runeCount[attackRune];
+function checkGameOver() {
+  if (playerHealth <= 0) {
+    document.getElementById("resultMessage").textContent = "VERESÉG! Az ellenfél legyőzött!";
+    disableRoll();
+  } else if (botHealth <= 0) {
+    document.getElementById("resultMessage").textContent = "GYŐZELEM! Legyőzted az ellenfelet!";
+    disableRoll();
+  }
+}
 
-        if (truth >= total) {
-          botHealth--;
-          document.getElementById('result').textContent = `A bot túlbecsülte a helyzetet. 1 Életpontot veszít.`;
-        } else {
-          playerHealth--;
-          document.getElementById('result').textContent = `A bot jól taktikázott. Te veszítettél 1 Életpontot.`;
-        }
+function disableRoll() {
+  document.getElementById("rollBtn").disabled = true;
+}
 
-        updateHealth();
-      }, 2000);
-    }
+function resetGame() {
+  playerHealth = 5;
+  botHealth = 5;
+  document.getElementById("rollBtn").disabled = false;
+  document.getElementById("resultMessage").textContent = "";
+  document.getElementById("playerDice").innerHTML = "";
+  document.getElementById("botDice").innerHTML = "";
+  updateHealth();
+}
 
-    updateHealth();
-  </script>
+// Bot logika: Ha 2 vagy több azonos rúnája van, blöffölhet, különben védekezik
+function intelligentBotDecision(botRunes, playerRunes) {
+  let bluff = false;
+  const values = Object.values(botRunes);
+  const max = Math.max(...values);
+
+  if (max < 2) bluff = true;
+  return { bluff };
+}
+
+resetGame();
+</script>
+
 </body>
 </html>
