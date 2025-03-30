@@ -3,29 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <title>Futhark Rúna Kockajáték</title>
-  <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400..800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Norse&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --nordic-dark: #1e2329;
+      --nordic-medium: #2c3440;
+      --nordic-light: #3c4754;
+      --nordic-accent: #67748a;
+      --nordic-text: #e9eaed;
+      --rune-color: #d4a758;
+      --rune-glow: rgba(212, 167, 88, 0.6);
+      --loki-red: #ca3737;
+    }
+    
     body {
-      font-family: "Eczar", serif;
-      background-image: url('images/background.jpg.jpg');
+      font-family: 'Cinzel', serif;
+      background-color: var(--nordic-dark);
+      background-image: url('https://images.unsplash.com/photo-1559183731-4f9a33317d9e?q=80&w=1200');
       background-size: cover;
       background-position: center;
-      color: #d1c3af;
+      background-attachment: fixed;
+      background-blend-mode: overlay;
+      color: var(--nordic-text);
       margin: 0;
       padding: 20px;
       text-align: center;
-      background-color: #0c0c0c;
     }
-    h1 {
-      font-size: 2.6rem;
-      margin-bottom: 10px;
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 15px;
-      border-radius: 5px;
-      display: inline-block;
-      text-shadow: 0 0 10px #ff6400;
+    
+    /* Overlay to improve readability */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(30, 35, 41, 0.85);
+      z-index: -1;
+    }
+    
+    h1, h2, h3 {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
       letter-spacing: 2px;
     }
+    
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      position: relative;
+      display: inline-block;
+      padding: 0 30px;
+    }
+    
+    h1::before, h1::after {
+      content: "⟡";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--rune-color);
+      font-size: 2rem;
+    }
+    
+    h1::before {
+      left: 0;
+    }
+    
+    h1::after {
+      right: 0;
+    }
+    
     #gameArea {
       display: flex;
       justify-content: center;
@@ -33,85 +81,99 @@
       gap: 30px;
       margin: 20px 0;
     }
+    
     .player-section {
-      background-color: rgba(20, 14, 10, 0.85);
+      background-color: var(--nordic-medium);
       padding: 20px;
-      border-radius: 5px;
-      min-width: 260px;
-      border: 1px solid #482c17;
+      border-radius: 8px;
+      min-width: 280px;
+      border: 1px solid var(--nordic-accent);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
       transition: all 0.3s ease;
       position: relative;
     }
+    
     .active-player {
-      border: 3px solid #ff6400;
-      box-shadow: 0 0 25px rgba(255, 100, 0, 0.7);
+      border: 2px solid var(--rune-color);
+      box-shadow: 0 0 25px var(--rune-glow);
       transform: scale(1.05);
       z-index: 2;
     }
+    
+    .active-player::before, .active-player::after {
+      content: "ᛉ";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--rune-color);
+      font-size: 2.5rem;
+      text-shadow: 0 0 10px var(--rune-glow);
+      animation: pulse 1.5s infinite;
+    }
+    
     .active-player::before {
-      content: "》";
-      position: absolute;
       left: -30px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 2.5rem;
-      color: #ff6400;
-      text-shadow: 0 0 10px #ff6400;
-      animation: pulse 1.5s infinite;
     }
+    
     .active-player::after {
-      content: "《";
-      position: absolute;
       right: -30px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 2.5rem;
-      color: #ff6400;
-      text-shadow: 0 0 10px #ff6400;
-      animation: pulse 1.5s infinite;
     }
+    
     @keyframes pulse {
       0% { opacity: 0.7; }
       50% { opacity: 1; }
       100% { opacity: 0.7; }
     }
+    
     h2 {
       margin-top: 0;
       font-size: 1.8rem;
-      color: #d1c3af;
+      color: var(--nordic-text);
+      border-bottom: 1px solid var(--nordic-accent);
+      padding-bottom: 10px;
     }
+    
     .health {
-      font-size: 2.8rem;
+      font-size: 2.4rem;
       margin: 15px 0;
-      text-shadow: 0 0 10px rgba(255, 100, 0, 0.5);
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     }
+    
     .dice-container {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 12px;
       margin: 20px 0;
       min-height: 80px;
     }
+    
     .dice {
       width: 60px;
       height: 60px;
-      background-color: #291d14;
+      background-color: var(--nordic-light);
+      border: 2px solid var(--nordic-accent);
       border-radius: 5px;
-      box-shadow: 0 0 15px rgba(255, 100, 0, 0.3);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
+      font-size: 2.2rem;
       transition: transform 0.3s ease;
       position: relative;
+      color: var(--rune-color);
+      text-shadow: 0 0 8px var(--rune-glow);
     }
+    
     .dice-roll {
       animation: shakeDice 0.8s ease-out;
     }
+    
     .dice.hidden {
-      background-color: #1a100a;
-      color: rgba(209, 195, 175, 0.2);
+      background-color: var(--nordic-medium);
+      color: var(--nordic-accent);
+      text-shadow: none;
     }
+    
     @keyframes shakeDice {
       0% { transform: translate(0, 0) rotate(0deg); }
       20% { transform: translate(-10px, 0) rotate(-20deg); }
@@ -120,249 +182,388 @@
       80% { transform: translate(10px, 0) rotate(10deg); }
       100% { transform: translate(0, 0) rotate(0deg); }
     }
+    
     .controls-section {
-      background-color: rgba(20, 14, 10, 0.85);
-      padding: 20px;
-      border-radius: 5px;
+      background-color: var(--nordic-medium);
+      padding: 25px;
+      border-radius: 8px;
       margin: 20px auto;
       max-width: 700px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--nordic-accent);
     }
+    
     .claim-controls, .response-controls {
-      margin: 10px 0;
+      margin: 15px 0;
       display: none;
     }
+    
     .claim-form {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 10px;
+      gap: 15px;
       margin-bottom: 15px;
     }
+    
     label {
       font-size: 1.2rem;
       margin-right: 5px;
+      color: var(--nordic-text);
     }
+    
     select, input {
-      background-color: #291d14;
-      color: #d1c3af;
-      border: 1px solid #482c17;
-      padding: 8px;
+      background-color: var(--nordic-light);
+      color: var(--nordic-text);
+      border: 1px solid var(--nordic-accent);
+      padding: 8px 12px;
       border-radius: 5px;
-      font-family: inherit;
+      font-family: 'Cinzel', serif;
       font-size: 1rem;
     }
+    
+    select:focus, input:focus {
+      border-color: var(--rune-color);
+      outline: none;
+      box-shadow: 0 0 5px var(--rune-glow);
+    }
+    
     button {
-      font-family: "Eczar", serif;
+      font-family: 'Cinzel', serif;
       font-size: 1.2rem;
+      font-weight: bold;
       padding: 12px 25px;
       margin: 10px;
       border-radius: 5px;
-      border: none;
+      border: 2px solid var(--rune-color);
       cursor: pointer;
-      background-color: #482c17;
-      color: #d1c3af;
-      box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
+      background-color: var(--nordic-light);
+      color: var(--nordic-text);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
       transition: all 0.3s;
       letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
     }
-    button:hover:not(:disabled) {
-      background-color: #5a381f;
+    
+    button::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(212, 167, 88, 0.2),
+        transparent
+      );
+      transition: 0.5s;
+    }
+    
+    button:hover {
+      background-color: var(--nordic-medium);
       transform: scale(1.05);
-      box-shadow: 0 0 15px rgba(255, 100, 0, 0.5);
+      box-shadow: 0 0 15px var(--rune-glow);
     }
+    
+    button:hover::after {
+      left: 100%;
+    }
+    
     button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
+    
     #result {
       font-size: 1.3rem;
-      background-color: rgba(20, 14, 10, 0.7);
+      background-color: var(--nordic-medium);
       padding: 15px;
-      border-radius: 5px;
+      border-radius: 8px;
       display: inline-block;
       margin-top: 20px;
       max-width: 80%;
       letter-spacing: 1px;
       line-height: 1.4;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--nordic-accent);
     }
+    
     #resetContainer {
       display: none;
       margin-top: 30px;
     }
+    
     .winner {
-      color: #ff6400;
+      color: var(--rune-color);
       font-weight: bold;
-      text-shadow: 0 0 10px rgba(255, 100, 0, 0.7);
+      text-shadow: 0 0 10px var(--rune-glow);
     }
+    
     .rune-legend {
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
       gap: 15px;
       margin: 20px 0;
-      background-color: rgba(20, 14, 10, 0.7);
-      padding: 10px;
-      border-radius: 5px;
+      background-color: var(--nordic-medium);
+      padding: 20px;
+      border-radius: 8px;
       max-width: 600px;
       margin-left: auto;
       margin-right: auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--nordic-accent);
     }
+    
     .rune-item {
       display: flex;
       align-items: center;
       margin: 5px 10px;
     }
+    
     .rune-symbol {
-      font-size: 2rem;
-      margin-right: 10px;
-      width: 40px;
-      height: 40px;
+      font-size: 2.4rem;
+      margin-right: 15px;
+      width: 50px;
+      height: 50px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #291d14;
+      background-color: var(--nordic-light);
       border-radius: 5px;
-      box-shadow: 0 0 8px rgba(255, 100, 0, 0.2);
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+      color: var(--rune-color);
+      text-shadow: 0 0 8px var(--rune-glow);
+      border: 1px solid var(--nordic-accent);
     }
+    
     .rune-name {
-      font-size: 1rem;
+      font-size: 1.1rem;
       text-align: left;
+      color: var(--nordic-text);
     }
+    
     .loki-bonus {
-      background-color: rgba(255, 100, 0, 0.2);
-      padding: 10px;
-      border-radius: 5px;
-      margin: 15px auto;
-      max-width: 400px;
+      background-color: rgba(202, 55, 55, 0.2);
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px auto;
+      max-width: 500px;
+      border: 2px solid var(--loki-red);
+      box-shadow: 0 0 20px rgba(202, 55, 55, 0.3);
+      position: relative;
     }
+    
+    .loki-bonus h3 {
+      margin-top: 0;
+      color: var(--loki-red);
+      text-shadow: 0 0 10px rgba(202, 55, 55, 0.5);
+    }
+    
+    .loki-text {
+      font-size: 2.2rem;
+      letter-spacing: 15px;
+      margin: 15px 0 5px;
+      color: var(--loki-red);
+      text-shadow: 0 0 15px rgba(202, 55, 55, 0.6);
+    }
+    
     .history-section {
-      background-color: rgba(20, 14, 10, 0.7);
-      padding: 10px;
-      border-radius: 5px;
+      background-color: var(--nordic-medium);
+      padding: 20px;
+      border-radius: 8px;
       margin-top: 20px;
-      max-height: 150px;
+      max-height: 180px;
       overflow-y: auto;
       text-align: left;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--nordic-accent);
     }
+    
+    .history-section h3 {
+      margin-top: 0;
+      border-bottom: 1px solid var(--nordic-accent);
+      padding-bottom: 10px;
+    }
+    
     .history-entry {
-      margin: 5px 0;
-      padding: 5px;
-      border-bottom: 1px solid rgba(255, 100, 0, 0.2);
+      margin: 8px 0;
+      padding: 8px;
+      border-bottom: 1px solid rgba(212, 167, 88, 0.2);
     }
-    .loki-text {
-      font-size: 1.6rem;
-      letter-spacing: 10px;
-      margin: 5px 0;
-      color: #ff6400;
-    }
+    
     .game-status {
       font-size: 1.2rem;
       margin: 10px 0;
+      color: var(--nordic-text);
     }
+    
     .current-claim {
-      padding: 10px;
+      padding: 12px;
       margin: 10px 0;
-      background-color: rgba(72, 44, 23, 0.6);
+      background-color: var(--nordic-light);
       border-radius: 5px;
       display: inline-block;
+      border: 1px solid var(--nordic-accent);
+    }
+    
+    /* Norse decorative borders */
+    .nordic-border {
+      position: relative;
+      padding: 30px;
+    }
+    
+    .nordic-border::before,
+    .nordic-border::after {
+      content: "";
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      opacity: 0.6;
+    }
+    
+    .nordic-border::before {
+      top: 0;
+      left: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10,50 L50,10 L90,50 L50,90 Z' stroke='%23d4a758' stroke-width='2' fill='none'/%3E%3Cpath d='M25,50 L50,25 L75,50 L50,75 Z' stroke='%23d4a758' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+    }
+    
+    .nordic-border::after {
+      bottom: 0;
+      right: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10,50 L50,10 L90,50 L50,90 Z' stroke='%23d4a758' stroke-width='2' fill='none'/%3E%3Cpath d='M25,50 L50,25 L75,50 L50,75 Z' stroke='%23d4a758' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+    }
+    
+    /* Media queries for better responsiveness */
+    @media (max-width: 768px) {
+      .rune-legend {
+        padding: 10px;
+      }
+      
+      .rune-item {
+        margin: 3px 6px;
+      }
+      
+      .rune-symbol {
+        width: 40px;
+        height: 40px;
+        font-size: 2rem;
+      }
+      
+      .dice {
+        width: 50px;
+        height: 50px;
+      }
+      
+      .loki-text {
+        font-size: 1.8rem;
+        letter-spacing: 10px;
+      }
     }
   </style>
 </head>
 <body>
 
-<h1>Futhark Rúna Kockajáték</h1>
+<div class="nordic-border">
+  <h1>Futhark Rúna Játék</h1>
 
-<div class="rune-legend">
-  <div class="rune-item">
-    <div class="rune-symbol">ᛚ</div>
-    <div class="rune-name">Laguz</div>
-  </div>
-  <div class="rune-item">
-    <div class="rune-symbol">ᛁ</div>
-    <div class="rune-name">Isa</div>
-  </div>
-  <div class="rune-item">
-    <div class="rune-symbol">ᛟ</div>
-    <div class="rune-name">Othala</div>
-  </div>
-  <div class="rune-item">
-    <div class="rune-symbol">ᚲ</div>
-    <div class="rune-name">Kenaz</div>
-  </div>
-</div>
-
-<div class="loki-bonus">
-  <h3>LOKI Kombináció - Azonnali Győzelem!</h3>
-  <div class="loki-text">ᛚ ᛟ ᚲ ᛁ</div>
-</div>
-
-<div id="gameArea">
-  <div id="playerSection" class="player-section">
-    <h2>Te</h2>
-    <div class="health" id="playerHealth">5 ❤️</div>
-    <div class="dice-container" id="playerDice">
-      <!-- Játékos kockái ide kerülnek -->
+  <div class="rune-legend">
+    <div class="rune-item">
+      <div class="rune-symbol">ᛚ</div>
+      <div class="rune-name">Laguz</div>
+    </div>
+    <div class="rune-item">
+      <div class="rune-symbol">ᛁ</div>
+      <div class="rune-name">Isa</div>
+    </div>
+    <div class="rune-item">
+      <div class="rune-symbol">ᛟ</div>
+      <div class="rune-name">Othala</div>
+    </div>
+    <div class="rune-item">
+      <div class="rune-symbol">ᚲ</div>
+      <div class="rune-name">Kenaz</div>
     </div>
   </div>
-  
-  <div id="botSection" class="player-section">
-    <h2>Ellenfél</h2>
-    <div class="health" id="botHealth">5 ❤️</div>
-    <div class="dice-container" id="botDice">
-      <!-- Bot kockái ide kerülnek -->
+
+  <div class="loki-bonus">
+    <h3>LOKI Kombináció - Azonnali Győzelem!</h3>
+    <div class="loki-text">ᛚ ᛟ ᚲ ᛁ</div>
+  </div>
+
+  <div id="gameArea">
+    <div id="playerSection" class="player-section">
+      <h2>Te</h2>
+      <div class="health" id="playerHealth">5 ❤️</div>
+      <div class="dice-container" id="playerDice">
+        <!-- Játékos kockái ide kerülnek -->
+      </div>
+    </div>
+    
+    <div id="botSection" class="player-section">
+      <h2>Ellenfél</h2>
+      <div class="health" id="botHealth">5 ❤️</div>
+      <div class="dice-container" id="botDice">
+        <!-- Bot kockái ide kerülnek -->
+      </div>
     </div>
   </div>
-</div>
 
-<div class="controls-section">
-  <div class="game-status" id="gameStatus">Kezdjük a játékot! Nyomj a "Dobás" gombra.</div>
-  
-  <div class="current-claim" id="currentClaim" style="display: none;">
-    Aktuális bejelentés: <span id="claimText"></span>
-  </div>
-  
-  <button id="rollButton" onclick="startRound()">Dobás</button>
-  
-  <div class="claim-controls" id="claimControls">
-    <div class="claim-form">
-      <label for="runeType">Rúna:</label>
-      <select id="runeType">
-        <option value="ᛚ">Laguz (ᛚ)</option>
-        <option value="ᛁ">Isa (ᛁ)</option>
-        <option value="ᛟ">Othala (ᛟ)</option>
-        <option value="ᚲ">Kenaz (ᚲ)</option>
-      </select>
-      
-      <label for="runeCount">Darab:</label>
-      <select id="runeCount">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-      </select>
+  <div class="controls-section">
+    <div class="game-status" id="gameStatus">Kezdjük a játékot! Nyomj a "Dobás" gombra.</div>
+    
+    <div class="current-claim" id="currentClaim" style="display: none;">
+      Aktuális bejelentés: <span id="claimText"></span>
     </div>
-    <button onclick="makeClaim()">Bejelentés</button>
+    
+    <button id="rollButton" onclick="startRound()">Dobás</button>
+    
+    <div class="claim-controls" id="claimControls">
+      <div class="claim-form">
+        <label for="runeType">Rúna:</label>
+        <select id="runeType">
+          <option value="ᛚ">Laguz (ᛚ)</option>
+          <option value="ᛁ">Isa (ᛁ)</option>
+          <option value="ᛟ">Othala (ᛟ)</option>
+          <option value="ᚲ">Kenaz (ᚲ)</option>
+        </select>
+        
+        <label for="runeCount">Darab:</label>
+        <select id="runeCount">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </div>
+      <button onclick="makeClaim()">Bejelentés</button>
+    </div>
+    
+    <div class="response-controls" id="responseControls">
+      <button onclick="respondToClaim(true)">Igaz</button>
+      <button onclick="respondToClaim(false)">Blöff</button>
+    </div>
   </div>
-  
-  <div class="response-controls" id="responseControls">
-    <button onclick="respondToClaim(true)">Igaz</button>
-    <button onclick="respondToClaim(false)">Blöff</button>
+
+  <div id="result">Dobással kezdd a játékot. Ha valaki kidobja a LOKI kombinációt (Laguz, Othala, Kenaz, Isa), azonnal nyer!</div>
+
+  <div class="history-section" id="historySection">
+    <h3>Játékmenet</h3>
+    <div id="historyContent"></div>
   </div>
-</div>
 
-<div id="result">Dobással kezdd a játékot. Ha valaki kidobja a LOKI kombinációt (Laguz, Othala, Kenaz, Isa), azonnal nyer!</div>
-
-<div class="history-section" id="historySection">
-  <h3>Játékmenet</h3>
-  <div id="historyContent"></div>
-</div>
-
-<div id="resetContainer">
-  <button onclick="resetGame()">Új Játék</button>
+  <div id="resetContainer">
+    <button onclick="resetGame()">Új Játék</button>
+  </div>
 </div>
 
 <script>
@@ -715,7 +916,7 @@ function botAcceptClaim() {
   addToHistory(`Ellenfél: Elfogadom a bejelentésedet.`);
   gameStatusDisplay.textContent = `Az ellenfél elfogadta a bejelentésedet. Új kör kezdődik.`;
   
-  // Az elfogadásnál senki sem veszít életpontot - ez a szabály módosítása
+  // Az elfogadásnál senki sem veszít életpontot - ez a szabály
   
   // Következő kör
   setTimeout(() => {
@@ -735,7 +936,7 @@ function respondToClaim(believesClaim) {
     // Elfogadja az állítást
     addToHistory(`Te: Elfogadom az ellenfél bejelentését.`);
     
-    // Az elfogadásnál senki sem veszít életpontot - ez a szabály módosítása
+    // Az elfogadásnál senki sem veszít életpontot - ez a szabály
     
     gameStatusDisplay.textContent = `Elfogadtad a bejelentést. Új kör kezdődik.`;
   } else {
