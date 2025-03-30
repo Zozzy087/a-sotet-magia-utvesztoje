@@ -543,15 +543,30 @@ function botRespondToClaim() {
   const allDice = [...playerDice, ...botDice];
   const total = countRunes(allDice)[currentClaim.runeType] || 0;
 
-  if (total < currentClaim.runeCount) {
+  revealDice();
+
+  if (total >= currentClaim.runeCount) {
+    // A játékos igazat mondott
     botHealth--;
-    revealDice();
-    resultDisplay.innerHTML = `<span class="winner">Blöfföt kiáltott az ellenfél, de igazad volt! Az ellenfél veszít 1 ÉP-t.</span>`;
+    resultDisplay.innerHTML = `<span class="winner">Blöfföt kiáltott az ellenfél, de igazat mondtál! Az ellenfél veszít 1 ÉP-t.</span>`;
   } else {
+    // A játékos blöffölt
     playerHealth--;
-    revealDice();
-    resultDisplay.innerHTML = `<span class="winner">Blöfföt kiáltott az ellenfél, és sajnos igazat mondtál. Veszítesz 1 ÉP-t.</span>`;
+    resultDisplay.innerHTML = `<span class="winner">Blöfföt kiáltott az ellenfél, és sajnos igazat mondott. Veszítesz 1 ÉP-t.</span>`;
   }
+
+  updateHealth();
+
+  if (playerHealth <= 0) return gameWon('bot');
+  if (botHealth <= 0) return gameWon('player');
+
+  setTimeout(() => {
+    activePlayer = 'bot';
+    rollButton.style.display = 'block';
+    gameStatusDisplay.textContent = 'Új kör kezdődik. Dobj újra!';
+  }, 3000);
+}
+
 
   updateHealth();
 
