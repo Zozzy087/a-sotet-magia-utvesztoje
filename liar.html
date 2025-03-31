@@ -2,275 +2,1386 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Futhark Rúna Játék</title>
-  <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@500&display=swap" rel="stylesheet">
+  <title>Futhark Rúna Kockajáték</title>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;700&family=Norse&display=swap" rel="stylesheet">
   <style>
-    body {
+    :root {
+      --nordic-dark: #151d27;
+      --nordic-medium: #273040;
+      --nordic-light: #384354;
+      --nordic-text: #f5f0e6;
+      --accent-gold: #d3a958;
+      --accent-gold-light: #ebc675;
+      --accent-red: #913a3a;
+      --accent-red-glow: rgba(145, 58, 58, 0.6);
+      --accent-gold-glow: rgba(211, 169, 88, 0.4);
+    }
+    
+    * {
       margin: 0;
       padding: 0;
-      font-family: "Eczar", serif;
-      background: url('scandinavian_background.jpg') no-repeat center center fixed;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Jost', sans-serif;
+      background-color: var(--nordic-dark);
+      background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxyYW5kb218MHx8bm9yZGljLHdpbnRlcnx8fHx8fDE3MTIyMjY5MjI&ixlib=rb-4.0.3&q=80&w=1080');
       background-size: cover;
-      color: #e2dfd2;
+      background-position: center;
+      background-attachment: fixed;
+      color: var(--nordic-text);
+      min-height: 100vh;
+      padding: 20px;
       text-align: center;
-    }
-
-    header {
-      background: rgba(0, 0, 0, 0.75);
-      padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 2.5rem;
-      text-shadow: 0 0 10px #ff6400;
-    }
-
-    .loki-rule {
-      background: rgba(255, 100, 0, 0.15);
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 1.2rem;
-    }
-
-    .loki-text {
-      font-size: 1.8rem;
-      letter-spacing: 12px;
-      margin-top: 8px;
-      color: #ff6400;
-    }
-
-    .game-area {
-      display: flex;
-      justify-content: center;
-      margin-top: 40px;
-      gap: 40px;
-      flex-wrap: wrap;
-    }
-
-    .player-panel {
-      background: rgba(0,0,0,0.65);
-      padding: 20px;
-      border-radius: 10px;
-      width: 280px;
-      transition: 0.3s;
       position: relative;
     }
-
-    .player-panel.active {
-      border: 3px solid #00ff88;
-      box-shadow: 0 0 25px #00ff88;
-      transform: scale(1.05);
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(21, 29, 39, 0.85), rgba(21, 29, 39, 0.95));
+      z-index: -1;
     }
-
-    .player-panel h2 {
-      margin: 0;
-      font-size: 1.6rem;
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
     }
-
-    .health {
-      font-size: 1.4rem;
-      margin: 10px 0;
+    
+    /* Nordic decorative elements */
+    .nordic-border {
+      position: relative;
+      border: 1px solid rgba(211, 169, 88, 0.3);
+      border-radius: 5px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      background-color: rgba(39, 48, 64, 0.6);
+      overflow: hidden;
     }
-
-    .dice-row {
+    
+    .nordic-border::before,
+    .nordic-border::after {
+      content: '';
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      opacity: 0.2;
+    }
+    
+    .norse-knot {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      opacity: 0.15;
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10,50 C10,30 30,10 50,10 C70,10 90,30 90,50 C90,70 70,90 50,90 C30,90 10,70 10,50 Z M30,50 C30,40 40,30 50,30 C60,30 70,40 70,50 C70,60 60,70 50,70 C40,70 30,60 30,50 Z M21,50 C21,36 36,21 50,21 C64,21 79,36 79,50 C79,64 64,79 50,79 C36,79 21,64 21,50 Z' stroke='%23d3a958' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+    
+    .norse-knot-tl {
+      top: 10px;
+      left: 10px;
+    }
+    
+    .norse-knot-tr {
+      top: 10px;
+      right: 10px;
+      transform: rotate(90deg);
+    }
+    
+    .norse-knot-bl {
+      bottom: 10px;
+      left: 10px;
+      transform: rotate(270deg);
+    }
+    
+    .norse-knot-br {
+      bottom: 10px;
+      right: 10px;
+      transform: rotate(180deg);
+    }
+    
+    /* Header styling */
+    h1 {
+      font-size: 2.8rem;
+      color: var(--accent-gold);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin: 20px 0;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      position: relative;
+      display: inline-block;
+    }
+    
+    h1::before, h1::after {
+      content: "⟡";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent-gold);
+      font-size: 2rem;
+      opacity: 0.7;
+    }
+    
+    h1::before {
+      left: -40px;
+    }
+    
+    h1::after {
+      right: -40px;
+    }
+    
+    .intro-text {
+      font-size: 1.2rem;
+      max-width: 800px;
+      margin: 0 auto 25px;
+      line-height: 1.5;
+      color: var(--nordic-text);
+      opacity: 0.9;
+    }
+    
+    /* Rune legend */
+    .rune-legend {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin-top: 15px;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 20px 0;
+      padding: 15px;
+      background-color: var(--nordic-medium);
+      border-radius: 8px;
+      border: 1px solid var(--accent-gold);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
-
-    .dice {
-      width: 60px;
-      height: 60px;
-      background: #1e1e1e;
-      border: 2px solid #ff6400;
-      font-size: 2rem;
+    
+    .rune-item {
+      display: flex;
+      align-items: center;
+      margin: 5px 10px;
+    }
+    
+    .rune-symbol {
+      font-size: 2.4rem;
+      margin-right: 15px;
+      width: 50px;
+      height: 50px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 6px;
-    }
-
-    .dice.hidden {
-      color: #444;
-      background: #111;
-    }
-
-    .controls {
-      margin-top: 30px;
-    }
-
-    .controls button {
-      font-family: "Eczar", serif;
-      font-size: 1.2rem;
-      padding: 10px 20px;
-      margin: 10px;
-      background-color: #5a381f;
-      color: #f0e8d8;
-      border: none;
+      background-color: var(--nordic-light);
       border-radius: 5px;
-      cursor: pointer;
-      transition: 0.2s;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      color: var(--accent-gold);
+      text-shadow: 0 0 10px var(--accent-gold-glow);
+      position: relative;
+      border: 1px solid rgba(211, 169, 88, 0.3);
+      overflow: hidden;
     }
-
-    .controls button:hover {
-      background-color: #7a4b2a;
-      transform: scale(1.05);
+    
+    .rune-symbol::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(211, 169, 88, 0.1) 0%, transparent 50%, rgba(211, 169, 88, 0.1) 100%);
     }
-
-    .result {
-      margin-top: 20px;
+    
+    .rune-name {
+      font-size: 1.1rem;
+      text-align: left;
+      color: var(--nordic-text);
+      letter-spacing: 1px;
+    }
+    
+    /* Loki bonus */
+    .loki-bonus {
+      background-color: rgba(145, 58, 58, 0.2);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px auto 30px;
+      max-width: 500px;
+      position: relative;
+      border: 1px solid var(--accent-red);
+      box-shadow: 0 0 20px rgba(145, 58, 58, 0.2);
+    }
+    
+    .loki-bonus h3 {
+      margin: 0 0 10px;
+      color: var(--accent-red);
+      font-size: 1.4rem;
+      text-shadow: 0 0 10px var(--accent-red-glow);
+    }
+    
+    .loki-text {
+      font-size: 2rem;
+      letter-spacing: 12px;
+      margin: 10px 0;
+      color: var(--accent-red);
+      text-shadow: 0 0 15px var(--accent-red-glow);
+    }
+    
+    /* Game Area */
+    #gameArea {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin: 20px 0;
+    }
+    
+    .player-section {
+      background-color: var(--nordic-medium);
+      padding: 25px;
+      border-radius: 8px;
+      min-width: 280px;
+      border: 1px solid rgba(211, 169, 88, 0.3);
+      transition: all 0.4s ease;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .active-player {
+      border: 2px solid var(--accent-gold);
+      box-shadow: 0 0 30px var(--accent-gold-glow), 0 5px 20px rgba(0, 0, 0, 0.3);
+      transform: translateY(-5px) scale(1.05);
+      z-index: 2;
+    }
+    
+    .active-player::before {
+      content: "";
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-bottom: 15px solid var(--accent-gold);
+      animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-10px); }
+    }
+    
+    .active-player::after {
+      content: attr(data-active);
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--accent-gold);
+      text-shadow: 0 0 10px var(--accent-gold-glow);
+      animation: pulse 1.5s infinite;
+      white-space: nowrap;
+      padding: 3px 10px;
+      background-color: var(--nordic-dark);
+      border-radius: 4px;
+      border: 1px solid var(--accent-gold);
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; }
+    }
+    
+    h2 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 1.8rem;
+      color: var(--accent-gold-light);
+      letter-spacing: 1px;
+      position: relative;
+      display: inline-block;
+      padding-bottom: 10px;
+    }
+    
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 2px;
+      background-color: var(--accent-gold);
+      opacity: 0.6;
+    }
+    
+    .health {
+      font-size: 2.2rem;
+      margin: 15px 0;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+    
+    .dice-container {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 20px 0;
+      min-height: 80px;
+    }
+    
+    .dice {
+      width: 60px;
+      height: 60px;
+      background-color: var(--nordic-light);
+      border: 1px solid rgba(211, 169, 88, 0.5);
+      border-radius: 5px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      color: var(--accent-gold);
+      text-shadow: 0 0 5px var(--accent-gold-glow);
+      overflow: hidden;
+    }
+    
+    .dice::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(211, 169, 88, 0.2), transparent);
+      transition: 0.5s;
+    }
+    
+    .dice:hover::after {
+      left: 100%;
+    }
+    
+    .dice-roll {
+      animation: shakeDice 0.8s ease-out;
+    }
+    
+    .dice.hidden {
+      background-color: var(--nordic-dark);
+      color: var(--nordic-light);
+      text-shadow: none;
+      border-color: rgba(211, 169, 88, 0.2);
+    }
+    
+    @keyframes shakeDice {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      15% { transform: translate(-10px, -5px) rotate(-15deg); }
+      30% { transform: translate(10px, 5px) rotate(15deg); }
+      45% { transform: translate(-10px, -5px) rotate(-10deg); }
+      60% { transform: translate(10px, 5px) rotate(10deg); }
+      75% { transform: translate(-5px, -2px) rotate(-5deg); }
+      90% { transform: translate(5px, 2px) rotate(5deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+    
+    /* Controls Section */
+    .controls-section {
+      background-color: var(--nordic-medium);
+      padding: 25px;
+      border-radius: 8px;
+      margin: 30px auto;
+      max-width: 700px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(211, 169, 88, 0.3);
+      position: relative;
+    }
+    
+    .current-claim {
+      padding: 12px 20px;
+      margin: 15px 0;
+      background-color: var(--nordic-light);
+      border-radius: 6px;
+      display: inline-block;
+      border: 1px solid rgba(211, 169, 88, 0.3);
+      font-size: 1.1rem;
+    }
+    
+    .game-status {
       font-size: 1.3rem;
+      margin: 5px 0 15px;
+      color: var(--nordic-text);
+      max-width: 600px;
+    }
+    
+    .claim-controls, .response-controls {
+      margin: 15px 0;
+      display: none;
+      width: 100%;
+      max-width: 500px;
+    }
+    
+    .claim-form {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    
+    label {
+      font-size: 1.1rem;
+      margin-right: 5px;
+      color: var(--nordic-text);
+    }
+    
+    select, input {
+      background-color: var(--nordic-light);
+      color: var(--nordic-text);
+      border: 1px solid rgba(211, 169, 88, 0.3);
+      padding: 10px 15px;
+      border-radius: 5px;
+      font-family: 'Jost', sans-serif;
+      font-size: 1rem;
+      min-width: 100px;
+      transition: all 0.3s ease;
+    }
+    
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 10px var(--accent-gold-glow);
+    }
+    
+    button {
+      font-family: 'Jost', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+      padding: 12px 30px;
+      margin: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--accent-gold);
+      cursor: pointer;
+      background-color: var(--nordic-light);
+      color: var(--nordic-text);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    button::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(211, 169, 88, 0.2),
+        transparent
+      );
+      transition: 0.5s;
+    }
+    
+    button:hover {
+      background-color: var(--nordic-medium);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3), 0 0 10px var(--accent-gold-glow);
+    }
+    
+    button:hover::after {
+      left: 100%;
+    }
+    
+    button:active {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    #result {
+      font-size: 1.3rem;
+      background-color: var(--nordic-medium);
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px auto;
+      max-width: 700px;
+      letter-spacing: 0.5px;
+      line-height: 1.5;
+      border: 1px solid rgba(211, 169, 88, 0.3);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    #resetContainer {
+      display: none;
+      margin: 30px auto;
+    }
+    
+    .winner {
+      color: var(--accent-gold);
       font-weight: bold;
-      color: #ff6400;
-      text-shadow: 0 0 6px #000;
+      text-shadow: 0 0 10px var(--accent-gold-glow);
+    }
+    
+    .loser {
+      color: var(--accent-red);
+      font-weight: bold;
+      text-shadow: 0 0 10px var(--accent-red-glow);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      h1::before, h1::after {
+        display: none;
+      }
+      
+      .rune-symbol {
+        width: 40px;
+        height: 40px;
+        font-size: 1.8rem;
+      }
+      
+      .loki-text {
+        font-size: 1.6rem;
+        letter-spacing: 8px;
+      }
+      
+      .dice {
+        width: 50px;
+        height: 50px;
+        font-size: 1.8rem;
+      }
+      
+      .player-section {
+        padding: 15px;
+      }
+      
+      .active-player::after {
+        font-size: 0.9rem;
+      }
+      
+      .health {
+        font-size: 1.8rem;
+      }
+      
+      .claim-form {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      button {
+        padding: 10px 20px;
+      }
+      
+      .current-claim {
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
 <body>
-
-<header>
-  <h1>Futhark Rúna Játék</h1>
-  <div class="loki-rule">
-    Dobással kezdd a játékot. Ha valaki kidobja a LOKI kombinációt (Laguz, Othala, Kenaz, Isa), azonnal nyer!
-    <div class="loki-text">ᛚ ᛟ ᚲ ᛁ</div>
+  <div class="container">
+    <h1>Futhark Rúna Kockajáték</h1>
+    
+    <p class="intro-text">
+      Dobással kezdd a játékot. Ha valaki kidobja a LOKI kombinációt (Laguz, Othala, Kenaz, Isa), azonnal nyer!
+    </p>
+    
+    <div class="nordic-border">
+      <div class="norse-knot norse-knot-tl"></div>
+      <div class="norse-knot norse-knot-tr"></div>
+      <div class="norse-knot norse-knot-bl"></div>
+      <div class="norse-knot norse-knot-br"></div>
+      
+      <div class="rune-legend">
+        <div class="rune-item">
+          <div class="rune-symbol">ᛚ</div>
+          <div class="rune-name">Laguz</div>
+        </div>
+        <div class="rune-item">
+          <div class="rune-symbol">ᛁ</div>
+          <div class="rune-name">Isa</div>
+        </div>
+        <div class="rune-item">
+          <div class="rune-symbol">ᛟ</div>
+          <div class="rune-name">Othala</div>
+        </div>
+        <div class="rune-item">
+          <div class="rune-symbol">ᚲ</div>
+          <div class="rune-name">Kenaz</div>
+        </div>
+      </div>
+      
+      <div class="loki-bonus">
+        <h3>LOKI Kombináció - Azonnali Győzelem!</h3>
+        <div class="loki-text">ᛚ ᛟ ᚲ ᛁ</div>
+      </div>
+      
+      <div id="gameArea">
+        <div id="playerSection" class="player-section" data-active="Te következel">
+          <h2>Kalandor</h2>
+          <div class="health" id="playerHealth">5 ❤️</div>
+          <div class="dice-container" id="playerDice">
+            <!-- Játékos kockái ide kerülnek -->
+          </div>
+        </div>
+        
+        <div id="botSection" class="player-section" data-active="Ellenfél köre">
+          <h2>Ellenfél</h2>
+          <div class="health" id="botHealth">5 ❤️</div>
+          <div class="dice-container" id="botDice">
+            <!-- Bot kockái ide kerülnek -->
+          </div>
+        </div>
+      </div>
+      
+      <div class="controls-section">
+        <div class="game-status" id="gameStatus">Kezdjük a játékot! Nyomj a "Dobás" gombra.</div>
+        
+        <div class="current-claim" id="currentClaim" style="display: none;">
+          Aktuális bejelentés: <span id="claimText"></span>
+        </div>
+        
+        <button id="rollButton" onclick="startRound()">Dobás</button>
+        
+        <div class="claim-controls" id="claimControls">
+          <div class="claim-form">
+            <label for="runeType">Rúna:</label>
+            <select id="runeType">
+              <option value="ᛚ">Laguz (ᛚ)</option>
+              <option value="ᛁ">Isa (ᛁ)</option>
+              <option value="ᛟ">Othala (ᛟ)</option>
+              <option value="ᚲ">Kenaz (ᚲ)</option>
+            </select>
+            
+            <label for="runeCount">Darab:</label>
+            <select id="runeCount">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+          <button onclick="makeClaim()">Bejelentés</button>
+        </div>
+        
+        <div class="response-controls" id="responseControls">
+          <button onclick="respondToClaim(true)">Igaz</button>
+          <button onclick="respondToClaim(false)">Blöff</button>
+        </div>
+      </div>
+      
+      <div id="result"></div>
+      
+      <div id="resetContainer">
+        <button onclick="resetGame()">Új Játék</button>
+      </div>
+    </div>
   </div>
-</header>
-
-<div class="game-area">
-  <div id="playerPanel" class="player-panel active">
-    <h2>Te</h2>
-    <div class="health" id="playerHealth">5 ❤️</div>
-    <div class="dice-row" id="playerDice"></div>
-  </div>
-
-  <div id="botPanel" class="player-panel">
-    <h2>Ellenfél</h2>
-    <div class="health" id="botHealth">5 ❤️</div>
-    <div class="dice-row" id="botDice"></div>
-  </div>
-</div>
-
-<div class="controls">
-  <button onclick="rollDice()" id="rollBtn">Dobás</button>
-  <button onclick="resetGame()">Új játék</button>
-</div>
-
-<div class="result" id="resultMessage"></div>
 
 <script>
-const RUNES = ['ᛚ', 'ᛁ', 'ᛟ', 'ᚲ'];
-const RUNE_NAMES = { 'ᛚ': 'Laguz', 'ᛁ': 'Isa', 'ᛟ': 'Othala', 'ᚲ': 'Kenaz' };
-const LOKI_COMBINATION = ['ᛚ', 'ᛟ', 'ᚲ', 'ᛁ'];
+// Játék változók
+const RUNES = ['ᛚ', 'ᛁ', 'ᛟ', 'ᚲ']; // Laguz, Isa, Othala, Kenaz
+const RUNE_NAMES = {
+  'ᛚ': 'Laguz',
+  'ᛁ': 'Isa',
+  'ᛟ': 'Othala',
+  'ᚲ': 'Kenaz'
+};
+const LOKI_COMBINATION = ['ᛚ', 'ᛟ', 'ᚲ', 'ᛁ']; // Laguz, Othala, Kenaz, Isa
 
 let playerHealth = 5;
 let botHealth = 5;
+let playerDice = [];
+let botDice = [];
+let activePlayer = 'player'; // 'player' vagy 'bot'
+let currentClaim = null;
+let gameActive = true;
+let turnHistory = [];
+let playerBehaviorData = {
+  bluffFrequency: 0,
+  claimedRuneCounts: [],
+  bluffCalls: 0,
+  totalRounds: 0,
+  lastRounds: []
+};
 
-function rollDice() {
-  const player = randomRunes(4);
-  const bot = randomRunes(4);
+// DOM elemek
+const playerDiceContainer = document.getElementById('playerDice');
+const botDiceContainer = document.getElementById('botDice');
+const playerHealthDisplay = document.getElementById('playerHealth');
+const botHealthDisplay = document.getElementById('botHealth');
+const playerSection = document.getElementById('playerSection');
+const botSection = document.getElementById('botSection');
+const rollButton = document.getElementById('rollButton');
+const claimControls = document.getElementById('claimControls');
+const responseControls = document.getElementById('responseControls');
+const resultDisplay = document.getElementById('result');
+const gameStatusDisplay = document.getElementById('gameStatus');
+const currentClaimDisplay = document.getElementById('currentClaim');
+const claimTextDisplay = document.getElementById('claimText');
+const resetContainer = document.getElementById('resetContainer');
 
-  displayDice(player, document.getElementById("playerDice"), false);
-  displayDice(bot, document.getElementById("botDice"), true);
-
-  const result = document.getElementById("resultMessage");
-
-  if (hasLoki(player)) {
-    result.textContent = "LOKI ÁLDÁSA! Kidobtad a LOKI kombinációt! Győzelem!";
-    disableRoll();
-    return;
-  }
-
-  if (hasLoki(bot)) {
-    result.textContent = "LOKI ÁTKA! Az ellenfél kidobta a LOKI kombinációt! Vereség!";
-    disableRoll();
-    return;
-  }
-
-  const playerRuneCounts = countRunes(player);
-  const botRuneCounts = countRunes(bot);
-
-  const botDecision = intelligentBotDecision(botRuneCounts, playerRuneCounts);
-
-  if (botDecision.bluff && Math.random() < 0.5) {
-    playerHealth--;
-    result.textContent = "Blöfföltél, lebuktál! Vesztesz 1 ÉP-t.";
-  } else {
-    botHealth--;
-    result.textContent = "Igazad volt! Az ellenfél veszít 1 ÉP-t.";
-  }
-
-  updateHealth();
-  checkGameOver();
-}
-
-function randomRunes(n) {
-  return Array.from({ length: n }, () => RUNES[Math.floor(Math.random() * RUNES.length)]);
-}
-
-function displayDice(runes, container, hide) {
-  container.innerHTML = "";
-  runes.forEach(r => {
-    const d = document.createElement("div");
-    d.className = "dice" + (hide ? " hidden" : "");
-    d.textContent = hide ? "?" : r;
-    container.appendChild(d);
-  });
-}
-
-function countRunes(runes) {
-  const counts = {};
-  runes.forEach(r => counts[r] = (counts[r] || 0) + 1);
-  return counts;
-}
-
-function hasLoki(runes) {
-  const counts = countRunes(runes);
-  return LOKI_COMBINATION.every(r => counts[r] > 0);
-}
-
-function updateHealth() {
-  document.getElementById("playerHealth").textContent = `${playerHealth} ❤️`;
-  document.getElementById("botHealth").textContent = `${botHealth} ❤️`;
-}
-
-function checkGameOver() {
-  if (playerHealth <= 0) {
-    document.getElementById("resultMessage").textContent = "VERESÉG! Az ellenfél legyőzött!";
-    disableRoll();
-  } else if (botHealth <= 0) {
-    document.getElementById("resultMessage").textContent = "GYŐZELEM! Legyőzted az ellenfelet!";
-    disableRoll();
-  }
-}
-
-function disableRoll() {
-  document.getElementById("rollBtn").disabled = true;
-}
-
+// Játék inicializálása
 function resetGame() {
   playerHealth = 5;
   botHealth = 5;
-  document.getElementById("rollBtn").disabled = false;
-  document.getElementById("resultMessage").textContent = "";
-  document.getElementById("playerDice").innerHTML = "";
-  document.getElementById("botDice").innerHTML = "";
+  playerDice = [];
+  botDice = [];
+  activePlayer = 'player';
+  currentClaim = null;
+  gameActive = true;
+  turnHistory = [];
+  
+  // Bot viselkedés elemzési adatok alaphelyzetbe állítása
+  playerBehaviorData = {
+    bluffFrequency: 0,
+    claimedRuneCounts: [],
+    bluffCalls: 0,
+    totalRounds: 0,
+    lastRounds: []
+  };
+  
   updateHealth();
+  clearDice();
+  
+  rollButton.style.display = 'block';
+  claimControls.style.display = 'none';
+  responseControls.style.display = 'none';
+  currentClaimDisplay.style.display = 'none';
+  resetContainer.style.display = 'none';
+  
+  resultDisplay.textContent = '';
+  gameStatusDisplay.textContent = 'Kezdjük a játékot! Nyomj a "Dobás" gombra.';
+  
+  setActivePlayer('player');
 }
 
-// Bot logika: Ha 2 vagy több azonos rúnája van, blöffölhet, különben védekezik
-function intelligentBotDecision(botRunes, playerRunes) {
-  let bluff = false;
-  const values = Object.values(botRunes);
-  const max = Math.max(...values);
-
-  if (max < 2) bluff = true;
-  return { bluff };
+// Kör indítása
+function startRound() {
+  if (!gameActive) return;
+  
+  rollButton.style.display = 'none';
+  clearDice();
+  
+  // Játékkör számlálása
+  playerBehaviorData.totalRounds++;
+  
+  // Kockák dobása
+  playerDice = rollDice();
+  botDice = rollDice();
+  
+  // Kockák megjelenítése
+  renderDice(playerDice, playerDiceContainer, false);
+  renderDice(botDice, botDiceContainer, true);
+  
+  // LOKI kombináció ellenőrzése
+  const playerHasLoki = checkForLoki(playerDice);
+  const botHasLoki = checkForLoki(botDice);
+  
+  if (playerHasLoki) {
+    gameWon('player', true);
+    return;
+  }
+  
+  if (botHasLoki) {
+    gameWon('bot', true);
+    return;
+  }
+  
+  // Játék folytatása
+  currentClaim = null;
+  currentClaimDisplay.style.display = 'none';
+  
+  // Kezdés (játékos vagy bot)
+  if (activePlayer === 'player') {
+    claimControls.style.display = 'block';
+    gameStatusDisplay.textContent = 'Tegyél egy bejelentést a kockáidról!';
+  } else {
+    // Bot kezd
+    gameStatusDisplay.textContent = 'Az ellenfél gondolkodik...';
+    setTimeout(botMakeClaim, 2000);
+  }
 }
 
+// Kockák dobása
+function rollDice() {
+  const dice = [];
+  for (let i = 0; i < 4; i++) {
+    const rune = RUNES[Math.floor(Math.random() * RUNES.length)];
+    dice.push(rune);
+  }
+  return dice;
+}
+
+// Kockák renderelése
+function renderDice(dice, container, hidden) {
+  container.innerHTML = '';
+  
+  dice.forEach(rune => {
+    const diceElement = document.createElement('div');
+    diceElement.className = 'dice' + (hidden ? ' hidden' : '');
+    diceElement.textContent = hidden ? '?' : rune;
+    diceElement.classList.add('dice-roll');
+    container.appendChild(diceElement);
+  });
+}
+
+// Kockák törlése
+function clearDice() {
+  playerDiceContainer.innerHTML = '';
+  botDiceContainer.innerHTML = '';
+}
+
+// Játékos bejelentése
+function makeClaim() {
+  if (!gameActive) return;
+  
+  const runeType = document.getElementById('runeType').value;
+  const runeCount = parseInt(document.getElementById('runeCount').value);
+  
+  // Ellenőrizzük, hogy a bejelentés valid-e
+  if (currentClaim) {
+    // Ha már van korábbi bejelentés, akkor ennek jobbnak kell lennie
+    if (runeType === currentClaim.runeType && runeCount <= currentClaim.runeCount) {
+      gameStatusDisplay.textContent = `Ugyanolyan vagy magasabb értéket kell bejelentened!`;
+      return;
+    }
+  }
+  
+  // Az aktuális dobások ellenőrzése a játékos adataiban
+  const playerRuneCounts = countRunes(playerDice);
+  const actualCount = playerRuneCounts[runeType] || 0;
+  const isBluffing = runeCount > actualCount;
+  
+  // Statisztika rögzítése
+  playerBehaviorData.claimedRuneCounts.push(runeCount);
+  if (isBluffing) {
+    playerBehaviorData.bluffFrequency += 1;
+  }
+  
+  // Kör adatok rögzítése
+  playerBehaviorData.lastRounds.push({
+    runeType,
+    claimed: runeCount,
+    actual: actualCount,
+    bluffed: isBluffing
+  });
+  
+  // Csak az utolsó 10 kört követjük
+  if (playerBehaviorData.lastRounds.length > 10) {
+    playerBehaviorData.lastRounds.shift();
+  }
+  
+  currentClaim = {
+    player: 'player',
+    runeType: runeType,
+    runeCount: runeCount
+  };
+  
+  // Bejelentés megjelenítése
+  displayClaim(currentClaim);
+  
+  // Játékos váltás
+  claimControls.style.display = 'none';
+  
+  // Bot válasza
+  setActivePlayer('bot');
+  gameStatusDisplay.textContent = 'Az ellenfél mérlegeli a bejelentésedet...';
+  
+  setTimeout(botRespondToClaim, 2000);
+}
+
+// Bot bejelentése
+function botMakeClaim() {
+  if (!gameActive) return;
+  
+  // Bot kockáinak elemzése
+  const runeCounts = countRunes(botDice);
+  
+  let botRune = '';
+  let botCount = 0;
+  
+  // Stratégia komplexitása: játékkör alapján
+  const strategicLevel = Math.min(3, Math.floor(playerBehaviorData.totalRounds / 3));
+  
+  // Rúnák rangsora a kockaértékek alapján
+  const runeRanking = Object.entries(runeCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(entry => ({ rune: entry[0], count: entry[1] }));
+  
+  // Blöffölési hajlandóság (adaptív a játékos stílusához)
+  let bluffThreshold = 0.2; // Alap
+  
+  // Ha a játékos gyakran blöfföl, a bot is vállalja több kockázatot
+  if (playerBehaviorData.totalRounds > 3) {
+    const playerBluffRate = playerBehaviorData.bluffFrequency / playerBehaviorData.totalRounds;
+    bluffThreshold = Math.min(0.5, playerBluffRate + 0.1);
+  }
+  
+  // Extra stratégiák előrehaladott játékban
+  if (strategicLevel > 1) {
+    // Bot előnyben van és konzervatív lesz
+    if (botHealth > playerHealth + 1) {
+      bluffThreshold *= 0.5;
+    }
+    // Bot hátrányban van és kockáztatóbb lesz
+    else if (botHealth < playerHealth) {
+      bluffThreshold *= 1.5;
+    }
+  }
+  
+  const shouldBluff = Math.random() < bluffThreshold;
+  
+  // Legjobb rúna kiválasztása vagy blöffölés
+  if (shouldBluff || runeRanking.length === 0 || runeRanking[0].count < 1) {
+    // Blöffölési stratégia
+    const preferredRunes = [...RUNES];
+    
+    // Ha van előző állítás, a bot preferálhatja
+    if (currentClaim && Math.random() < 0.3) {
+      preferredRunes.unshift(currentClaim.runeType);
+    }
+    
+    // Okos rúna választás a blöfföléshez
+    botRune = preferredRunes[Math.floor(Math.random() * preferredRunes.length)];
+    
+    // Ha volt korábbi bejelentés, akkor okos túllicitálás
+    if (currentClaim) {
+      if (botRune === currentClaim.runeType) {
+        // Növeli az előző állítást 1-2 értékkel
+        botCount = currentClaim.runeCount + 1 + (Math.random() < 0.3 ? 1 : 0);
+      } else {
+        // Okos túllicitálás: magasabb kezdőérték, ha kevés van hátra
+        const remainingRounds = Math.max(1, 5 - Math.abs(botHealth - playerHealth));
+        const minValue = Math.max(1, Math.min(3, Math.floor(8 / remainingRounds)));
+        botCount = Math.max(minValue, Math.floor(Math.random() * 3) + 1);
+      }
+    } else {
+      // Első bejelentés: kockázatvállalás a játék állapota alapján
+      const riskFactor = botHealth > playerHealth ? 1 : 2;
+      botCount = Math.floor(Math.random() * 2) + riskFactor;
+    }
+  } else {
+    // Igazmondás stratégia: a bot legjobb rúnája
+    botRune = runeRanking[0].rune;
+    botCount = runeRanking[0].count;
+    
+    // Stratégiai túllicitálás
+    if (currentClaim) {
+      if (botRune === currentClaim.runeType && botCount <= currentClaim.runeCount) {
+        // Lehetséges alternatív rúna keresése
+        if (runeRanking.length > 1 && runeRanking[1].count > 0) {
+          // Ha van más jó rúna, használhatja
+          botRune = runeRanking[1].rune;
+          botCount = runeRanking[1].count;
+          
+          // Még mindig túl kell licitálnia
+          if (botRune === currentClaim.runeType && botCount <= currentClaim.runeCount) {
+            // Kénytelen blöffölni a túllicitáláshoz
+            botCount = currentClaim.runeCount + 1;
+          }
+        } else {
+          // Nincs jó alternatíva, muszáj blöffölni
+          botCount = currentClaim.runeCount + 1;
+        }
+      }
+    }
+  }
+  
+  // Limit ellenőrzés és játék helyzethez igazítás
+  botCount = Math.min(botCount, Math.min(8, 4 + strategicLevel));
+  
+  // Bejelentés létrehozása
+  currentClaim = {
+    player: 'bot',
+    runeType: botRune,
+    runeCount: botCount
+  };
+  
+  // Bejelentés megjelenítése
+  displayClaim(currentClaim);
+  
+  // Játékos váltás
+  setActivePlayer('player');
+  
+  // Játékos válasza
+  responseControls.style.display = 'block';
+  gameStatusDisplay.textContent = 'Mit gondolsz, igazat mond az ellenfél?';
+}
+
+// Bot válasza a játékos bejelentésére
+function botRespondToClaim() {
+  if (!gameActive) return;
+  
+  // Összes kocka számolása
+  const allDice = [...playerDice, ...botDice];
+  const runeCounts = countRunes(allDice);
+  
+  // Bot csak a saját kockáit látja
+  const botRuneCounts = countRunes(botDice);
+  
+  // Az állítás igazolása
+  const totalCount = runeCounts[currentClaim.runeType] || 0;
+  const botKnownCount = botRuneCounts[currentClaim.runeType] || 0;
+  const remainingNeeded = currentClaim.runeCount - botKnownCount;
+  const playerDiceCount = 4; // Játékos kockáinak száma
+  
+  // Játékos viselkedési mintái
+  const playerBluffRate = playerBehaviorData.totalRounds > 0 
+    ? playerBehaviorData.bluffFrequency / playerBehaviorData.totalRounds
+    : 0.3; // Alapértelmezett ha nincs adat
+  
+  // Ha a bot tudja, hogy nem lehet igaz (több rúnát állít mint lehetséges)
+  if (remainingNeeded > playerDiceCount) {
+    // Biztos blöff
+    setTimeout(() => {
+      gameStatusDisplay.textContent = 'Az ellenfél elemzi az állításodat...';
+      setTimeout(() => botCallBluff(), 1000);
+    }, 1000);
+    return;
+  }
+  
+  // Bot döntési stratégiája
+  let bluffCallThreshold;
+  
+  // Alap küszöbérték valószínűség alapján
+  const probability = calculateProbability(remainingNeeded, playerDiceCount);
+  
+  // Játék állása szerinti stratégia
+  if (botHealth <= 2 && playerHealth > 2) {
+    // Kétségbeesetten kockáztatóbb, ha vesztésre áll
+    bluffCallThreshold = 0.7;
+  } else if (botHealth > playerHealth + 1) {
+    // Konzervatívabb, ha előnyben van
+    bluffCallThreshold = 0.3;
+  } else {
+    // Kiegyensúlyozott játékban
+    bluffCallThreshold = 0.5;
+  }
+  
+  // Játékos előzményeinek figyelése
+  if (playerBehaviorData.lastRounds.length > 2) {
+    // Ha a játékos mintázata az utolsó két körben blöffölés volt
+    const lastTwoRounds = playerBehaviorData.lastRounds.slice(-2);
+    if (lastTwoRounds.filter(r => r.bluffed).length === 2) {
+      // A bot gyanakszik, hogy a játékos sokat blöfföl
+      bluffCallThreshold -= 0.2;
+    }
+    
+    // Ha a játékos most sokkal nagyobb értéket mond mint szokott
+    const avgClaim = playerBehaviorData.claimedRuneCounts.reduce((a, b) => a + b, 0) / 
+                     playerBehaviorData.claimedRuneCounts.length;
+    if (currentClaim.runeCount > avgClaim * 1.5) {
+      // Gyanúsan nagy szám
+      bluffCallThreshold -= 0.15;
+    }
+  }
+  
+  // Valószínűség-alapú döntés, a módosított küszöbértékkel
+  const callBluff = probability < bluffCallThreshold;
+  
+  // Kis késleltetés a gondolkodás érzékeltetésére
+  setTimeout(() => {
+    gameStatusDisplay.textContent = 'Az ellenfél mérlegeli a lehetőségeket...';
+    
+    setTimeout(() => {
+      if (callBluff) {
+        botCallBluff();
+      } else {
+        botAcceptClaim();
+      }
+    }, 1500);
+  }, 1000);
+}
+
+// Bot blöfföt kiált
+function botCallBluff() {
+  gameStatusDisplay.textContent = 'Az ellenfél blöfföt kiált!';
+  
+  // Az ellenfél viselkedésének követése
+  playerBehaviorData.bluffCalls++;
+  
+  // Kockák felfedése
+  setTimeout(() => {
+    revealDice();
+    
+    // Ellenőrzés
+    const allDice = [...playerDice, ...botDice];
+    const runeCounts = countRunes(allDice);
+    
+    // Az állítás igazolása
+    const totalCount = runeCounts[currentClaim.runeType] || 0;
+    
+    gameStatusDisplay.textContent = `Az ellenfél blöfföt kiáltott. ${displayRuneCheck(currentClaim.runeType, totalCount, currentClaim.runeCount)}`;
+    
+    if (totalCount >= currentClaim.runeCount) {
+      // Az állítás igaz volt, a bot veszít
+      botHealth--;
+      setTimeout(() => {
+        updateHealth();
+        resultDisplay.innerHTML = '<span class="winner">Igazad volt! Az ellenfél veszít 1 ÉP-t.</span>';
+        
+        if (botHealth <= 0) {
+          gameWon('player');
+          return;
+        }
+        
+        prepareNextRound('bot');
+      }, 1500);
+    } else {
+      // Az állítás blöff volt, a játékos veszít
+      playerHealth--;
+      setTimeout(() => {
+        updateHealth();
+        resultDisplay.innerHTML = '<span class="loser">Blöfföltél! Vesztesz 1 ÉP-t.</span>';
+        
+        if (playerHealth <= 0) {
+          gameWon('bot');
+          return;
+        }
+        
+        prepareNextRound('bot');
+      }, 1500);
+    }
+  }, 1000);
+}
+
+// Bot elfogadja a bejelentést
+function botAcceptClaim() {
+  gameStatusDisplay.textContent = 'Az ellenfél elfogadja a bejelentésedet.';
+  
+  // Az elfogadásnál senki sem veszít életpontot - ez a szabály
+  setTimeout(() => {
+    resultDisplay.textContent = 'Az ellenfél elfogadta a bejelentésedet. Új kör kezdődik.';
+    prepareNextRound('bot');
+  }, 1000);
+}
+
+// Játékos válasza a bejelentésre
+function respondToClaim(believesClaim) {
+  if (!gameActive) return;
+  
+  responseControls.style.display = 'none';
+  
+  if (believesClaim) {
+    // Elfogadja az állítást
+    gameStatusDisplay.textContent = 'Elfogadtad az ellenfél bejelentését.';
+    
+    // Az elfogadásnál senki sem veszít életpontot - ez a szabály
+    setTimeout(() => {
+      resultDisplay.textContent = 'Elfogadtad a bejelentést. Új kör kezdődik.';
+      prepareNextRound('player');
+    }, 1000);
+  } else {
+    // Blöfföt kiált
+    gameStatusDisplay.textContent = 'Blöfföt kiáltottál! Nézzük az eredményt...';
+    
+    // Kockák felfedése
+    setTimeout(() => {
+      revealDice();
+      
+      // Ellenőrzés
+      const allDice = [...playerDice, ...botDice];
+      const runeCounts = countRunes(allDice);
+      
+      // Az állítás igazolása
+      const totalCount = runeCounts[currentClaim.runeType] || 0;
+      
+      gameStatusDisplay.textContent = `Blöfföt kiáltottál. ${displayRuneCheck(currentClaim.runeType, totalCount, currentClaim.runeCount)}`;
+      
+      if (totalCount >= currentClaim.runeCount) {
+        // Az állítás igaz volt, a játékos veszít
+        playerHealth--;
+        setTimeout(() => {
+          updateHealth();
+          resultDisplay.innerHTML = '<span class="loser">Az ellenfél igazat mondott! Vesztesz 1 ÉP-t.</span>';
+          
+          if (playerHealth <= 0) {
+            gameWon('bot');
+            return;
+          }
+          
+          prepareNextRound('player');
+        }, 1500);
+      } else {
+        // Az állítás blöff volt, a bot veszít
+        botHealth--;
+        setTimeout(() => {
+          updateHealth();
+          resultDisplay.innerHTML = '<span class="winner">Igazad volt, az ellenfél blöffölt! Az ellenfél veszít 1 ÉP-t.</span>';
+          
+          if (botHealth <= 0) {
+            gameWon('player');
+            return;
+          }
+          
+          prepareNextRound('player');
+        }, 1500);
+      }
+    }, 1000);
+  }
+}
+
+// Következő kör előkészítése
+function prepareNextRound(nextStarter) {
+  setTimeout(() => {
+    activePlayer = nextStarter;
+    rollButton.style.display = 'block';
+    gameStatusDisplay.textContent = 'Új kör kezdődik. Nyomj a "Dobás" gombra.';
+    setActivePlayer(nextStarter);
+  }, 2000);
+}
+
+// Rúnák számlálása a kockákon
+function countRunes(dice) {
+  const counts = {};
+  for (const rune of dice) {
+    counts[rune] = (counts[rune] || 0) + 1;
+  }
+  return counts;
+}
+
+// LOKI kombináció ellenőrzése
+function checkForLoki(dice) {
+  // Rúnák számlálása
+  const counts = countRunes(dice);
+  
+  // LOKI kombináció ellenőrzése (L, O, K, I mind legalább egyszer)
+  return LOKI_COMBINATION.every(rune => counts[rune] && counts[rune] > 0);
+}
+
+// Aktív játékos beállítása
+function setActivePlayer(player) {
+  activePlayer = player;
+  
+  // Vizuális jelölés
+  if (player === 'player') {
+    playerSection.classList.add('active-player');
+    botSection.classList.remove('active-player');
+  } else {
+    playerSection.classList.remove('active-player');
+    botSection.classList.add('active-player');
+  }
+}
+
+// Egészségpontok frissítése
+function updateHealth() {
+  playerHealthDisplay.textContent = `${playerHealth} ❤️`;
+  botHealthDisplay.textContent = `${botHealth} ❤️`;
+}
+
+// Bejelentés megjelenítése
+function displayClaim(claim) {
+  const playerName = claim.player === 'player' ? 'Te' : 'Ellenfél';
+  const claimText = `${playerName}: ${claim.runeCount} db ${RUNE_NAMES[claim.runeType]} (${claim.runeType})`;
+  
+  currentClaimDisplay.style.display = 'block';
+  claimTextDisplay.textContent = claimText;
+}
+
+// Kockák felfedése
+function revealDice() {
+  renderDice(playerDice, playerDiceContainer, false);
+  renderDice(botDice, botDiceContainer, false);
+}
+
+// Rúnák ellenőrzésének megjelenítése
+function displayRuneCheck(runeType, actualCount, claimedCount) {
+  return `Összesen ${actualCount} db ${RUNE_NAMES[runeType]} (${runeType}) van a kockákon, a bejelentett ${claimedCount} helyett.`;
+}
+
+// Játék vége
+function gameWon(winner, lokiWin = false) {
+  gameActive = false;
+  
+  revealDice();
+  
+  if (lokiWin) {
+    if (winner === 'player') {
+      resultDisplay.innerHTML = `<span class="winner">LOKI ÁLDÁSA! Kidobtad a LOKI kombinációt! Megnyerted a játékot!</span>`;
+    } else {
+      resultDisplay.innerHTML = `<span class="loser">LOKI ÁTKA! Az ellenfél kidobta a LOKI kombinációt! Elvesztetted a játékot!</span>`;
+    }
+  } else {
+    if (winner === 'player') {
+      resultDisplay.innerHTML = `<span class="winner">GYŐZELEM! Legyőzted az ellenfeledet!</span>`;
+    } else {
+      resultDisplay.innerHTML = `<span class="loser">VERESÉG! Az ellenfél legyőzött téged!</span>`;
+    }
+  }
+  
+  rollButton.style.display = 'none';
+  claimControls.style.display = 'none';
+  responseControls.style.display = 'none';
+  resetContainer.style.display = 'block';
+  
+  gameStatusDisplay.textContent = 'A játék véget ért. Nyomj az "Új Játék" gombra egy új játékhoz.';
+}
+
+// Valószínűségszámítás a blöff megítéléséhez - továbbfejlesztett verzió
+function calculateProbability(needed, diceLeft) {
+  if (needed <= 0) return 1;
+  if (needed > diceLeft) return 0;
+  
+  // Binomiális valószínűségszámítás - pontosabb eredményt ad
+  let probability = 0;
+  const p = 0.25; // 1/4 az esély egy adott rúnára
+  
+  for (let k = needed; k <= diceLeft; k++) {
+    probability += binomialProbability(diceLeft, k, p);
+  }
+  
+  return probability;
+}
+
+// Binomiális valószínűség számítása
+function binomialProbability(n, k, p) {
+  return binomialCoefficient(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
+}
+
+// Binomiális együttható számítása
+function binomialCoefficient(n, k) {
+  if (k < 0 || k > n) return 0;
+  if (k === 0 || k === n) return 1;
+  
+  let result = 1;
+  for (let i = 1; i <= k; i++) {
+    result *= (n - (k - i));
+    result /= i;
+  }
+  
+  return result;
+}
+
+// Játék indítása
 resetGame();
 </script>
 
