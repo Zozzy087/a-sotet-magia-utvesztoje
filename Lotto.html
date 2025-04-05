@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Sorsjegy Ellenőrző</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f2f2f2;
+      padding: 2rem;
+    }
+    .container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: auto;
+    }
+    input, button {
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      width: 100%;
+    }
+    #result {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>Sorsjegy Ellenőrző (OCR + Web)</h2>
+  <label>Jelenlegi nyereménylista URL:</label>
+  <input type="text" id="urlInput" placeholder="Illeszd be a Szerencsejáték linket...">
+
+  <label>Fotózd le a szelvényt:</label>
+  <input type="file" id="imageInput" accept="image/*">
+
+  <button onclick="checkTicket()">Ellenőrzés</button>
+  <div id="result"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+<script>
+  async function extractTicketNumber(image) {
+    const result = await Tesseract.recognize(image, 'eng', {
+      logger: m => console.log(m)
+    });
+    const text = result.data.text.replace(/\s+/g, '').trim();
+    const match = text.match(/\d{16}/); // csak 16 jegyű szám kell
+    return match ? match[0] : null;
+  }
+
+  async function fetchWinningNumbers(url) {
+    const proxy = "https://api.allorigins.win/get?url=" + encodeURIComponent(url);
+    const response = await fetch(proxy);
+    const data = await response.json();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(data.contents, 'text/html');
+    const rows = doc.querySelectorAll('table tr');
+
+    const winningNumbers = [];
+    rows.forEach(row => {
+      const cells = Array.from(row.cells);
+      cells.forEach(cell => {
+        if (cell.innerText.includes("azonosító száma")) {
+          const match = cell.innerText.match(/\d{16}/);
+          if (match) winningNumbers.push(match[0]);
+        }
+      });
+    });
+    return winningNumbers;
+  }
+
+  async function checkTicket() {
+    const imageInput = document.getElementById('imageInput').files[0];
+    const url = document.getElementById('urlInput').value.trim();
+    const resultDiv = document.getElementById('result');
+
+    if (!imageInput || !url) {
+      resultDiv.innerText = "Kérlek töltsd fel a szelvény képét és illeszd be az URL-t!";
+      return;
+    }
+
+    resultDiv.innerText = "Feldolgozás folyamatban...";
+    const ticketNumber = await extractTicketNumber(imageInput);
+    if (!ticketNumber) {
+      resultDiv.innerText = "Nem sikerült szelvényszámot kiolvasni a képből!";
+      return;
+    }
+
+    const winningNumbers = await fetchWinningNumbers(url);
+
+    if (winningNumbers.includes(ticketNumber)) {
+      resultDiv.innerText = `GRATULÁLUNK! A szelvényszámod (${ticketNumber}) nyert!`;
+    } else {
+      resultDiv.innerText = `Sajnos a szelvényszámod (${ticketNumber}) nem szerepel a nyertesek között.`;
+    }
+  }
+</script>
+</body>
+</html>
